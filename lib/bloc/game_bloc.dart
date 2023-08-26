@@ -8,9 +8,11 @@ import 'package:flutter_crush/model/objective_event.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_crush/model/tile.dart';
 import 'package:quiver/iterables.dart';
+// import 'package:quiver/iterables.dart';
+// import 'package:quiver/quiver.dart';
 import 'package:rxdart/rxdart.dart';
 
-class GameBloc implements BlocBase {
+class GameBloc {
   // Max number of tiles per row (and per column)
   static double kMaxTilesPerRowAndColumn = 12.0;
   static double kMaxTilesSize = 28.0;
@@ -20,16 +22,21 @@ class GameBloc implements BlocBase {
   // at game load is ready.  This is done as soon as this BLoC receives the
   // dimensions/position of the board as well as the dimensions of a tile
   //
-  BehaviorSubject<bool> _readyToDisplayTilesController = BehaviorSubject<bool>();
-  Function get setReadyToDisplayTiles => _readyToDisplayTilesController.sink.add;
-  Stream<bool> get outReadyToDisplayTiles => _readyToDisplayTilesController.stream;
+  BehaviorSubject<bool> _readyToDisplayTilesController =
+      BehaviorSubject<bool>();
+  Function get setReadyToDisplayTiles =>
+      _readyToDisplayTilesController.sink.add;
+  Stream<bool> get outReadyToDisplayTiles =>
+      _readyToDisplayTilesController.stream;
 
   //
   // Controller aimed at processing the Objective events
   //
-  PublishSubject<ObjectiveEvent> _objectiveEventsController = PublishSubject<ObjectiveEvent>();
+  PublishSubject<ObjectiveEvent> _objectiveEventsController =
+      PublishSubject<ObjectiveEvent>();
   Function get sendObjectiveEvent => _objectiveEventsController.sink.add;
-  Stream<ObjectiveEvent> get outObjectiveEvents => _objectiveEventsController.stream;
+  Stream<ObjectiveEvent> get outObjectiveEvents =>
+      _objectiveEventsController.stream;
 
   //
   // Controller that emits a boolean value to notify that a game is over
@@ -47,7 +54,7 @@ class GameBloc implements BlocBase {
   //
   // List of all level definitions
   //
-  List<Level> _levels = <Level>[];
+  final _levels = <Level>[];
   int _maxLevel = 0;
   int _levelNumber = 0;
   int get levelNumber => _levelNumber;
@@ -56,15 +63,15 @@ class GameBloc implements BlocBase {
   //
   // The Controller for the Game being played
   //
-  GameController _gameController;
+  late GameController _gameController;
   GameController get gameController => _gameController;
 
   //
   // Constructor
   //
-  GameBloc(){
+  GameBloc() {
     // Load all levels definitions
-    _loadLevels();
+    unawaited(_loadLevels());
   }
 
   //
@@ -75,9 +82,11 @@ class GameBloc implements BlocBase {
   //
   //  e.g.  bloc.setLevel(1).then(() => )
   //
-  Future<Level> setLevel(int levelIndex) async {
+  Future<Level?> setLevel(int levelIndex) async {
+    print('setLevel');
     _levelNumber = (levelIndex - 1).clamp(0, _maxLevel);
 
+    print('get _gameController');
     //
     // Initialize the Game
     //
@@ -86,21 +95,43 @@ class GameBloc implements BlocBase {
     //
     // Fill the Game with Tile and make sure there are possible Swaps
     //
-    _gameController.shuffle();
+    print('shufl _gameController');
+    // _gameController.shuffle();
 
-    return _levels[_levelNumber];
+    print('return  _level');
+    try {
+      final v = _levels[_levelNumber];
+      print('level try v $v');
+      return v;
+    } catch (e) {
+      print('level error $e');
+      return null;
+    }
   }
 
   //
   // Load the levels definitions from assets
   //
   _loadLevels() async {
-    String jsonContent = await rootBundle.loadString("assets/levels.json");
-    Map<dynamic, dynamic> list = json.decode(jsonContent);
-    enumerate(list["levels"] as List).forEach((levelItem){
-      _levels.add(Level.fromJson(levelItem.value));
-      _maxLevel++;
-    });
+    print('_loadLevels');
+    try {
+      String jsonContent = await rootBundle.loadString("assets/levels.json");
+      final list = json.decode(jsonContent) as Map<String, dynamic>;
+      print(list.toString());
+      (list["levels"] as List).forEach((levelItem) {
+        print(levelItem.toString());
+        try {
+          print(' type ${levelItem.runtimeType}');
+          final l = Level.fromJson(levelItem);
+          _levels.add(l);
+          _maxLevel += 1;
+        } catch (e) {
+          print('erro json Level.fromJson ');
+        }
+      });
+    } catch (e, stack) {
+      print('failted loadLevels');
+    }
   }
 
   //
@@ -108,26 +139,34 @@ class GameBloc implements BlocBase {
   // We need to notify anyone who might be interested in
   // knowing it so that actions can be taken
   //
-  void pushTileEvent(TileType tileType, int counter){
+  void pushTileEvent(TileType? tileType, int counter) {
     // We first need to decrement the objective by the counter
-    Objective objective = gameController.level.objectives.firstWhere((o) => o.type == tileType, orElse: () => null);
-    if (objective == null) { return; }
+    print('ssetLevel');
+    Objective? objective;
+    try {
+      objective =
+          gameController.level.objectives.firstWhere((o) => o.type == tileType);
+    } catch (_) {}
+    if (objective == null) {
+      return;
+    }
 
     objective.decrement(counter);
 
     // Send a notification
-    sendObjectiveEvent(ObjectiveEvent(type: tileType, remaining: objective.count));
+    sendObjectiveEvent(
+        ObjectiveEvent(type: tileType, remaining: objective.count));
 
     // Check if the game is won
     bool isWon = true;
-    gameController.level.objectives.forEach((Objective objective){
-      if (objective.count > 0){
+    gameController.level.objectives.forEach((Objective? objective) {
+      if ((objective?.count ?? 0) > 0) {
         isWon = false;
       }
     });
 
     // If the game is won, send a notification
-    if (isWon){
+    if (isWon) {
       _gameIsOverController.sink.add(true);
     }
   }
@@ -136,14 +175,15 @@ class GameBloc implements BlocBase {
   // A move has been played, let's decrement the number of moves
   // left and check if the game is over
   //
-  void playMove(){
+  void playMove() {
+    print('playMode');
     int movesLeft = gameController.level.decrementMove();
 
     // Emit the number of moves left (to refresh the moves left panel)
     _movesLeftController.sink.add(movesLeft);
 
     // There is no move left, so inform that the game is over
-    if (movesLeft == 0){
+    if (movesLeft == 0) {
       _gameIsOverController.sink.add(false);
     }
   }
@@ -151,15 +191,15 @@ class GameBloc implements BlocBase {
   //
   // When a game starts, we need to reset everything
   //
-  void reset(){
+  void reset() {
     gameController.level.resetObjectives();
   }
 
-  @override
-  void dispose() {
-    _readyToDisplayTilesController?.close();
-    _objectiveEventsController?.close();
-    _gameIsOverController?.close();
-    _movesLeftController?.close();
-  }
+  // @override
+  // void dispose() {
+  //   _readyToDisplayTilesController.close();
+  //   _objectiveEventsController.close();
+  //   _gameIsOverController.close();
+  //   _movesLeftController.close();
+  // }
 }
