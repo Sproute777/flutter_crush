@@ -1,6 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_crush/animations/shine_effect.dart';
-import 'package:flutter_crush/bloc/bloc_provider.dart';
 import 'package:flutter_crush/bloc/game_bloc.dart';
 import 'package:flutter_crush/game_widgets/double_curved_container.dart';
 import 'package:flutter_crush/game_widgets/game_level_button.dart';

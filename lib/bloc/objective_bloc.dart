@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter_crush/bloc/bloc_provider.dart';
 import 'package:flutter_crush/model/objective_event.dart';
 import 'package:flutter_crush/model/tile.dart';
 import 'package:rxdart/rxdart.dart';

@@ -244,7 +244,6 @@ class GameRepo {
                 destCol > -1 &&
                 destCol < totalCols) {
               toTile = _grid!.array![destRow][destCol];
-              if (toTile == null) continue;
               // If the destination does not exist, skip
               if (toTile.type == TileType.forbidden) continue;
 
@@ -330,7 +329,7 @@ class GameRepo {
     int minRow = math.max(0, row - 5);
     int maxRow = math.min(row + 5, _grid!.height - 1);
     int index = row;
-    TileType? type = _grid!.array![row][col]?.type;
+    TileType? type = _grid!.array![row][col].type;
 
     // By default the tested tile is part of the chain
     chain.addTile(_grid!.array![row][col]);
@@ -347,8 +346,8 @@ class GameRepo {
     // Search Up
     index = row + 1;
     while (index <= maxRow &&
-        _grid!.array![index][col]?.type == type &&
-        _grid!.array![index][col]?.type != TileType.empty) {
+        _grid!.array![index][col].type == type &&
+        _grid!.array![index][col].type != TileType.empty) {
       chain.addTile(_grid!.array?[index][col]);
       index++;
     }
@@ -365,7 +364,7 @@ class GameRepo {
     int minCol = math.max(0, col - 5);
     int maxCol = math.min(col + 5, _grid!.width - 1);
     int index = col;
-    TileType? type = _grid!.array![row][col]?.type;
+    TileType? type = _grid!.array![row][col].type;
 
     // By default the tested tile is part of the chain
     chain.addTile(_grid!.array![row][col]);
@@ -373,7 +372,7 @@ class GameRepo {
     // Search Left
     index = col - 1;
     while (index >= minCol &&
-        _grid!.array![row][index]?.type == type &&
+        _grid!.array![row][index].type == type &&
         _grid!.array![row][index].type != TileType.empty) {
       chain.addTile(_grid!.array![row][index]);
       index--;
@@ -382,7 +381,7 @@ class GameRepo {
     // Search Right
     index = col + 1;
     while (index <= maxCol &&
-        _grid!.array![row][index]?.type == type &&
+        _grid!.array![row][index].type == type &&
         _grid!.array![row][index].type != TileType.empty) {
       chain.addTile(_grid!.array![row][index]);
       index++;
@@ -432,23 +431,23 @@ class GameRepo {
       if (tile == null) return;
       if (tile != combo.commonTile) {
         // Decrement the depth
-        if ((--grid!.array![tile.row][tile.col]?.depth ?? 0) < 0) {
+        if (--grid!.array![tile.row][tile.col].depth  < 0) {
           // Check for objectives
-          gameBloc.pushTileEvent(grid!.array![tile.row][tile.col]?.type, 1);
+          gameBloc.pushTileEvent(grid!.array![tile.row][tile.col].type, 1);
 
           // If the depth is lower than 0, this means that we can remove the tile
-          grid!.array![tile.row][tile.col]?.type = TileType.empty;
+          grid!.array![tile.row][tile.col].type = TileType.empty;
         }
         // We need to rebuild the Widget
-        grid!.array![tile.row][tile.col]?.build();
+        grid!.array![tile.row][tile.col].build();
       } else {
         if (combo.commonTile != null) {
-          grid!.array![tile.row][tile.col]?.row = combo.commonTile!.row;
-          grid!.array![tile.row][tile.col]?.col = combo.commonTile!.col;
+          grid!.array![tile.row][tile.col].row = combo.commonTile!.row;
+          grid!.array![tile.row][tile.col].col = combo.commonTile!.col;
         }
-        grid!.array![tile.row][tile.col]?.type = combo.resultingTileType;
-        grid!.array![tile.row][tile.col]?.visible = true;
-        grid!.array![tile.row][tile.col]?.build();
+        grid!.array![tile.row][tile.col].type = combo.resultingTileType;
+        grid!.array![tile.row][tile.col].visible = true;
+        grid!.array![tile.row][tile.col].build();
 
         // We need to notify about the creation of a new tile
         gameBloc.pushTileEvent(combo.resultingTileType, 1);
@@ -462,13 +461,13 @@ class GameRepo {
   void refreshGridAfterAnimations(
       Array2d<TileType> tileTypes, Set<RowCol> involvedCells) {
     involvedCells.forEach((RowCol rowCol) {
-      _grid!.array![rowCol.row][rowCol.col]?.row = rowCol.row;
-      _grid!.array![rowCol.row][rowCol.col]?.col = rowCol.col;
-      _grid!.array![rowCol.row][rowCol.col]?.type =
+      _grid!.array![rowCol.row][rowCol.col].row = rowCol.row;
+      _grid!.array![rowCol.row][rowCol.col].col = rowCol.col;
+      _grid!.array![rowCol.row][rowCol.col].type =
           tileTypes.array![rowCol.row][rowCol.col];
-      _grid!.array![rowCol.row][rowCol.col]?.visible = true;
-      _grid!.array![rowCol.row][rowCol.col]?.depth = 0;
-      _grid!.array![rowCol.row][rowCol.col]?.build();
+      _grid!.array![rowCol.row][rowCol.col].visible = true;
+      _grid!.array![rowCol.row][rowCol.col].depth = 0;
+      _grid!.array![rowCol.row][rowCol.col].build();
     });
   }
 
@@ -499,16 +498,16 @@ class GameRepo {
         if (level.grid.array![row][col] == '1') {
           Tile? tile = _grid!.array![row][col];
 
-          if (tile != null && Tile.isBomb(tile.type) && !skipThis) {
+          if ( Tile.isBomb(tile.type) && !skipThis) {
             // Another bomb must explode
             _subExplosions.add(tile);
           } else {
             // Notify that we removed some tiles
-            gameBloc.pushTileEvent(tile?.type, 1);
+            gameBloc.pushTileEvent(tile.type, 1);
 
             // Empty the cell
-            tile?.type = TileType.empty;
-            tile?.build();
+            tile.type = TileType.empty;
+            tile.build();
           }
         }
       }

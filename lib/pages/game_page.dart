@@ -5,7 +5,6 @@ import 'package:flutter_crush/animations/animation_chain.dart';
 import 'package:flutter_crush/animations/animation_combo_collapse.dart';
 import 'package:flutter_crush/animations/animation_combo_three.dart';
 import 'package:flutter_crush/animations/animation_swap_tiles.dart';
-import 'package:flutter_crush/bloc/bloc_provider.dart';
 import 'package:flutter_crush/bloc/game_bloc.dart';
 import 'package:flutter_crush/game_widgets/board.dart';
 import 'package:flutter_crush/game_widgets/game_moves_left_panel.dart';
@@ -274,10 +273,7 @@ class _GamePageState extends State<GamePage>
     gestureOffsetStart = null;
     gestureFromRowCol = null;
 
-    if (selectedTile != null) {
-      //TODO: Condition no longer necessary
-      canBePlayed = selectedTile.canMove;
-    }
+    canBePlayed = selectedTile.canMove;
 
     if (canBePlayed) {
       gestureFromTile = selectedTile;
@@ -361,14 +357,11 @@ class _GamePageState extends State<GamePage>
           Tile? destTile = gameBloc!.gameController.grid!.array![rowCol.row][rowCol.col];
           bool canBePlayed = false;
 
-          if (destTile != null) {
             //TODO:  Condition no longer necessary
             canBePlayed = destTile.canMove || destTile.type == TileType.empty;
-          }
 
           if (canBePlayed) {
             // We need to test the swap
-if(destTile == null) return;
             bool swapAllowed =
                 gameBloc!.gameController.swapContains(gestureFromTile!, destTile);
 
@@ -384,12 +377,12 @@ if(destTile == null) return;
             Tile downTile = destTile.cloneForAnimation();
 
             // 3. Remove both tiles from the game grid
-            gameBloc!.gameController.grid!.array![rowCol.row][rowCol.col]?.visible =
+            gameBloc!.gameController.grid!.array![rowCol.row][rowCol.col].visible =
                 false;
             gameBloc!
                 .gameController
                 .grid!.array![gestureFromRowCol!.row][gestureFromRowCol!.col]
-                ?.visible = false;
+                .visible = false;
 
             setState(() {});
 
@@ -404,11 +397,11 @@ if(destTile == null) return;
                     onComplete: () async {
                       // 5. Put back the tiles in the game grid
                       gameBloc!.gameController.grid!.array![rowCol.row][rowCol.col]
-                          ?.visible = true;
+                          .visible = true;
                       gameBloc!
                           .gameController
                           .grid!.array![gestureFromRowCol!.row][gestureFromRowCol!.col]
-                          ?.visible = true;
+                          .visible = true;
 
                       // 6. Remove the overlay Entry
                       _overlayEntryAnimateSwapTiles?.remove();
@@ -627,7 +620,7 @@ if(destTile == null) return;
 
     // Make all involved cells invisible
     animationResolver.involvedCells.forEach((RowCol rowCol) {
-      gameBloc!.gameController.grid!.array![rowCol.row][rowCol.col]?.visible = false;
+      gameBloc!.gameController.grid!.array![rowCol.row][rowCol.col].visible = false;
     });
 
     // Make a refresh of the board and the end of which we will play the animations

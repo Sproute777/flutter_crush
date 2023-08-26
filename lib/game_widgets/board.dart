@@ -1,12 +1,11 @@
 import 'dart:math' as math;
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_crush/bloc/bloc_provider.dart';
 import 'package:flutter_crush/bloc/game_bloc.dart';
 import 'package:flutter_crush/helpers/array_2d.dart';
 import 'package:flutter_crush/model/level.dart';
 import 'package:flutter/material.dart';
 
-class Board extends StatelessWidget {
+class Board extends StatefulWidget {
   Board({
     Key? key,
     this.cols = 0,
@@ -18,22 +17,29 @@ class Board extends StatelessWidget {
   final int cols;
   final Level level;
 
+  @override
+  State<Board> createState() => _BoardState();
+}
+
+class _BoardState extends State<Board> {
   Array2d<BoxDecoration?>? _decorations;
+
   Array2d<Color?>? _checker;
+
   GlobalKey _keyChecker = GlobalKey();
+
   GlobalKey _keyCheckerCell = GlobalKey();
+
   GameBloc? gameBloc;
 
-  //
-  // Builds the decorations of each tile
   //
   void _buildDecorations() {
     if (_decorations != null) return;
 
-    _decorations = Array2d<BoxDecoration?>(cols + 1, rows + 1,defaultValue: null);
+    _decorations = Array2d<BoxDecoration?>(widget.cols + 1, widget.rows + 1,defaultValue: null);
 
-    for (int row = 0; row <= rows; row++) {
-      for (int col = 0; col <= cols; col++) {
+    for (int row = 0; row <= widget.rows; row++) {
+      for (int col = 0; col <= widget.cols; col++) {
         // If there is nothing at (row, col) => no decoration
         int topLeft = 0;
         int bottomLeft = 0;
@@ -42,26 +48,26 @@ class Board extends StatelessWidget {
         BoxDecoration? boxDecoration;
 
         if (col > 0) {
-          if (row < rows) {
-            if (level.grid.array![row][col - 1] != 'X') {
+          if (row < widget.rows) {
+            if (widget.level.grid.array![row][col - 1] != 'X') {
               topLeft = 1;
             }
           }
           if (row > 0) {
-            if (level.grid.array![row - 1][col - 1] != 'X') {
+            if (widget.level.grid.array![row - 1][col - 1] != 'X') {
               bottomLeft = 1;
             }
           }
         }
 
-        if (col < cols) {
-          if (row < rows) {
-            if (level.grid.array![row][col] != 'X') {
+        if (col < widget.cols) {
+          if (row < widget.rows) {
+            if (widget.level.grid.array![row][col] != 'X') {
               topRight = 1;
             }
           }
           if (row > 0) {
-            if (level.grid.array![row - 1][col] != 'X') {
+            if (widget.level.grid.array![row - 1][col] != 'X') {
               bottomRight = 1;
             }
           }
@@ -85,20 +91,18 @@ class Board extends StatelessWidget {
   }
 
   //
-  // Builds a checker board
-  //
   void _buildChecker(){
     if (_checker != null) return;
 
-    _checker = Array2d<Color?>(rows, cols,defaultValue: null);
+    _checker = Array2d<Color?>(widget.rows, widget.cols,defaultValue: null);
     int counter = 0;
 
-    for (int row = 0; row < rows; row++) {
+    for (int row = 0; row < widget.rows; row++) {
       counter = (row % 2 == 1) ? 0 : 1;
-      for (int col = 0; col < cols; col++) {
+      for (int col = 0; col < widget.cols; col++) {
         final double opacity = ((counter + col) % 2 == 1) ? 0.3 : 0.1;
 
-        Color color = (level.grid.array![row][col] == 'X')
+        Color color = (widget.level.grid.array![row][col] == 'X')
             ? Colors.transparent
             : Colors.white.withOpacity(opacity);
 
@@ -125,8 +129,8 @@ class Board extends StatelessWidget {
     //
     // Dimensions of the board
     //
-    final double width = maxTileWidth * (cols + 1) * 1.1;
-    final double height = maxTileWidth * (rows + 1) * 1.1;
+    final double width = maxTileWidth * (widget.cols + 1) * 1.1;
+    final double height = maxTileWidth * (widget.rows + 1) * 1.1;
 
     return Container(
       padding: const EdgeInsets.all(0.0),
@@ -147,25 +151,23 @@ class Board extends StatelessWidget {
     return GridView.builder(
       padding: const EdgeInsets.all(0.0),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: cols + 1,
+        crossAxisCount: widget.cols + 1,
         childAspectRatio: 1.01,
       ),
-      itemCount: (cols + 1) * (rows + 1),
+      itemCount: (widget.cols + 1) * (widget.rows + 1),
       itemBuilder: (BuildContext context, int index) {
-        final int col = index % (cols + 1);
-        final int row = (index / (cols + 1)).floor();
+        final int col = index % (widget.cols + 1);
+        final int row = (index / (widget.cols + 1)).floor();
 
         //
         // Use the decoration from bottom up during this build
         //
         return Container(
-            decoration: _decorations?.array![rows - row][col]);
+            decoration: _decorations?.array![widget.rows - row][col]);
       },
     );
   }
 
-  //
-  // Show a "checkerboard-like" grid
   //
   Widget _showGrid(double width, GameBloc gameBloc) {
     bool isFirst = true;
@@ -176,16 +178,16 @@ class Board extends StatelessWidget {
         key: _keyChecker,
         padding: const EdgeInsets.all(0.0),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: cols,
+          crossAxisCount: widget.cols,
           childAspectRatio: 1.01,   // 1.01 solves an issue with floating numbers
         ),
-        itemCount: cols * rows,
+        itemCount: widget.cols * widget.rows,
         itemBuilder: (BuildContext context, int index) {
-          final int col = index % cols;
-          final int row = (index / cols).floor();
+          final int col = index % widget.cols;
+          final int row = (index / widget.cols).floor();
 
           return Container(
-            color: _checker!.array![rows - row - 1][col],
+            color: _checker!.array![widget.rows - row - 1][col],
             child: LayoutBuilder(
                 builder: (BuildContext context, BoxConstraints constraints) {
               if (isFirst) {
@@ -201,8 +203,6 @@ class Board extends StatelessWidget {
   }
 
   //
-  // Helper class that gets the dimensions of a Widget, from its context
-  //
   Rect _getDimensionsFromContext(BuildContext context) {
     final RenderBox box = context.findRenderObject() as RenderBox;
 
@@ -215,9 +215,6 @@ class Board extends StatelessWidget {
   }
 
   //
-  // As the context is not available to get the position, dimensions... during the build,
-  // we use this little trick to request this method to be called right after the frame rendering
-  //
   void _afterBuild() {
     //
     // Let's get the dimensions and position of the exact position of the board
@@ -228,8 +225,8 @@ class Board extends StatelessWidget {
       //
       // Save the position of the board
       //
-        level.boardLeft = rectBoard.left;
-        level.boardTop = rectBoard.top;
+        widget.level.boardLeft = rectBoard.left;
+        widget.level.boardTop = rectBoard.top;
 
       //
       // Let's get the dimensions of one cell of the board
@@ -239,8 +236,8 @@ class Board extends StatelessWidget {
       //
       // Save it for later reuse
       //
-      level.tileWidth = rectBoardSquare.width;
-      level.tileHeight = rectBoardSquare.height;
+      widget.level.tileWidth = rectBoardSquare.width;
+      widget.level.tileHeight = rectBoardSquare.height;
 
       //
       // Send a notification to inform that we are ready to display the tiles from now on

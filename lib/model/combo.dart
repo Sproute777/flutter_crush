@@ -23,10 +23,10 @@ class Combo {
 
   // Constructor
   Combo(Chain? horizontalChain, Chain? verticalChain, int row, int col){
-    horizontalChain?.tiles?.forEach((Tile? tile){
+    horizontalChain?.tiles.forEach((Tile? tile){
       _tiles.putIfAbsent(tile.hashCode, () => tile);
     });
-    verticalChain?.tiles?.forEach((Tile? tile){
+    verticalChain?.tiles.forEach((Tile? tile){
       if (commonTile == null && _tiles.keys.contains(tile.hashCode)){
         commonTile = tile;
       }

@@ -407,7 +407,6 @@ class AnimationsResolver {
 
         // Register the avalanche animation
         final id = _identities.array![row][col];
-        if (id == null) return;
         _registerAnimation(
           id,
           delay,
@@ -522,7 +521,6 @@ class AnimationsResolver {
 
         // There will be an animation (move down)
         final id = _identities.array![row][col];
-        if (id == null) continue;
         _registerAnimation(
           id,
           delay,

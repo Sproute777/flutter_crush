@@ -25,7 +25,8 @@ class AppBlocObserver extends BlocObserver {
 }
 
 Future<void> startApp() async {
-  final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  // final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
   // FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);

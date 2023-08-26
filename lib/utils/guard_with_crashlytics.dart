@@ -129,12 +129,12 @@ extension LevelColor on Level {
   }
 }
 
-const _black = '\x1B[30m';
+// const _black = '\x1B[30m';
 const _red = '\x1B[31m';
 const _green = '\x1B[32m';
-const _yellow = '\x1B[33m';
-const _blue = '\x1B[34m';
-const _magenta = '\x1B[35m';
+// const _yellow = '\x1B[33m';
+// const _blue = '\x1B[34m';
+// const _magenta = '\x1B[35m';
 const _cyan = '\x1B[36m';
-const _white = '\x1B[37m';
+// const _white = '\x1B[37m';
 const _reset = '\x1B[0m';

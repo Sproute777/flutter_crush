@@ -404,23 +404,23 @@ class GameController {
       if(tile == null) return;
       if (tile != combo.commonTile){
         // Decrement the depth
-        if ((--grid!.array![tile.row][tile.col]?.depth ?? 0) < 0){
+        if (--grid!.array![tile.row][tile.col].depth  < 0){
           // Check for objectives
-          gameBloc.pushTileEvent(grid!.array![tile.row][tile.col]?.type, 1);
+          gameBloc.pushTileEvent(grid!.array![tile.row][tile.col].type, 1);
 
           // If the depth is lower than 0, this means that we can remove the tile
-          grid!.array![tile.row][tile.col]?.type = TileType.empty;
+          grid!.array![tile.row][tile.col].type = TileType.empty;
         }
         // We need to rebuild the Widget
-        grid!.array![tile.row][tile.col]?.build();
+        grid!.array![tile.row][tile.col].build();
       } else {
         if(combo.commonTile != null){
-        grid!.array![tile.row][tile.col]?.row = combo.commonTile!.row;
-        grid!.array![tile.row][tile.col]?.col = combo.commonTile!.col;
+        grid!.array![tile.row][tile.col].row = combo.commonTile!.row;
+        grid!.array![tile.row][tile.col].col = combo.commonTile!.col;
         }
-        grid!.array![tile.row][tile.col]?.type = combo.resultingTileType;
-        grid!.array![tile.row][tile.col]?.visible = true;
-        grid!.array![tile.row][tile.col]?.build();
+        grid!.array![tile.row][tile.col].type = combo.resultingTileType;
+        grid!.array![tile.row][tile.col].visible = true;
+        grid!.array![tile.row][tile.col].build();
 
         // We need to notify about the creation of a new tile
         gameBloc.pushTileEvent(combo.resultingTileType, 1);
