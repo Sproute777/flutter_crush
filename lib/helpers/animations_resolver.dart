@@ -1,6 +1,5 @@
 import 'dart:math' as math;
 
-import 'package:flutter_crush/bloc/game_bloc.dart';
 import 'package:flutter_crush/controllers/game_controller.dart';
 import 'package:flutter_crush/helpers/array_2d.dart';
 import 'package:flutter_crush/model/animation_sequence.dart';
@@ -11,7 +10,6 @@ import 'package:flutter_crush/model/level.dart';
 import 'package:flutter_crush/model/row_col.dart';
 import 'package:flutter_crush/model/tile.dart';
 import 'package:flutter_crush/model/tile_animation.dart';
-import 'package:quiver/iterables.dart';
 
 class AnimationsResolver {
   // final GameBloc gameBloc;
@@ -249,7 +247,8 @@ class AnimationsResolver {
           _involvedCells.add(from!);
 
           // At the same time, we need to check the objectives
-          gameController.pushTileEvent(_tiles.array![tile.row][tile.col]?.type, 1);
+          gameController.pushTileEvent(
+              _tiles.array![tile.row][tile.col]?.type, 1);
         });
 
         // ... the delay for the next move
@@ -721,36 +720,66 @@ class AnimationsResolver {
       TileAnimation? tileAnimation;
       Tile? tile;
       if (delays != null)
-        enumerate(delays).forEach((item) {
-          // Remember that start and end delays as well as the type of tile
-          if (item.index == 0) {
-            startDelay = item.value;
-            final tileA = _animationsPerIdentityAndDelay[identity]?[item.value];
+        for (var delayIndex = 0; delayIndex < delays.length; delayIndex++) {
+          final item = delays[delayIndex];
+          if (delayIndex == 0) {
+            startDelay = item;
+            final tileA = _animationsPerIdentityAndDelay[identity]?[item];
             if (tileA != null) {
               tileAnimation = tileA;
-              tileType = tileAnimation!.tileType;
+              tileType = tileAnimation.tileType;
               // If the tile does not exist, create it
-              tile = tileAnimation!.tile;
+              tile = tileAnimation.tile;
             }
             if (tile == null) {
               tile = Tile(
                 row: tileAnimation!.from.row,
-                col: tileAnimation!.from.col,
+                col: tileAnimation.from.col,
                 depth: 0,
                 level: level,
                 type: tileType!,
                 visible: true,
               );
-              tile!.build();
-              tileAnimation!.tile = tile!;
+              tile.build();
+              tileAnimation.tile = tile;
             }
           }
-          endDelay = math.max(endDelay, item.value);
+          endDelay = math.max(endDelay, item);
 
           // add the animation
-          final a = _animationsPerIdentityAndDelay[identity]?[item.value];
+          final a = _animationsPerIdentityAndDelay[identity]?[item];
           if (a != null) animations.add(a);
-        });
+        }
+      // enumerate(delays).forEach((item) {
+      //   // Remember that start and end delays as well as the type of tile
+      //   if (item.index == 0) {
+      //     startDelay = item.value;
+      //     final tileA = _animationsPerIdentityAndDelay[identity]?[item.value];
+      //     if (tileA != null) {
+      //       tileAnimation = tileA;
+      //       tileType = tileAnimation!.tileType;
+      //       // If the tile does not exist, create it
+      //       tile = tileAnimation!.tile;
+      //     }
+      //     if (tile == null) {
+      //       tile = Tile(
+      //         row: tileAnimation!.from.row,
+      //         col: tileAnimation!.from.col,
+      //         depth: 0,
+      //         level: level,
+      //         type: tileType!,
+      //         visible: true,
+      //       );
+      //       tile!.build();
+      //       tileAnimation!.tile = tile!;
+      //     }
+      //   }
+      //   endDelay = math.max(endDelay, item.value);
+
+      //   // add the animation
+      //   final a = _animationsPerIdentityAndDelay[identity]?[item.value];
+      //   if (a != null) animations.add(a);
+      // });
 
       // Record the sequence
       if (tileType != null) {
