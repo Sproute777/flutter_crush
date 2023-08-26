@@ -90,10 +90,10 @@ class AnimationsResolver {
     //
     // Fill both arrays based on the current definition
     //
-    _state = Array2d<int>(rows, cols,defaultValue: -1);
-    _types = Array2d<TileType>(rows, cols,defaultValue: TileType.empty);
-    _tiles = Array2d<Tile?>(rows, cols,defaultValue: null);
-    _identities = Array2d<int>(rows, cols,defaultValue: -1);
+    _state = Array2d<int>(rows, cols, defaultValue: -1);
+    _types = Array2d<TileType>(rows, cols, defaultValue: TileType.empty);
+    _tiles = Array2d<Tile?>(rows, cols, defaultValue: null);
+    _identities = Array2d<int>(rows, cols, defaultValue: -1);
     _nextIdentity = 0;
 
     for (int row = 0; row < rows; row++) {
@@ -104,7 +104,6 @@ class AnimationsResolver {
           _tiles.array![row][col] = null;
         } else {
           Tile? tile = gameController.grid!.array![row][col];
-          if (tile == null) continue;
           if (tile.type == TileType.empty) {
             _state.array![row][col] = 0;
             _types.array![row][col] = TileType.empty;
@@ -232,7 +231,8 @@ class AnimationsResolver {
           if (tile == null) return;
           from = RowCol(row: tile.row, col: tile.col);
           final id = _identities.array![tile.row][tile.col];
-          if (id == null) return;
+          if (to == null) return;
+          if (from == null) return;
           _registerAnimation(
             id,
             delay,
@@ -240,7 +240,7 @@ class AnimationsResolver {
               animationType: animationType,
               delay: delay,
               from: from!,
-              to: to!,
+              to: to,
               tile: _tiles.array![tile.row][tile.col],
             ),
           );
@@ -406,9 +406,8 @@ class AnimationsResolver {
         RowCol to = RowCol(row: row - 1, col: col + colOffset);
 
         // Register the avalanche animation
-        final id = 
-          _identities.array![row][col];
-          if(id == null) return;
+        final id = _identities.array![row][col];
+        if (id == null) return;
         _registerAnimation(
           id,
           delay,
@@ -522,9 +521,8 @@ class AnimationsResolver {
         RowCol to = RowCol(row: dest, col: col);
 
         // There will be an animation (move down)
-        final id = 
-          _identities.array![row][col];
-          if(id == null) continue;
+        final id = _identities.array![row][col];
+        if (id == null) continue;
         _registerAnimation(
           id,
           delay,
@@ -630,8 +628,7 @@ class AnimationsResolver {
           RowCol from = RowCol(row: row, col: col);
           RowCol to = RowCol(row: dest, col: col);
 
-          final id =  _identities.array![dest][col];
-          if(id == null) continue;
+          final id = _identities.array![dest][col];
           _registerAnimation(
             id,
             delay,
@@ -758,12 +755,14 @@ class AnimationsResolver {
         });
 
       // Record the sequence
-      sequences.add(AnimationSequence(
-        tileType: tileType!,
-        startDelay: startDelay,
-        endDelay: endDelay,
-        animations: animations,
-      ));
+      if (tileType != null) {
+        sequences.add(AnimationSequence(
+          tileType: tileType!,
+          startDelay: startDelay,
+          endDelay: endDelay,
+          animations: animations,
+        ));
+      }
     });
 
     return sequences;

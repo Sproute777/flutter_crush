@@ -1,18 +1,19 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:flutter_crush/bloc/bloc_provider.dart';
 import 'package:flutter_crush/controllers/game_controller.dart';
 import 'package:flutter_crush/model/level.dart';
 import 'package:flutter_crush/model/objective.dart';
 import 'package:flutter_crush/model/objective_event.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_crush/model/tile.dart';
-import 'package:quiver/iterables.dart';
+import 'package:logging/logging.dart' hide Level;
 // import 'package:quiver/iterables.dart';
 // import 'package:quiver/quiver.dart';
 import 'package:rxdart/rxdart.dart';
 
 class GameBloc {
+  static const tag = 'GameBloc';
+  final _log = Logger(tag);
   // Max number of tiles per row (and per column)
   static double kMaxTilesPerRowAndColumn = 12.0;
   static double kMaxTilesSize = 28.0;
@@ -83,39 +84,31 @@ class GameBloc {
   //  e.g.  bloc.setLevel(1).then(() => )
   //
   Future<Level?> setLevel(int levelIndex) async {
-    print('setLevel');
+    _log.fine('setLevel');
     _levelNumber = (levelIndex - 1).clamp(0, _maxLevel);
 
-    print('_levelNumber $_levelNumber');
-    print('get _gameController');
+    _log.fine('_levelNumber $_levelNumber');
+    _log.fine('get _gameController');
     //
     // Initialize the Game
     //
     _gameController = GameController(level: _levels[_levelNumber]);
-    print('_gameController ${_gameController.level}');
+    _log.fine('_gameController ${_gameController.level}');
 
     //
     // Fill the Game with Tile and make sure there are possible Swaps
     //
-    print('shufl _gameController');
-   await _gameController.shuffle().timeout(Duration(seconds: 10));
+    _log.fine('shufl _gameController');
+   await _gameController.shuffle();
+  //  .timeout(Duration(seconds: 10));
 
-    print('return  _level');
-    try {
-      final v = _levels[_levelNumber];
-      print('level try v $v');
-      return v;
-    } catch (e) {
-      print('level error $e');
-      return null;
-    }
+      return _levels[_levelNumber];
   }
 
   //
   // Load the levels definitions from assets
   //
   _loadLevels() async {
-    print('_loadLevels');
     try {
       String jsonContent = await rootBundle.loadString("assets/levels.json");
       final list = json.decode(jsonContent) as Map<String, dynamic>;
@@ -123,16 +116,15 @@ class GameBloc {
       (list["levels"] as List).forEach((levelItem) {
         print(levelItem.toString());
         try {
-          print(' type ${levelItem.runtimeType}');
           final l = Level.fromJson(levelItem);
           _levels.add(l);
           _maxLevel += 1;
-        } catch (e) {
-          print('erro json Level.fromJson ');
+        } catch (e,stack) {
+         _log.severe('crash during parse fromJson',e,stack);
         }
       });
     } catch (e, stack) {
-      print('failted loadLevels');
+      _log.severe('crash during loading assets',e,stack);
     }
   }
 

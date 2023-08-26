@@ -36,17 +36,8 @@ class Level extends Object {
         _rows = json["rows"] as int,
         _cols = json["cols"] as int,
         _maxMoves = json["moves"] as int {
-    print('create aray');
     // Initialize the grid to the dimensions
-    try {
-      print('grid start');
-      print('rows $_rows');
-      print('columns $_cols');
       grid = Array2d<String>(_rows, _cols,defaultValue: '');
-    } catch (e) {
-      print(e);
-      print('grid failed');
-    }
     // Populate the grid from the definition
     //
     // Trick
@@ -55,18 +46,12 @@ class Level extends Object {
     //  the grid (bottom-up), we need to reverse the
     //  definition from the JSON file.
     //
-    print('next');
-    print('grid is ${json['grid'].runtimeType}');
     final row = List.of((json['grid'] as List).reversed);
     for (var rowIndex = 0; rowIndex < row.length; rowIndex++) {
-      print('grid row is ${row.runtimeType} ${row.toString()}');
       final listCell = (row[rowIndex] as String).split(',');
       for (var cellIndex = 0; cellIndex < listCell.length; cellIndex++) {
         final cell = listCell[cellIndex];
-        print('grid value ${cell.toString()}');
         try{
-          print('grid toStr ${grid.array!.length} ${grid.toString()}');
-        print('grid rowIndex ${rowIndex} , cellIndex ${cellIndex} ${cell.toString()}');
         grid.array![rowIndex][cellIndex] = cell;
         } catch (e){
           print(e);

@@ -1,9 +1,8 @@
 import 'dart:async';
 
-import 'package:flutter_crush/application.dart';
-import 'package:flutter_crush/helpers/audio.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_crush/utils/guard_with_crashlytics.dart';
+
+import 'startapp.dart';
 
 Future<void> main() async {
   //
@@ -14,23 +13,8 @@ Future<void> main() async {
   //
   // Remove the status bar
   //
-  await runZonedGuarded<Future<void>>(
-    () async {
-      WidgetsFlutterBinding.ensureInitialized();
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
-      await Future<void>.delayed(Duration(milliseconds: 100));
-      FlutterError.onError = (details) {
-        print(details.exceptionAsString());
-        print(details.stack);
-      };
+    await guardWithCrashlytics(() {
+    startApp();
+  });
 
-      runApp(
-        Application(),
-      );
-    },
-    (error, stackTrace) {
-      print(error);
-      print(stackTrace);
-    },
-  );
-}
+  }

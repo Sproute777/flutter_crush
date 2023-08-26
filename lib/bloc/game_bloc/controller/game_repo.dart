@@ -12,18 +12,18 @@ import 'package:flutter_crush/model/swap_move.dart';
 import 'package:flutter_crush/model/tile.dart';
 import 'package:logging/logging.dart' hide Level;
 
-class GameController {
-  static const tag = 'GameController';
+class GameRepo {
+  static const tag = 'GameRepo';
   final _log = Logger(tag);
-  Level level;
-   Array2d<Tile>? _grid;
+  final Level level;
+  Array2d<Tile>? _grid;
   Array2d<Tile>? get grid => _grid;
   late math.Random _rnd;
 
   //
   // List of all possible Swaps
   //
- late HashMap<int, Swap> _swaps;
+  late HashMap<int, Swap> _swaps;
   List<Swap> get swaps => _swaps.values.toList();
 
   //
@@ -43,64 +43,65 @@ class GameController {
   //
   Map<TileType, List<SwapMove>> _explosions = {
     TileType.flare: <SwapMove>[
-                      const SwapMove(row: 0, col: -1),
-                      const SwapMove(row: 0, col: 1),
-                      const SwapMove(row: -1, col: 0),
-                      const SwapMove(row: 1, col: 0),
-                      const SwapMove(row: 0, col: 0),
-                    ],
+      const SwapMove(row: 0, col: -1),
+      const SwapMove(row: 0, col: 1),
+      const SwapMove(row: -1, col: 0),
+      const SwapMove(row: 1, col: 0),
+      const SwapMove(row: 0, col: 0),
+    ],
     TileType.bomb: <SwapMove>[
-                      const SwapMove(row: 0, col: -2),
-                      const SwapMove(row: 0, col: -1),
-                      const SwapMove(row: 0, col: 1),
-                      const SwapMove(row: 0, col: 2),
-                      const SwapMove(row: -1, col: 0),
-                      const SwapMove(row: -1, col: -1),
-                      const SwapMove(row: -1, col: 1),
-                      const SwapMove(row: 1, col: -1),
-                      const SwapMove(row: 1, col: 0),
-                      const SwapMove(row: 1, col: 1),
-                      const SwapMove(row: -2, col: 0),
-                      const SwapMove(row: 2, col: 0),
-                      const SwapMove(row: 0, col: 0),
-                    ],
+      const SwapMove(row: 0, col: -2),
+      const SwapMove(row: 0, col: -1),
+      const SwapMove(row: 0, col: 1),
+      const SwapMove(row: 0, col: 2),
+      const SwapMove(row: -1, col: 0),
+      const SwapMove(row: -1, col: -1),
+      const SwapMove(row: -1, col: 1),
+      const SwapMove(row: 1, col: -1),
+      const SwapMove(row: 1, col: 0),
+      const SwapMove(row: 1, col: 1),
+      const SwapMove(row: -2, col: 0),
+      const SwapMove(row: 2, col: 0),
+      const SwapMove(row: 0, col: 0),
+    ],
     TileType.wrapped: <SwapMove>[
-                      const SwapMove(row: 0, col: -3),
-                      const SwapMove(row: 0, col: -2),
-                      const SwapMove(row: 0, col: -1),
-                      const SwapMove(row: 0, col: 1),
-                      const SwapMove(row: 0, col: 2),
-                      const SwapMove(row: 0, col: 3),
-                      const SwapMove(row: -1, col: -2),
-                      const SwapMove(row: -1, col: -1),
-                      const SwapMove(row: -1, col: 0),
-                      const SwapMove(row: -1, col: 1),
-                      const SwapMove(row: -1, col: 2),
-                      const SwapMove(row: 1, col: -2),
-                      const SwapMove(row: 1, col: -1),
-                      const SwapMove(row: 1, col: 0),
-                      const SwapMove(row: 1, col: 1),
-                      const SwapMove(row: 1, col: 2),
-                      const SwapMove(row: -2, col: -1),
-                      const SwapMove(row: -2, col: 0),
-                      const SwapMove(row: -2, col: 1),
-                      const SwapMove(row: 2, col: -1),
-                      const SwapMove(row: 2, col: 0),
-                      const SwapMove(row: 2, col: 1),
-                      const SwapMove(row: -3, col: 0),
-                      const SwapMove(row: 3, col: 0),
-                      const SwapMove(row: 0, col: 0),
-                    ],
+      const SwapMove(row: 0, col: -3),
+      const SwapMove(row: 0, col: -2),
+      const SwapMove(row: 0, col: -1),
+      const SwapMove(row: 0, col: 1),
+      const SwapMove(row: 0, col: 2),
+      const SwapMove(row: 0, col: 3),
+      const SwapMove(row: -1, col: -2),
+      const SwapMove(row: -1, col: -1),
+      const SwapMove(row: -1, col: 0),
+      const SwapMove(row: -1, col: 1),
+      const SwapMove(row: -1, col: 2),
+      const SwapMove(row: 1, col: -2),
+      const SwapMove(row: 1, col: -1),
+      const SwapMove(row: 1, col: 0),
+      const SwapMove(row: 1, col: 1),
+      const SwapMove(row: 1, col: 2),
+      const SwapMove(row: -2, col: -1),
+      const SwapMove(row: -2, col: 0),
+      const SwapMove(row: -2, col: 1),
+      const SwapMove(row: 2, col: -1),
+      const SwapMove(row: 2, col: 0),
+      const SwapMove(row: 2, col: 1),
+      const SwapMove(row: -3, col: 0),
+      const SwapMove(row: 3, col: 0),
+      const SwapMove(row: 0, col: 0),
+    ],
   };
 
   //
   // Initialization
   //
-  GameController({
-   required this.level,
+  GameRepo({
+    required this.level,
   }) {
     // Initialize the grid to the dimensions of the Level and fill it with "empty" tiles
-    _grid = Array2d<Tile>(level.numberOfRows, level.numberOfCols,defaultValue:  Tile(type: TileType.empty));
+    _grid = Array2d<Tile>(level.numberOfRows, level.numberOfCols,
+        defaultValue: Tile(type: TileType.empty));
 
     // Initialize the Random generator
     _rnd = math.Random();
@@ -113,15 +114,14 @@ class GameController {
   /// Initialize the Tiles in the game
   /// Only the empty cells are to be considered
   ///
-  Future<void> shuffle()async {
+  Future<void> shuffle() async {
     TileType? type;
     final clone = _grid!.copyWith() as Array2d<Tile>;
     print('clone is looke like ${clone == _grid}');
     bool isFirst = true;
     do {
-      if (!isFirst){
-
-    print('shufl isNot first');
+      if (!isFirst) {
+        print('shufl isNot first');
         _grid = clone.copyWith() as Array2d<Tile>;
         print('shufl clone ${_grid!.array.toString()}');
       }
@@ -134,15 +134,15 @@ class GameController {
         for (int col = 0; col < level.numberOfCols; col++) {
           // Only consider the empty cells
           if (_grid!.array![row][col].type != TileType.empty) {
-
-    // print('shufl continue ${_grid.array![row][col]?.type}');
+            // print('shufl continue ${_grid.array![row][col]?.type}');
             continue;
           }
-         Tile? tile;
+          _log.fine('get children');
+          Tile? tile;
           switch (level.grid.array![row][col]) {
             case '1': // Regular cell
             case '2': // Regular cell but frozen
-              
+
               do {
                 type = Tile.random(_rnd);
               } while ((col > 1 &&
@@ -151,23 +151,37 @@ class GameController {
                   (row > 1 &&
                       _grid!.array![row - 1][col].type == type &&
                       _grid!.array![row - 2][col].type == type));
-              tile = Tile(row: row, col: col, type: type, level: level, depth: (level.grid.array![row][col] == '2') ? 1 : 0);
+              tile = Tile(
+                  row: row,
+                  col: col,
+                  type: type,
+                  level: level,
+                  depth: (level.grid.array![row][col] == '2') ? 1 : 0);
               break;
 
             case 'X':
               // No cell
-              tile = Tile(row: row, col: col, type: TileType.forbidden, level: level, depth: 1);
+              tile = Tile(
+                  row: row,
+                  col: col,
+                  type: TileType.forbidden,
+                  level: level,
+                  depth: 1);
               break;
 
             case 'W':
               // A wall
-              tile = Tile(row: row, col: col, type: TileType.wall, level: level, depth: 1);
+              tile = Tile(
+                  row: row,
+                  col: col,
+                  type: TileType.wall,
+                  level: level,
+                  depth: 1);
               break;
           }
 
           // Assign the tile
-          if(tile != null)
-          _grid!.array![row][col] = tile;
+          _grid!.array![row][col] = tile!;
         }
       }
 
@@ -181,12 +195,12 @@ class GameController {
     // Once everything is set, build the tile Widgets
     //
     for (int row = 0; row < level.numberOfRows; row++) {
-        for (int col = 0; col < level.numberOfCols; col++) {
-          // Only consider the authorized cells (not forbidden)
-          if (_grid!.array?[row][col].type == TileType.forbidden) continue;
+      for (int col = 0; col < level.numberOfCols; col++) {
+        // Only consider the authorized cells (not forbidden)
+        if (_grid!.array?[row][col].type == TileType.forbidden) continue;
 
-          _grid!.array![row][col].build();
-        }
+        _grid!.array![row][col].build();
+      }
     }
   }
 
@@ -230,6 +244,7 @@ class GameController {
                 destCol > -1 &&
                 destCol < totalCols) {
               toTile = _grid!.array![destRow][destCol];
+              if (toTile == null) continue;
               // If the destination does not exist, skip
               if (toTile.type == TileType.forbidden) continue;
 
@@ -253,8 +268,13 @@ class GameController {
 
               if (isDestNormalTile || toTile.type == TileType.empty) {
                 // Exchange the tiles
-                _grid!.array![destRow][destCol] = Tile(row: row, col: col, type: fromTile.type, level: level);
-                _grid!.array![row][col] = Tile(row: destRow, col: destCol, type: toTile.type, level: level);
+                _grid!.array![destRow][destCol] =
+                    Tile(row: row, col: col, type: fromTile.type, level: level);
+                _grid!.array![row][col] = Tile(
+                    row: destRow,
+                    col: destCol,
+                    type: toTile.type,
+                    level: level);
 
                 //
                 // check if this change creates a chain
@@ -294,12 +314,12 @@ class GameController {
   // Since the hashCode varies with the direction of a swap, we need
   // to record both
   //
-  void _addSwaps(Tile fromTile, Tile toTile){
+  void _addSwaps(Tile fromTile, Tile toTile) {
     Swap newSwap = Swap(from: fromTile, to: toTile);
-     _swaps.putIfAbsent(newSwap.hashCode, () => newSwap);
-     
-     newSwap = Swap(from: toTile, to: fromTile);
-     _swaps.putIfAbsent(newSwap.hashCode, () => newSwap);
+    _swaps.putIfAbsent(newSwap.hashCode, () => newSwap);
+
+    newSwap = Swap(from: toTile, to: fromTile);
+    _swaps.putIfAbsent(newSwap.hashCode, () => newSwap);
   }
 
   //
@@ -310,21 +330,25 @@ class GameController {
     int minRow = math.max(0, row - 5);
     int maxRow = math.min(row + 5, _grid!.height - 1);
     int index = row;
-    TileType? type = _grid!.array![row][col].type;
+    TileType? type = _grid!.array![row][col]?.type;
 
     // By default the tested tile is part of the chain
     chain.addTile(_grid!.array![row][col]);
 
     // Search Down
     index = row - 1;
-    while (index >= minRow && _grid!.array![index][col].type == type && _grid!.array![index][col].type != TileType.empty) {
+    while (index >= minRow &&
+        _grid!.array![index][col].type == type &&
+        _grid!.array![index][col].type != TileType.empty) {
       chain.addTile(_grid!.array![index][col]);
       index--;
     }
 
     // Search Up
     index = row + 1;
-    while (index <= maxRow && _grid!.array![index][col].type == type && _grid!.array![index][col].type != TileType.empty) {
+    while (index <= maxRow &&
+        _grid!.array![index][col]?.type == type &&
+        _grid!.array![index][col]?.type != TileType.empty) {
       chain.addTile(_grid!.array?[index][col]);
       index++;
     }
@@ -341,21 +365,25 @@ class GameController {
     int minCol = math.max(0, col - 5);
     int maxCol = math.min(col + 5, _grid!.width - 1);
     int index = col;
-    TileType? type = _grid!.array![row][col].type;
+    TileType? type = _grid!.array![row][col]?.type;
 
     // By default the tested tile is part of the chain
     chain.addTile(_grid!.array![row][col]);
 
     // Search Left
     index = col - 1;
-    while (index >= minCol && _grid!.array![row][index].type == type && _grid!.array![row][index].type != TileType.empty) {
+    while (index >= minCol &&
+        _grid!.array![row][index]?.type == type &&
+        _grid!.array![row][index].type != TileType.empty) {
       chain.addTile(_grid!.array![row][index]);
       index--;
     }
 
     // Search Right
     index = col + 1;
-    while (index <= maxCol && _grid!.array![row][index].type == type && _grid!.array![row][index].type != TileType.empty) {
+    while (index <= maxCol &&
+        _grid!.array![row][index]?.type == type &&
+        _grid!.array![row][index].type != TileType.empty) {
       chain.addTile(_grid!.array![row][index]);
       index++;
     }
@@ -367,27 +395,28 @@ class GameController {
   //
   // Check if the swap between 2 tiles is recognized
   //
-  bool swapContains(Tile source, Tile destination){
+  bool swapContains(Tile source, Tile destination) {
     Swap testSwap = Swap(from: source, to: destination);
     return _swaps.keys.contains(testSwap.hashCode);
   }
-  
+
   //
   // Swap 2 tiles
   //
-  void swapTiles(Tile source, Tile destination){
+  void swapTiles(Tile source, Tile destination) {
     RowCol sourceRowCol = RowCol(row: source.row, col: source.col);
     RowCol destRowCol = RowCol(row: destination.row, col: destination.col);
     source.swapRowColWith(destination);
     Tile? tft = grid!.array![sourceRowCol.row][sourceRowCol.col];
-    grid!.array![sourceRowCol.row][sourceRowCol.col] = grid!.array![destRowCol.row][destRowCol.col];
+    grid!.array![sourceRowCol.row][sourceRowCol.col] =
+        grid!.array![destRowCol.row][destRowCol.col];
     grid!.array![destRowCol.row][destRowCol.col] = tft;
   }
 
   //
   // Get combo resulting from a move
   //
-  Combo getCombo(int row, int col){
+  Combo getCombo(int row, int col) {
     Chain? verticalChain = checkVerticalChain(row, col);
     Chain? horizontalChain = checkHorizontalChain(row, col);
 
@@ -397,14 +426,13 @@ class GameController {
   //
   // Resolves a combo
   //
-  void resolveCombo(Combo combo, GameBloc gameBloc){
-    
+  void resolveCombo(Combo combo, GameBloc gameBloc) {
     // We now need to remove all the Tiles from the grid and change the type if necessary
-    combo.tiles.forEach((Tile? tile){
-      if(tile == null) return;
-      if (tile != combo.commonTile){
+    combo.tiles.forEach((Tile? tile) {
+      if (tile == null) return;
+      if (tile != combo.commonTile) {
         // Decrement the depth
-        if ((--grid!.array![tile.row][tile.col]?.depth ?? 0) < 0){
+        if ((--grid!.array![tile.row][tile.col]?.depth ?? 0) < 0) {
           // Check for objectives
           gameBloc.pushTileEvent(grid!.array![tile.row][tile.col]?.type, 1);
 
@@ -414,9 +442,9 @@ class GameController {
         // We need to rebuild the Widget
         grid!.array![tile.row][tile.col]?.build();
       } else {
-        if(combo.commonTile != null){
-        grid!.array![tile.row][tile.col]?.row = combo.commonTile!.row;
-        grid!.array![tile.row][tile.col]?.col = combo.commonTile!.col;
+        if (combo.commonTile != null) {
+          grid!.array![tile.row][tile.col]?.row = combo.commonTile!.row;
+          grid!.array![tile.row][tile.col]?.col = combo.commonTile!.col;
         }
         grid!.array![tile.row][tile.col]?.type = combo.resultingTileType;
         grid!.array![tile.row][tile.col]?.visible = true;
@@ -431,15 +459,16 @@ class GameController {
   //
   // Rebuilds the grid, once all animations are complete
   //
-  void refreshGridAfterAnimations(Array2d<TileType> tileTypes, Set<RowCol> involvedCells){
-
-    involvedCells.forEach((RowCol rowCol){
-        _grid!.array![rowCol.row][rowCol.col].row = rowCol.row;
-        _grid!.array![rowCol.row][rowCol.col].col = rowCol.col;
-        _grid!.array![rowCol.row][rowCol.col].type = tileTypes.array![rowCol.row][rowCol.col];
-        _grid!.array![rowCol.row][rowCol.col].visible = true;
-        _grid!.array![rowCol.row][rowCol.col].depth = 0;
-        _grid!.array![rowCol.row][rowCol.col].build();
+  void refreshGridAfterAnimations(
+      Array2d<TileType> tileTypes, Set<RowCol> involvedCells) {
+    involvedCells.forEach((RowCol rowCol) {
+      _grid!.array![rowCol.row][rowCol.col]?.row = rowCol.row;
+      _grid!.array![rowCol.row][rowCol.col]?.col = rowCol.col;
+      _grid!.array![rowCol.row][rowCol.col]?.type =
+          tileTypes.array![rowCol.row][rowCol.col];
+      _grid!.array![rowCol.row][rowCol.col]?.visible = true;
+      _grid!.array![rowCol.row][rowCol.col]?.depth = 0;
+      _grid!.array![rowCol.row][rowCol.col]?.build();
     });
   }
 
@@ -447,7 +476,8 @@ class GameController {
   // Proceed with an explosion
   // The spread of the explosion depends on the type of bomb
   //
-  void proceedWithExplosion(Tile tileExplosion, GameBloc gameBloc, {bool skipThis = false}){
+  void proceedWithExplosion(Tile tileExplosion, GameBloc gameBloc,
+      {bool skipThis = false}) {
     // Retrieve the list of row/col variations
     List<SwapMove>? _swaps = _explosions[tileExplosion.type];
 
@@ -456,33 +486,36 @@ class GameController {
     List<Tile> _subExplosions = <Tile>[];
 
     // All the tiles in that area will disappear
-    _swaps?.forEach((SwapMove move){
+    _swaps?.forEach((SwapMove move) {
       int row = tileExplosion.row + move.row;
       int col = tileExplosion.col + move.col;
 
       // Test if the cell is valid
-      if (row > -1 && row < level.numberOfRows && col > -1 && col < level.numberOfCols){
+      if (row > -1 &&
+          row < level.numberOfRows &&
+          col > -1 &&
+          col < level.numberOfCols) {
         // And also if we may explode the tile
-        if (level.grid.array![row][col] == '1'){
+        if (level.grid.array![row][col] == '1') {
           Tile? tile = _grid!.array![row][col];
 
-          if ( Tile.isBomb(tile.type) && !skipThis){
+          if (tile != null && Tile.isBomb(tile.type) && !skipThis) {
             // Another bomb must explode
             _subExplosions.add(tile);
           } else {
             // Notify that we removed some tiles
-            gameBloc.pushTileEvent(tile.type, 1);
+            gameBloc.pushTileEvent(tile?.type, 1);
 
             // Empty the cell
-            tile.type = TileType.empty;
-            tile.build();
+            tile?.type = TileType.empty;
+            tile?.build();
           }
         }
       }
     });
 
     // Proceed with chained explosions
-    _subExplosions.forEach((Tile tile){
+    _subExplosions.forEach((Tile tile) {
       proceedWithExplosion(tile, gameBloc, skipThis: true);
     });
   }
