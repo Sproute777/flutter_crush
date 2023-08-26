@@ -42,7 +42,7 @@ class Level extends Object {
       print('grid start');
       print('rows $_rows');
       print('columns $_cols');
-      grid = Array2d<String?>(_rows, _cols);
+      grid = Array2d<String>(_rows, _cols,defaultValue: '');
     } catch (e) {
       print(e);
       print('grid failed');

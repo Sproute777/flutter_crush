@@ -98,7 +98,7 @@ class GameBloc {
     // Fill the Game with Tile and make sure there are possible Swaps
     //
     print('shufl _gameController');
-    // _gameController.shuffle();
+   await _gameController.shuffle().timeout(Duration(seconds: 10));
 
     print('return  _level');
     try {

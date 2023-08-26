@@ -90,10 +90,10 @@ class AnimationsResolver {
     //
     // Fill both arrays based on the current definition
     //
-    _state = Array2d<int>(rows, cols);
-    _types = Array2d<TileType>(rows, cols);
-    _tiles = Array2d<Tile?>(rows, cols);
-    _identities = Array2d<int>(rows, cols);
+    _state = Array2d<int>(rows, cols,defaultValue: -1);
+    _types = Array2d<TileType>(rows, cols,defaultValue: TileType.empty);
+    _tiles = Array2d<Tile?>(rows, cols,defaultValue: null);
+    _identities = Array2d<int>(rows, cols,defaultValue: -1);
     _nextIdentity = 0;
 
     for (int row = 0; row < rows; row++) {
@@ -103,17 +103,17 @@ class AnimationsResolver {
           _types.array![row][col] = TileType.forbidden;
           _tiles.array![row][col] = null;
         } else {
-          Tile? tile = gameController.grid.array![row][col];
+          Tile? tile = gameController.grid!.array![row][col];
           if (tile == null) continue;
           if (tile.type == TileType.empty) {
             _state.array![row][col] = 0;
             _types.array![row][col] = TileType.empty;
           } else if (tile.canMove) {
             _state.array![row][col] = 1;
-            _types.array![row][col] = tile.type;
+            _types.array![row][col] = tile.type!;
           } else {
             _state.array![row][col] = -1;
-            _types.array![row][col] = tile.type;
+            _types.array![row][col] = tile.type!;
           }
           _tiles.array![row][col] = tile;
         }

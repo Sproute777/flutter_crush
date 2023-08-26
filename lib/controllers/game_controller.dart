@@ -13,8 +13,8 @@ import 'package:flutter_crush/model/tile.dart';
 
 class GameController {
   Level level;
-  late Array2d<Tile?> _grid;
-  Array2d<Tile?> get grid => _grid;
+   Array2d<Tile>? _grid;
+  Array2d<Tile>? get grid => _grid;
   late math.Random _rnd;
 
   //
@@ -97,7 +97,7 @@ class GameController {
    required this.level,
   }) {
     // Initialize the grid to the dimensions of the Level and fill it with "empty" tiles
-    _grid = Array2d<Tile>(level.numberOfRows, level.numberOfCols,  Tile(type: TileType.empty));
+    _grid = Array2d<Tile>(level.numberOfRows, level.numberOfCols,defaultValue:  Tile(type: TileType.empty));
 
     // Initialize the Random generator
     _rnd = math.Random();
@@ -110,17 +110,17 @@ class GameController {
   /// Initialize the Tiles in the game
   /// Only the empty cells are to be considered
   ///
-  void shuffle() {
+  Future<void> shuffle()async {
     TileType? type;
-    Array2d<Tile?> clone = _grid.clone<Tile?>() as Array2d<Tile?>;
+    final clone = _grid!.copyWith() as Array2d<Tile>;
+    print('clone is looke like ${clone == _grid}');
     bool isFirst = true;
-
     do {
       if (!isFirst){
 
     print('shufl isNot first');
-        _grid = clone.clone<Tile?>() as Array2d<Tile?>;
-        print('shufl clone ${_grid.array.toString()}');
+        _grid = clone.copyWith() as Array2d<Tile>;
+        print('shufl clone ${_grid!.array.toString()}');
       }
       isFirst = false;
 
@@ -130,7 +130,7 @@ class GameController {
       for (int row = 0; row < level.numberOfRows; row++) {
         for (int col = 0; col < level.numberOfCols; col++) {
           // Only consider the empty cells
-          if (_grid.array![row][col]?.type != TileType.empty) {
+          if (_grid!.array![row][col].type != TileType.empty) {
 
     // print('shufl continue ${_grid.array![row][col]?.type}');
             continue;
@@ -145,11 +145,11 @@ class GameController {
               do {
                 type = Tile.random(_rnd);
               } while ((col > 1 &&
-                      _grid.array![row][col - 1]?.type == type &&
-                      _grid.array![row][col - 2]?.type == type) ||
+                      _grid!.array![row][col - 1].type == type &&
+                      _grid!.array![row][col - 2].type == type) ||
                   (row > 1 &&
-                      _grid.array![row - 1][col]?.type == type &&
-                      _grid.array![row - 2][col]?.type == type));
+                      _grid!.array![row - 1][col].type == type &&
+                      _grid!.array![row - 2][col].type == type));
               tile = Tile(row: row, col: col, type: type, level: level, depth: (level.grid.array![row][col] == '2') ? 1 : 0);
               break;
 
@@ -165,7 +165,7 @@ class GameController {
           }
 
           // Assign the tile
-          _grid.array![row][col] = tile;
+          _grid!.array![row][col] = tile!;
         }
       }
 
@@ -181,9 +181,9 @@ class GameController {
     for (int row = 0; row < level.numberOfRows; row++) {
         for (int col = 0; col < level.numberOfCols; col++) {
           // Only consider the authorized cells (not forbidden)
-          if (_grid.array![row][col]?.type == TileType.forbidden) continue;
+          if (_grid!.array?[row][col].type == TileType.forbidden) continue;
 
-          _grid.array![row][col]?.build();
+          _grid!.array![row][col].build();
         }
     }
   }
@@ -197,8 +197,8 @@ class GameController {
     int index;
     int destRow;
     int destCol;
-    int totalRows = _grid.height;
-    int totalCols = _grid.width;
+    int totalRows = _grid!.height;
+    int totalCols = _grid!.width;
     Tile? fromTile;
     Tile? toTile;
     bool isSrcNormalTile;
@@ -211,8 +211,7 @@ class GameController {
     for (int row = 0; row < totalRows; row++) {
       for (int col = 0; col < totalCols; col++) {
         index = -1;
-        fromTile = _grid.array![row][col];
-if(fromTile == null) continue;
+        fromTile = _grid!.array![row][col];
         isSrcNormalTile = Tile.isNormal(fromTile.type);
         isSrcBombTile = Tile.isBomb(fromTile.type);
 
@@ -228,7 +227,7 @@ if(fromTile == null) continue;
                 destRow < totalRows &&
                 destCol > -1 &&
                 destCol < totalCols) {
-              toTile = _grid.array![destRow][destCol];
+              toTile = _grid!.array![destRow][destCol];
 if(toTile == null) continue;
               // If the destination does not exist, skip
               if (toTile.type == TileType.forbidden) continue;
@@ -253,8 +252,8 @@ if(toTile == null) continue;
 
               if (isDestNormalTile || toTile.type == TileType.empty) {
                 // Exchange the tiles
-                _grid.array![destRow][destCol] = Tile(row: row, col: col, type: fromTile.type, level: level);
-                _grid.array![row][col] = Tile(row: destRow, col: destCol, type: toTile.type, level: level);
+                _grid!.array![destRow][destCol] = Tile(row: row, col: col, type: fromTile.type, level: level);
+                _grid!.array![row][col] = Tile(row: destRow, col: destCol, type: toTile.type, level: level);
 
                 //
                 // check if this change creates a chain
@@ -280,8 +279,8 @@ if(toTile == null) continue;
                 }
 
                 // Revert back
-                _grid.array![destRow][destCol] = toTile;
-                _grid.array![row][col] = fromTile;
+                _grid!.array![destRow][destCol] = toTile;
+                _grid!.array![row][col] = fromTile;
               }
             }
           } while (index < 3);
@@ -308,24 +307,24 @@ if(toTile == null) continue;
   Chain? checkVerticalChain(int row, int col) {
     Chain chain = Chain(type: ChainType.vertical);
     int minRow = math.max(0, row - 5);
-    int maxRow = math.min(row + 5, _grid.height - 1);
+    int maxRow = math.min(row + 5, _grid!.height - 1);
     int index = row;
-    TileType? type = _grid.array![row][col]?.type;
+    TileType? type = _grid!.array![row][col]?.type;
 
     // By default the tested tile is part of the chain
-    chain.addTile(_grid.array![row][col]);
+    chain.addTile(_grid!.array![row][col]);
 
     // Search Down
     index = row - 1;
-    while (index >= minRow && _grid.array![index][col]?.type == type && _grid.array![index][col]?.type != TileType.empty) {
-      chain.addTile(_grid.array![index][col]);
+    while (index >= minRow && _grid!.array![index][col].type == type && _grid!.array![index][col].type != TileType.empty) {
+      chain.addTile(_grid!.array![index][col]);
       index--;
     }
 
     // Search Up
     index = row + 1;
-    while (index <= maxRow && _grid.array![index][col]?.type == type && _grid.array![index][col]?.type != TileType.empty) {
-      chain.addTile(_grid.array![index][col]);
+    while (index <= maxRow && _grid!.array![index][col]?.type == type && _grid!.array![index][col]?.type != TileType.empty) {
+      chain.addTile(_grid!.array?[index][col]);
       index++;
     }
 
@@ -339,24 +338,24 @@ if(toTile == null) continue;
   Chain? checkHorizontalChain(int row, int col) {
     Chain chain = Chain(type: ChainType.horizontal);
     int minCol = math.max(0, col - 5);
-    int maxCol = math.min(col + 5, _grid.width - 1);
+    int maxCol = math.min(col + 5, _grid!.width - 1);
     int index = col;
-    TileType? type = _grid.array![row][col]?.type;
+    TileType? type = _grid!.array![row][col]?.type;
 
     // By default the tested tile is part of the chain
-    chain.addTile(_grid.array![row][col]);
+    chain.addTile(_grid!.array![row][col]);
 
     // Search Left
     index = col - 1;
-    while (index >= minCol && _grid.array![row][index]?.type == type && _grid.array![row][index]?.type != TileType.empty) {
-      chain.addTile(_grid.array![row][index]);
+    while (index >= minCol && _grid!.array![row][index]?.type == type && _grid!.array![row][index].type != TileType.empty) {
+      chain.addTile(_grid!.array![row][index]);
       index--;
     }
 
     // Search Right
     index = col + 1;
-    while (index <= maxCol && _grid.array![row][index]?.type == type && _grid.array![row][index]?.type != TileType.empty) {
-      chain.addTile(_grid.array![row][index]);
+    while (index <= maxCol && _grid!.array![row][index]?.type == type && _grid!.array![row][index].type != TileType.empty) {
+      chain.addTile(_grid!.array![row][index]);
       index++;
     }
 
@@ -379,9 +378,9 @@ if(toTile == null) continue;
     RowCol sourceRowCol = RowCol(row: source.row, col: source.col);
     RowCol destRowCol = RowCol(row: destination.row, col: destination.col);
     source.swapRowColWith(destination);
-    Tile? tft = grid.array![sourceRowCol.row][sourceRowCol.col];
-    grid.array![sourceRowCol.row][sourceRowCol.col] = grid.array![destRowCol.row][destRowCol.col];
-    grid.array![destRowCol.row][destRowCol.col] = tft;
+    Tile? tft = grid!.array![sourceRowCol.row][sourceRowCol.col];
+    grid!.array![sourceRowCol.row][sourceRowCol.col] = grid!.array![destRowCol.row][destRowCol.col];
+    grid!.array![destRowCol.row][destRowCol.col] = tft;
   }
 
   //
@@ -404,23 +403,23 @@ if(toTile == null) continue;
       if(tile == null) return;
       if (tile != combo.commonTile){
         // Decrement the depth
-        if ((--grid.array![tile.row][tile.col]?.depth ?? 0) < 0){
+        if ((--grid!.array![tile.row][tile.col]?.depth ?? 0) < 0){
           // Check for objectives
-          gameBloc.pushTileEvent(grid.array![tile.row][tile.col]?.type, 1);
+          gameBloc.pushTileEvent(grid!.array![tile.row][tile.col]?.type, 1);
 
           // If the depth is lower than 0, this means that we can remove the tile
-          grid.array![tile.row][tile.col]?.type = TileType.empty;
+          grid!.array![tile.row][tile.col]?.type = TileType.empty;
         }
         // We need to rebuild the Widget
-        grid.array![tile.row][tile.col]?.build();
+        grid!.array![tile.row][tile.col]?.build();
       } else {
         if(combo.commonTile != null){
-        grid.array![tile.row][tile.col]?.row = combo.commonTile!.row;
-        grid.array![tile.row][tile.col]?.col = combo.commonTile!.col;
+        grid!.array![tile.row][tile.col]?.row = combo.commonTile!.row;
+        grid!.array![tile.row][tile.col]?.col = combo.commonTile!.col;
         }
-        grid.array![tile.row][tile.col]?.type = combo.resultingTileType;
-        grid.array![tile.row][tile.col]?.visible = true;
-        grid.array![tile.row][tile.col]?.build();
+        grid!.array![tile.row][tile.col]?.type = combo.resultingTileType;
+        grid!.array![tile.row][tile.col]?.visible = true;
+        grid!.array![tile.row][tile.col]?.build();
 
         // We need to notify about the creation of a new tile
         gameBloc.pushTileEvent(combo.resultingTileType, 1);
@@ -434,12 +433,12 @@ if(toTile == null) continue;
   void refreshGridAfterAnimations(Array2d<TileType> tileTypes, Set<RowCol> involvedCells){
 
     involvedCells.forEach((RowCol rowCol){
-        _grid.array![rowCol.row][rowCol.col]?.row = rowCol.row;
-        _grid.array![rowCol.row][rowCol.col]?.col = rowCol.col;
-        _grid.array![rowCol.row][rowCol.col]?.type = tileTypes.array![rowCol.row][rowCol.col];
-        _grid.array![rowCol.row][rowCol.col]?.visible = true;
-        _grid.array![rowCol.row][rowCol.col]?.depth = 0;
-        _grid.array![rowCol.row][rowCol.col]?.build();
+        _grid!.array![rowCol.row][rowCol.col]?.row = rowCol.row;
+        _grid!.array![rowCol.row][rowCol.col]?.col = rowCol.col;
+        _grid!.array![rowCol.row][rowCol.col]?.type = tileTypes.array![rowCol.row][rowCol.col];
+        _grid!.array![rowCol.row][rowCol.col]?.visible = true;
+        _grid!.array![rowCol.row][rowCol.col]?.depth = 0;
+        _grid!.array![rowCol.row][rowCol.col]?.build();
     });
   }
 
@@ -464,7 +463,7 @@ if(toTile == null) continue;
       if (row > -1 && row < level.numberOfRows && col > -1 && col < level.numberOfCols){
         // And also if we may explode the tile
         if (level.grid.array![row][col] == '1'){
-          Tile? tile = _grid.array![row][col];
+          Tile? tile = _grid!.array![row][col];
 
           if (tile != null && Tile.isBomb(tile.type) && !skipThis){
             // Another bomb must explode

@@ -192,23 +192,28 @@ class _GamePageState extends State<GamePage>
   // Builds the tiles
   //
   Widget _buildTiles() {
+    print('build tiles');
     return StreamBuilder<bool>(
       stream: gameBloc!.outReadyToDisplayTiles,
       initialData: null,
       builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-        if (snapshot.data != null && snapshot.hasData) {
+        if (snapshot.hasData) {
+          print('buildTiles has data');
           List<Widget> tiles = <Widget>[];
-          Array2d<Tile?> grid = gameBloc!.gameController.grid;
+          Array2d<Tile?> grid = gameBloc!.gameController.grid!;
+          print('gameBloc grid ${grid.array?.length ?? 0}');
 
           for (int row = 0; row < widget.level.numberOfRows; row++) {
             for (int col = 0; col < widget.level.numberOfCols; col++) {
-              final Tile? tile = grid.array![row][col];
+              final tile = grid.array![row][col];
+              print('tile isNull ? $tile');
               if (tile != null && tile.type != TileType.empty &&
                   tile.type != TileType.forbidden &&
                   tile.visible) {
                 //
                 // Make sure the widget is correctly positioned
                 //
+                print('tile pos ${tile.x}');
                 tile.setPosition();
                 tiles.add(Positioned(
                   left: tile.x,
@@ -260,7 +265,7 @@ class _GamePageState extends State<GamePage>
         rowCol.col >= widget.level.numberOfCols) return;
 
     // Check if the [row,col] corresponds to a possible swap
-    Tile? selectedTile = gameBloc!.gameController.grid.array![rowCol.row][rowCol.col];
+    Tile? selectedTile = gameBloc!.gameController.grid!.array![rowCol.row][rowCol.col];
     bool canBePlayed = false;
 
     // Reset
@@ -353,7 +358,7 @@ class _GamePageState extends State<GamePage>
             rowCol.row == widget.level.numberOfRows) {
           // Not possible, outside the boundaries
         } else {
-          Tile? destTile = gameBloc!.gameController.grid.array![rowCol.row][rowCol.col];
+          Tile? destTile = gameBloc!.gameController.grid!.array![rowCol.row][rowCol.col];
           bool canBePlayed = false;
 
           if (destTile != null) {
@@ -379,11 +384,11 @@ if(destTile == null) return;
             Tile downTile = destTile.cloneForAnimation();
 
             // 3. Remove both tiles from the game grid
-            gameBloc!.gameController.grid.array![rowCol.row][rowCol.col]?.visible =
+            gameBloc!.gameController.grid!.array![rowCol.row][rowCol.col]?.visible =
                 false;
             gameBloc!
                 .gameController
-                .grid.array![gestureFromRowCol!.row][gestureFromRowCol!.col]
+                .grid!.array![gestureFromRowCol!.row][gestureFromRowCol!.col]
                 ?.visible = false;
 
             setState(() {});
@@ -398,11 +403,11 @@ if(destTile == null) return;
                     swapAllowed: swapAllowed,
                     onComplete: () async {
                       // 5. Put back the tiles in the game grid
-                      gameBloc!.gameController.grid.array![rowCol.row][rowCol.col]
+                      gameBloc!.gameController.grid!.array![rowCol.row][rowCol.col]
                           ?.visible = true;
                       gameBloc!
                           .gameController
-                          .grid.array![gestureFromRowCol!.row][gestureFromRowCol!.col]
+                          .grid!.array![gestureFromRowCol!.row][gestureFromRowCol!.col]
                           ?.visible = true;
 
                       // 6. Remove the overlay Entry
@@ -622,7 +627,7 @@ if(destTile == null) return;
 
     // Make all involved cells invisible
     animationResolver.involvedCells.forEach((RowCol rowCol) {
-      gameBloc!.gameController.grid.array![rowCol.row][rowCol.col]?.visible = false;
+      gameBloc!.gameController.grid!.array![rowCol.row][rowCol.col]?.visible = false;
     });
 
     // Make a refresh of the board and the end of which we will play the animations

@@ -19,7 +19,7 @@ class Board extends StatelessWidget {
   final Level level;
 
   Array2d<BoxDecoration?>? _decorations;
-  Array2d<Color>? _checker;
+  Array2d<Color?>? _checker;
   GlobalKey _keyChecker = GlobalKey();
   GlobalKey _keyCheckerCell = GlobalKey();
   GameBloc? gameBloc;
@@ -30,7 +30,7 @@ class Board extends StatelessWidget {
   void _buildDecorations() {
     if (_decorations != null) return;
 
-    _decorations = Array2d<BoxDecoration>(cols + 1, rows + 1);
+    _decorations = Array2d<BoxDecoration?>(cols + 1, rows + 1,defaultValue: null);
 
     for (int row = 0; row <= rows; row++) {
       for (int col = 0; col <= cols; col++) {
@@ -90,7 +90,7 @@ class Board extends StatelessWidget {
   void _buildChecker(){
     if (_checker != null) return;
 
-    _checker = Array2d<Color>(rows, cols);
+    _checker = Array2d<Color?>(rows, cols,defaultValue: null);
     int counter = 0;
 
     for (int row = 0; row < rows; row++) {
