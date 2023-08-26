@@ -3,16 +3,17 @@ import 'package:flutter_crush/model/level.dart';
 import 'package:flutter_crush/model/tile_animation.dart';
 import 'package:flutter/material.dart';
 
+
 class AnimationChain extends StatefulWidget {
   AnimationChain({
-    Key key,
-    this.animationSequence,
-    @required this.level,
-    this.onComplete,
+    Key? key,
+    required this.animationSequence,
+    required this.level,
+     this.onComplete,
   }):super(key: key);
 
   final AnimationSequence animationSequence;
-  final VoidCallback onComplete;
+  final VoidCallback? onComplete;
   final Level level;
 
   @override
@@ -20,7 +21,7 @@ class AnimationChain extends StatefulWidget {
 }
 
 class _AnimationChainState extends State<AnimationChain> with SingleTickerProviderStateMixin {
-  AnimationController _controller;
+  late final AnimationController _controller;
 
   // List of all individual animations (one per delay)
   List<Animation<double>> _animations = <Animation<double>>[];
@@ -32,7 +33,7 @@ class _AnimationChainState extends State<AnimationChain> with SingleTickerProvid
   final int delayInMs = 10;
 
   // Total duration, taking into consideration the number of different delays
-  int totalDurationInMs;
+  late int totalDurationInMs;
 
   @override
   void initState(){
@@ -50,7 +51,7 @@ class _AnimationChainState extends State<AnimationChain> with SingleTickerProvid
     ..addStatusListener((AnimationStatus status){
       if (status == AnimationStatus.completed){
         if (widget.onComplete != null){
-          widget.onComplete();
+          widget.onComplete!();
         }
       }
     });
@@ -84,7 +85,7 @@ class _AnimationChainState extends State<AnimationChain> with SingleTickerProvid
 
   @override
   void dispose(){
-    _controller?.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -94,7 +95,7 @@ class _AnimationChainState extends State<AnimationChain> with SingleTickerProvid
     int totalAnimations = widget.animationSequence.animations.length;
     int index = totalAnimations - 1;
 
-    Widget theWidget = firstAnimation.tile.widget;
+    Widget? theWidget = firstAnimation.tile?.widget;
 
     //
     // In order to build the Widgets tree, we need to start from the last one up to the first
@@ -107,15 +108,15 @@ class _AnimationChainState extends State<AnimationChain> with SingleTickerProvid
     return Stack(
       children: [
         Positioned(
-          left: firstAnimation.tile.x,
-          top: firstAnimation.tile.y,
-          child: theWidget,
+          left: firstAnimation.tile?.x,
+          top: firstAnimation.tile?.y,
+          child: theWidget ?? SizedBox(),
         ),
       ],
     );
   }
 
-  Widget _buildSubAnimationFactory(int index, TileAnimation tileAnimation, Widget childWidget){
+  Widget _buildSubAnimationFactory(int index, TileAnimation tileAnimation, Widget? childWidget){
     Widget widget;
     switch(tileAnimation.animationType){
         case TileAnimationType.newTile:
@@ -141,7 +142,7 @@ class _AnimationChainState extends State<AnimationChain> with SingleTickerProvid
   // The appearance consists in an initial translated (-Y) position,
   // followed by a move down
   //
-  Widget _buildSubAnimationAppearance(int index, TileAnimation tileAnimation, Widget childWidget){
+  Widget _buildSubAnimationAppearance(int index, TileAnimation tileAnimation, Widget? childWidget){
     return Transform.translate(
       offset: Offset(0.0, -widget.level.tileHeight + widget.level.tileHeight * _animations[index].value),
       child: _buildSubAnimationMoveDown(index, tileAnimation, childWidget),
@@ -151,7 +152,7 @@ class _AnimationChainState extends State<AnimationChain> with SingleTickerProvid
   //
   // A move down animation consists in moving the tile down to its final position
   //
-  Widget _buildSubAnimationMoveDown(int index, TileAnimation tileAnimation, Widget childWidget){
+  Widget _buildSubAnimationMoveDown(int index, TileAnimation tileAnimation, Widget? childWidget){
     final double distance = (tileAnimation.to.row - tileAnimation.from.row) * widget.level.tileHeight;
 
     return Transform.translate(
@@ -163,7 +164,7 @@ class _AnimationChainState extends State<AnimationChain> with SingleTickerProvid
   //
   // A slide consists in moving the tile horizontally
   //
-  Widget _buildSubAnimationSlide(int index, TileAnimation tileAnimation, Widget childWidget){
+  Widget _buildSubAnimationSlide(int index, TileAnimation tileAnimation, Widget? childWidget){
     final double distanceX = (tileAnimation.to.col - tileAnimation.from.col) * widget.level.tileWidth;
     final double distanceY = (tileAnimation.to.row - tileAnimation.from.row) * widget.level.tileHeight;
     return Transform.translate(
@@ -175,7 +176,7 @@ class _AnimationChainState extends State<AnimationChain> with SingleTickerProvid
   //
   // A chain consists in making tiles disappear
   //
-  Widget _buildSubAnimationChain(int index, TileAnimation tileAnimation, Widget childWidget){
+  Widget _buildSubAnimationChain(int index, TileAnimation tileAnimation, Widget? childWidget){
     return Transform.scale(
       scale: (1.0 - _animations[index].value),
       child: childWidget,      
@@ -185,11 +186,7 @@ class _AnimationChainState extends State<AnimationChain> with SingleTickerProvid
   //
   // A collapse consists in moving the tile to the destination tile position
   //
-  Widget _buildSubAnimationCollapse(int index, TileAnimation tileAnimation, Widget childWidget){
-    if (tileAnimation.from == null || tileAnimation.to == null){
-      print('Houston, we have a problem... This should never happen');
-      return Container();
-    }
+  Widget _buildSubAnimationCollapse(int index, TileAnimation tileAnimation, Widget? childWidget){
     final double distanceX = (tileAnimation.to.col - tileAnimation.from.col) * widget.level.tileWidth;
     final double distanceY = (tileAnimation.to.row - tileAnimation.from.row) * widget.level.tileHeight;
     return Transform.translate(

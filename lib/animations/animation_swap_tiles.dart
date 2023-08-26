@@ -3,16 +3,16 @@ import 'package:flutter/material.dart';
 
 class AnimationSwapTiles extends StatefulWidget {
   AnimationSwapTiles({
-    Key key,
-    this.upTile,
-    this.downTile,
+    Key? key,
+    required this.upTile,
+    required this.downTile,
     this.onComplete,
-    this.swapAllowed,
+    required this.swapAllowed,
   }): super(key: key);
 
   final Tile upTile;
   final Tile downTile;
-  final VoidCallback onComplete;
+  final VoidCallback? onComplete;
   final bool swapAllowed;
 
   @override
@@ -20,7 +20,7 @@ class AnimationSwapTiles extends StatefulWidget {
 }
 
 class _AnimationSwapTilesState extends State<AnimationSwapTiles> with SingleTickerProviderStateMixin {
-  AnimationController _controller;
+ late final AnimationController _controller;
 
   @override
   void initState(){
@@ -37,14 +37,14 @@ class _AnimationSwapTilesState extends State<AnimationSwapTiles> with SingleTick
           _controller.reverse();
         } else {
           if (widget.onComplete != null) {
-            widget.onComplete();
+            widget.onComplete!();
           }
         }
       }
 
       if (status == AnimationStatus.dismissed){
           if (widget.onComplete != null) {
-            widget.onComplete();
+            widget.onComplete!();
           }
       }
     });
@@ -54,7 +54,7 @@ class _AnimationSwapTilesState extends State<AnimationSwapTiles> with SingleTick
 
   @override
   void dispose(){
-    _controller?.dispose();
+    _controller.dispose();
     super.dispose();
   }
 

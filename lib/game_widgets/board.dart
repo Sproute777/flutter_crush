@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_crush/bloc/bloc_provider.dart';
 import 'package:flutter_crush/bloc/game_bloc.dart';
 import 'package:flutter_crush/helpers/array_2d.dart';
@@ -7,21 +8,21 @@ import 'package:flutter/material.dart';
 
 class Board extends StatelessWidget {
   Board({
-    Key key,
-    this.cols,
-    this.rows,
-    this.level,
+    Key? key,
+    this.cols = 0,
+    this.rows = 0,
+    required this.level,
   }) : super(key: key);
 
   final int rows;
   final int cols;
   final Level level;
 
-  Array2d<BoxDecoration> _decorations;
-  Array2d<Color> _checker;
+  Array2d<BoxDecoration?>? _decorations;
+  Array2d<Color>? _checker;
   GlobalKey _keyChecker = GlobalKey();
   GlobalKey _keyCheckerCell = GlobalKey();
-  GameBloc gameBloc;
+  GameBloc? gameBloc;
 
   //
   // Builds the decorations of each tile
@@ -38,16 +39,16 @@ class Board extends StatelessWidget {
         int bottomLeft = 0;
         int topRight = 0;
         int bottomRight = 0;
-        BoxDecoration boxDecoration;
+        BoxDecoration? boxDecoration;
 
         if (col > 0) {
           if (row < rows) {
-            if (level.grid[row][col - 1] != 'X') {
+            if (level.grid.array![row][col - 1] != 'X') {
               topLeft = 1;
             }
           }
           if (row > 0) {
-            if (level.grid[row - 1][col - 1] != 'X') {
+            if (level.grid.array![row - 1][col - 1] != 'X') {
               bottomLeft = 1;
             }
           }
@@ -55,12 +56,12 @@ class Board extends StatelessWidget {
 
         if (col < cols) {
           if (row < rows) {
-            if (level.grid[row][col] != 'X') {
+            if (level.grid.array![row][col] != 'X') {
               topRight = 1;
             }
           }
           if (row > 0) {
-            if (level.grid[row - 1][col] != 'X') {
+            if (level.grid.array![row - 1][col] != 'X') {
               bottomRight = 1;
             }
           }
@@ -78,7 +79,7 @@ class Board extends StatelessWidget {
                 fit: BoxFit.cover),
           );
         }
-        _decorations[row][col] = boxDecoration;
+        _decorations?.array?[row][col] = boxDecoration;
       }
     }
   }
@@ -97,18 +98,18 @@ class Board extends StatelessWidget {
       for (int col = 0; col < cols; col++) {
         final double opacity = ((counter + col) % 2 == 1) ? 0.3 : 0.1;
 
-        Color color = (level.grid[row][col] == 'X')
+        Color color = (level.grid.array![row][col] == 'X')
             ? Colors.transparent
             : Colors.white.withOpacity(opacity);
 
-        _checker[row][col] = color;
+        _checker?.array![row][col] = color;
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    gameBloc = BlocProvider.of<GameBloc>(context);
+    gameBloc = RepositoryProvider.of<GameBloc>(context);
     final Size screenSize = MediaQuery.of(context).size;
     final double maxDimension = math.min(screenSize.width, screenSize.height);
     final double maxTileWidth = math.min(maxDimension / GameBloc.kMaxTilesPerRowAndColumn, GameBloc.kMaxTilesSize);
@@ -136,7 +137,7 @@ class Board extends StatelessWidget {
         children: <Widget>[
           _showDecorations(maxTileWidth),
           _showGrid(maxTileWidth,
-              gameBloc), // We pass the gameBloc since we will need to use it to pass the dimensions and coordinates
+              gameBloc!), // We pass the gameBloc since we will need to use it to pass the dimensions and coordinates
         ],
       ),
     );
@@ -158,7 +159,7 @@ class Board extends StatelessWidget {
         // Use the decoration from bottom up during this build
         //
         return Container(
-            decoration: _decorations[rows - row][col]);
+            decoration: _decorations?.array![rows - row][col]);
       },
     );
   }
@@ -184,7 +185,7 @@ class Board extends StatelessWidget {
           final int row = (index / cols).floor();
 
           return Container(
-            color: _checker[rows - row - 1][col],
+            color: _checker!.array![rows - row - 1][col],
             child: LayoutBuilder(
                 builder: (BuildContext context, BoxConstraints constraints) {
               if (isFirst) {
@@ -222,7 +223,7 @@ class Board extends StatelessWidget {
     // Let's get the dimensions and position of the exact position of the board
     //
     if (_keyChecker.currentContext != null){
-      final Rect rectBoard = _getDimensionsFromContext(_keyChecker.currentContext);
+      final Rect rectBoard = _getDimensionsFromContext(_keyChecker.currentContext!);
 
       //
       // Save the position of the board
@@ -233,7 +234,7 @@ class Board extends StatelessWidget {
       //
       // Let's get the dimensions of one cell of the board
       //
-      final Rect rectBoardSquare = _getDimensionsFromContext(_keyCheckerCell.currentContext);
+      final Rect rectBoardSquare = _getDimensionsFromContext(_keyCheckerCell.currentContext!);
 
       //
       // Save it for later reuse
@@ -244,7 +245,7 @@ class Board extends StatelessWidget {
       //
       // Send a notification to inform that we are ready to display the tiles from now on
       //
-      gameBloc.setReadyToDisplayTiles(true);
+      gameBloc!.setReadyToDisplayTiles(true);
     }
   }
 }

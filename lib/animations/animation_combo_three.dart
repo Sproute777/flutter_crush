@@ -4,20 +4,20 @@ import 'package:flutter/material.dart';
 
 class AnimationComboThree extends StatefulWidget {
   AnimationComboThree({
-    Key key,
-    this.combo,
+    Key? key,
+    required this.combo,
     this.onComplete,
   }):super(key: key);
 
   final Combo combo;
-  final VoidCallback onComplete;
+  final VoidCallback? onComplete;
 
   @override
   _AnimationComboThreeState createState() => _AnimationComboThreeState();
 }
 
 class _AnimationComboThreeState extends State<AnimationComboThree> with SingleTickerProviderStateMixin {
-  AnimationController _controller;
+ late final AnimationController _controller;
 
   @override
   void initState(){
@@ -30,7 +30,7 @@ class _AnimationComboThreeState extends State<AnimationComboThree> with SingleTi
     ..addStatusListener((AnimationStatus status){
       if (status == AnimationStatus.completed){
         if (widget.onComplete != null){
-          widget.onComplete();
+          widget.onComplete!();
         }
       }
     });
@@ -40,14 +40,17 @@ class _AnimationComboThreeState extends State<AnimationComboThree> with SingleTi
 
   @override
   void dispose(){
-    _controller?.dispose();
+    _controller.dispose();
     super.dispose();
   }
   
   @override
   Widget build(BuildContext context) {
     return Stack(
-      children: widget.combo.tiles.map((Tile tile){
+      children: widget.combo.tiles.map((Tile? tile){
+        if(tile == null){
+          return Positioned(child: SizedBox());
+        }
         return Positioned(
           left: tile.x,
           top: tile.y,

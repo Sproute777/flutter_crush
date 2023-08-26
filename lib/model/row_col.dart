@@ -8,8 +8,8 @@ class RowCol extends Object {
   int col;
 
   RowCol({
-    this.row,
-    this.col,
+    required this.row,
+    required this.col,
   });
 
   @override

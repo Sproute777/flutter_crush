@@ -10,8 +10,8 @@ class Swap extends Object {
   Tile to;
   
   Swap({
-    this.from,
-    this.to,
+    required this.from,
+    required this.to,
   });
   
   @override

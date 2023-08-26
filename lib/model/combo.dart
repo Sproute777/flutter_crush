@@ -8,25 +8,25 @@ import 'package:flutter_crush/model/tile.dart';
 ///
 class Combo {
   // List of all the tiles, part of the combo
-  HashMap<int, Tile> _tiles = HashMap<int, Tile>();
-  List<Tile> get tiles => UnmodifiableListView(_tiles.values.toList());
+  HashMap<int, Tile?> _tiles = HashMap<int, Tile?>();
+  List<Tile?> get tiles => UnmodifiableListView(_tiles.values.toList());
 
   // Type of combo
   ComboType _type = ComboType.none;
   ComboType get type => _type;
 
   // Type of tile that results from the combo
-  TileType resultingTileType;
+  late TileType resultingTileType;
 
   // Which tile is responsible for the combo
-  Tile commonTile;
+  Tile? commonTile;
 
   // Constructor
-  Combo(Chain horizontalChain, Chain verticalChain, int row, int col){
-    horizontalChain?.tiles?.forEach((Tile tile){
+  Combo(Chain? horizontalChain, Chain? verticalChain, int row, int col){
+    horizontalChain?.tiles?.forEach((Tile? tile){
       _tiles.putIfAbsent(tile.hashCode, () => tile);
     });
-    verticalChain?.tiles?.forEach((Tile tile){
+    verticalChain?.tiles?.forEach((Tile? tile){
       if (commonTile == null && _tiles.keys.contains(tile.hashCode)){
         commonTile = tile;
       }
@@ -39,8 +39,8 @@ class Combo {
     // If the combo contains more than 3 tiles but is not the combination of both horizontal and vertical chains
     // we need to determine the tile which created the chain
     if (total > 3 && commonTile == null){
-      _tiles.values.forEach((Tile tile){
-        if (tile.row == row && tile.col == col){
+      _tiles.values.forEach((Tile? tile){
+        if (tile != null && tile.row == row && tile.col == col){
           commonTile = tile;
         }
       });

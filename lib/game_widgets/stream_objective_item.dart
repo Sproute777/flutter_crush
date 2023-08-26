@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_crush/bloc/bloc_provider.dart';
 import 'package:flutter_crush/bloc/game_bloc.dart';
 import 'package:flutter_crush/bloc/objective_bloc.dart';
@@ -9,8 +10,8 @@ import 'package:flutter/material.dart';
 
 class StreamObjectiveItem extends StatefulWidget {
   StreamObjectiveItem({
-    Key key,
-    this.objective,
+    Key? key,
+    required this.objective,
   }): super(key: key);
 
   final Objective objective;
@@ -22,8 +23,8 @@ class StreamObjectiveItem extends StatefulWidget {
 }
 
 class StreamObjectiveItemState extends State<StreamObjectiveItem> {
-  ObjectiveBloc _bloc;
-  GameBloc gameBloc;
+   ObjectiveBloc? _bloc;
+    GameBloc? gameBloc;
 
   ///
   /// In order to determine whether this particular Objective is
@@ -31,14 +32,14 @@ class StreamObjectiveItemState extends State<StreamObjectiveItem> {
   /// that gives us the list of all Objective Events to THIS instance
   /// of the BLoC
   ///
-  StreamSubscription _subscription;
+  StreamSubscription? _subscription;
 
   @override
   void didChangeDependencies(){
     super.didChangeDependencies();
 
     // Now that the context is available, retrieve the gameBloc
-    gameBloc = BlocProvider.of<GameBloc>(context);
+    gameBloc = RepositoryProvider.of<GameBloc>(context);
     _createBloc();
   } 
 
@@ -65,7 +66,7 @@ class StreamObjectiveItemState extends State<StreamObjectiveItem> {
 
     // Simple pipe from the stream that lists all the ObjectiveEvents into
     // the BLoC that processes THIS particular Objective type
-    _subscription = gameBloc.outObjectiveEvents.listen(_bloc.sendObjectives);
+    _subscription = gameBloc!.outObjectiveEvents.listen((o)=> _bloc!.setObjectives);
   }
 
   void _disposeBloc() {
@@ -79,7 +80,7 @@ class StreamObjectiveItemState extends State<StreamObjectiveItem> {
     //
     // Trick to get the image of the tile
     //
-    Tile tile = Tile(type: widget.objective.type, level: gameBloc.gameController.level);
+    Tile tile = Tile(type: widget.objective.type, level: gameBloc!.gameController.level);
     tile.build();
 
     return Container(
@@ -94,7 +95,7 @@ class StreamObjectiveItemState extends State<StreamObjectiveItem> {
           ),
           StreamBuilder<int>(
             initialData: widget.objective.count,
-            stream: _bloc.objectiveCounter,
+            stream: _bloc!.objectiveCounter,
             builder: (BuildContext context, AsyncSnapshot<int> snapshot){
               return Text(
                 '${snapshot.data}',

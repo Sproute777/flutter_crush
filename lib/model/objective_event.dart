@@ -7,12 +7,12 @@ import 'package:flutter_crush/model/tile.dart';
 /// (normal tile being removed, bomb that explodes...)
 /// 
 class ObjectiveEvent {
-  final TileType type;
+  final TileType? type;
   // Remaining before reaching the objective for this type of Objective
   final int remaining;
 
   ObjectiveEvent({
     this.type,
-    this.remaining,
+    required this.remaining,
   });
 }

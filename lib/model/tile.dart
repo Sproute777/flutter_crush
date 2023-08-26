@@ -7,27 +7,27 @@ import 'package:flutter/material.dart';
 /// Tile
 /// 
 class Tile extends Object {
-  TileType type;
+   TileType? type;
   int row;
   int col;
-  Level level;
+   Level? level;
   int depth;
-  Widget _widget;
-  double x;
-  double y;
+  late Widget _widget;
+  late double x;
+  late double y;
   bool visible;
 
   Tile({
-    this.type,
-    this.row: 0,
-    this.col: 0,
-    this.level,
-    this.depth: 0,
-    this.visible: true,
+    required this.type,
+    this.row = 0,
+    this.col = 0,
+     this.level,
+    this.depth = 0,
+    this.visible = true,
   });
   
   @override
-  int get hashCode => row * level.numberOfRows + col;
+  int get hashCode => row * (level?.numberOfRows ?? 0) + col;
 
   @override
   bool operator ==(dynamic other) {
@@ -36,7 +36,7 @@ class Tile extends Object {
 
   @override
   String toString(){
-    return '[$row][$col] => ${describeEnum(type)}';
+    return '[$row][$col] => ${type}';
   }
 
   //
@@ -116,9 +116,10 @@ class Tile extends Object {
   // the dimensions of the board and a tile
   //
   void setPosition(){
-    double bottom = level.boardTop + (level.numberOfRows - 1) * level.tileHeight;
-    x = level.boardLeft + col * level.tileWidth;
-    y = bottom - row * level.tileHeight;
+    if(level == null) return;
+    double bottom = level!.boardTop + (level!.numberOfRows - 1) * level!.tileHeight;
+    x = level!.boardLeft + col * level!.tileWidth;
+    y = bottom - row * level!.tileHeight;
   }
 
   //
@@ -147,7 +148,7 @@ class Tile extends Object {
   //
   // Returns the Widget to be used to render the Tile
   //
-  Widget get widget => getWidgetSized(level.tileWidth, level.tileHeight);
+  Widget get widget => getWidgetSized(level!.tileWidth, level!.tileHeight);
 
   Widget getWidgetSized(double width, double height) => Container(
     width: width,
@@ -181,16 +182,18 @@ class Tile extends Object {
   static int  get _firstBombTile => TileType.bomb.index;
   static int  get _lastBombTile => TileType.fireball.index;
   
-  static bool isNormal(TileType type){
-    int index = type.index;
+  static bool isNormal(TileType? type){
+    int? index = type?.index;
+    if(index == null) return false;
     return (index >= _firstNormalTile && index <= _lastNormalTile);
   }
 
-  static bool isBomb(TileType type){
-    int index = type.index;
+  static bool isBomb(TileType? type){
+    int? index = type?.index;
+    if(index == null) return false;
     return (index >= _firstBombTile && index <= _lastBombTile);
   }
-  static bool canBePlayed(TileType type) => (type != TileType.wall && type != TileType.forbidden);
+  static bool canBePlayed(TileType? type) => (type != TileType.wall && type != TileType.forbidden);
 }
 
 //

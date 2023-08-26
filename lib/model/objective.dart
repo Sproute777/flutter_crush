@@ -6,7 +6,7 @@ import 'package:flutter_crush/model/tile.dart';
 /// One objective for a level.
 /// 
 class Objective extends Object {
-  TileType type;
+  late TileType type;
   int count = 0;
   int initialValue = 0;
   bool completed = false;

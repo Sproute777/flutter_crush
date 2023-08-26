@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 
 class AnimationComboCollapse extends StatefulWidget {
   AnimationComboCollapse({
-    Key key,
-    this.combo,
-    this.resultingTile,
+    Key? key,
+    required this.combo,
+    required this.resultingTile,
     this.onComplete,
   }):super(key: key);
 
   final Combo combo;
-  final VoidCallback onComplete;
+  final VoidCallback? onComplete;
   final Tile resultingTile;
 
   @override
@@ -19,7 +19,7 @@ class AnimationComboCollapse extends StatefulWidget {
 }
 
 class _AnimationComboCollapseState extends State<AnimationComboCollapse> with SingleTickerProviderStateMixin {
-  AnimationController _controller;
+  late final AnimationController _controller;
 
   @override
   void initState(){
@@ -32,7 +32,7 @@ class _AnimationComboCollapseState extends State<AnimationComboCollapse> with Si
     ..addStatusListener((AnimationStatus status){
       if (status == AnimationStatus.completed){
         if (widget.onComplete != null){
-          widget.onComplete();
+          widget.onComplete!();
         }
       }
     });
@@ -42,7 +42,7 @@ class _AnimationComboCollapseState extends State<AnimationComboCollapse> with Si
 
   @override
   void dispose(){
-    _controller?.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -52,7 +52,10 @@ class _AnimationComboCollapseState extends State<AnimationComboCollapse> with Si
     final double destinationY = widget.resultingTile.y;
 
     // Tiles are collapsing at the position of the resulting tile
-    List<Widget> children = widget.combo.tiles.map((Tile tile){
+    List<Widget> children = widget.combo.tiles.map((Tile? tile){
+      if(tile == null){
+        return Positioned(child: SizedBox());
+      }
       return Positioned(
           left: tile.x + (1.0 - _controller.value) * (tile.x - destinationX),
           top: tile.y + (1.0 - _controller.value) * (destinationY - tile.y),

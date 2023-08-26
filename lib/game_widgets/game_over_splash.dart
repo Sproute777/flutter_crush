@@ -5,14 +5,14 @@ import 'package:flutter/material.dart';
 
 class GameOverSplash extends StatefulWidget {
   GameOverSplash({
-    Key key,
-    this.success,
-    this.level,
+    Key? key,
+    required this.success,
+    required this.level,
     this.onComplete,
   }) : super(key: key);
 
   final Level level;
-  final VoidCallback onComplete;
+  final VoidCallback? onComplete;
   final bool success;
 
   @override
@@ -21,8 +21,8 @@ class GameOverSplash extends StatefulWidget {
 
 class _GameOverSplashState extends State<GameOverSplash>
     with SingleTickerProviderStateMixin {
-  AnimationController _controller;
-  Animation<double> _animationAppear;
+  late final AnimationController _controller;
+  late final Animation<double> _animationAppear;
 
   @override
   void initState() {
@@ -38,7 +38,7 @@ class _GameOverSplashState extends State<GameOverSplash>
       ..addStatusListener((AnimationStatus status) {
         if (status == AnimationStatus.completed) {
           if (widget.onComplete != null) {
-            widget.onComplete();
+            widget.onComplete!();
           }
         }
       });
@@ -58,7 +58,7 @@ class _GameOverSplashState extends State<GameOverSplash>
     );
 
     // Play the intro
-    Audio.playAsset(AudioType.game_start);
+    // Audio.playAsset(AudioType.game_start);
 
     // Launch the animation
     _controller.forward();
@@ -66,7 +66,7 @@ class _GameOverSplashState extends State<GameOverSplash>
 
   @override
   void dispose() {
-    _controller?.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -74,7 +74,7 @@ class _GameOverSplashState extends State<GameOverSplash>
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
 
-    Color darkColor = widget.success ? Colors.green[700] : Colors.red[700];
+    Color darkColor = widget.success ? Colors.green[700]! : Colors.red[700]!;
     Color lightColor = widget.success ? Colors.green : Colors.red;
     String message = widget.success ? "You Win" : "Game Over";
 
@@ -99,11 +99,11 @@ class _GameOverSplashState extends State<GameOverSplash>
           ),
         ),
       ),
-      builder: (BuildContext context, Widget child) {
+      builder: (BuildContext context, Widget? child) {
         return Positioned(
           left: 0.0,
           top: 150.0 + 100.0 * _animationAppear.value,
-          child: child,
+          child: child ?? SizedBox(),
         );
       },
     );

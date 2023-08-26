@@ -7,20 +7,20 @@ import 'package:flutter_crush/model/tile.dart';
 /// Class which is used to register a Tile animation
 class TileAnimation{
   TileAnimation({
-    this.animationType,
-    this.delay,
-    this.from,
-    this.to,
-    this.tileType,
-    this.tile,
+    required this.animationType,
+    required this.delay,
+    required this.from,
+    required this.to,
+     this.tileType,
+     this.tile,
   });
 
   final TileAnimationType animationType;
   final int delay;
   final RowCol from;
   final RowCol to;
-  final TileType tileType;
-  Tile tile;
+  final TileType? tileType;
+  Tile? tile;
 }
 
 //

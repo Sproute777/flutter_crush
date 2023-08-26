@@ -1,3 +1,4 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_crush/animations/shine_effect.dart';
 import 'package:flutter_crush/bloc/bloc_provider.dart';
 import 'package:flutter_crush/bloc/game_bloc.dart';
@@ -13,18 +14,19 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
-  AnimationController _controller;
-  Animation _animation;
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation _animation;
 
   @override
   void initState() {
+    debugPrint(' HomePage init');
     super.initState();
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 3500),
-    )
-      ..addListener(() {
+    )..addListener(() {
         setState(() {});
       });
 
@@ -46,27 +48,30 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
   @override
   void dispose() {
-    _controller?.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    GameBloc gameBloc = BlocProvider.of<GameBloc>(context);
-    MediaQueryData mediaQueryData = MediaQuery.of(context);
-    Size screenSize = mediaQueryData.size;
-    double levelsWidth = -100.0 + ((mediaQueryData.orientation == Orientation.portrait) ? screenSize.width : screenSize.height);
-
+   final gameBloc = RepositoryProvider.of<GameBloc>(context);
+   final mediaQueryData = MediaQuery.of(context);
+   final  screenSize = mediaQueryData.size;
+   final levelsWidth = -50.0 +
+        ((mediaQueryData.orientation == Orientation.portrait)
+            ? screenSize.width
+            : screenSize.height);
+    debugPrint(' HomePage build');
     return Scaffold(
-      body: WillPopScope(
-        // No way to get back
-        onWillPop: () async => false,
-        child: Stack(
+      backgroundColor: Colors.transparent,
+      body: Stack(
           children: <Widget>[
-            Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/images/background/background2.jpg'),
+            Positioned.fill(
+              child: SizedBox(
+                height:400, 
+                width: 400,
+                child: Image.asset(
+                  'assets/images/background/background2.jpeg',
                   fit: BoxFit.cover,
                 ),
               ),
@@ -96,23 +101,24 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                       crossAxisCount: 3,
                       childAspectRatio: 1.01,
                     ),
-                    itemBuilder: (BuildContext context, int index){
+                    itemBuilder: (BuildContext context, int index) {
                       return GameLevelButton(
                         width: 80.0,
                         height: 60.0,
                         borderRadius: 50.0,
                         text: 'Level ${index + 1}',
                         onTap: () async {
-                          Level newLevel = await gameBloc.setLevel(index + 1);
+                          Level? newLevel = await gameBloc.setLevel(index + 1);
 
                           // Open the Game page
+                          if(newLevel != null)
                           Navigator.of(context).push(GamePage.route(newLevel));
                         },
                       );
                     },
                   ),
                 ),
-              ), 
+              ),
             ),
             Positioned(
               left: 0.0,
@@ -122,7 +128,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 child: DoubleCurvedContainer(
                   width: screenSize.width - 60.0,
                   height: 150.0,
-                  outerColor: Colors.blue[700],
+                  outerColor: Colors.blue[700]!,
                   innerColor: Colors.blue,
                   child: Stack(
                     children: <Widget>[
@@ -136,7 +142,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                           color: Colors.white,
                           fontSize: 26.0,
                           shadowOpacity: 1.0,
-                          offset: Offset(1.0,1.0),
+                          offset: Offset(1.0, 1.0),
                         ),
                       ),
                     ],
@@ -146,7 +152,6 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
             ),
           ],
         ),
-      ),
     );
   }
 }

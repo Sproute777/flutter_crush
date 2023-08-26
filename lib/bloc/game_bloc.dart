@@ -86,11 +86,13 @@ class GameBloc {
     print('setLevel');
     _levelNumber = (levelIndex - 1).clamp(0, _maxLevel);
 
+    print('_levelNumber $_levelNumber');
     print('get _gameController');
     //
     // Initialize the Game
     //
     _gameController = GameController(level: _levels[_levelNumber]);
+    print('_gameController ${_gameController.level}');
 
     //
     // Fill the Game with Tile and make sure there are possible Swaps

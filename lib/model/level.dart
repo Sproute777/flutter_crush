@@ -1,10 +1,12 @@
+import 'dart:collection';
+
 import 'package:flutter_crush/helpers/array_2d.dart';
 import 'package:flutter_crush/model/objective.dart';
 import 'package:quiver/iterables.dart';
 
 ///
 /// Level
-/// 
+///
 /// Definition of a level in terms of:
 ///  - grid template
 ///  - maximum number of moves
@@ -14,13 +16,13 @@ import 'package:quiver/iterables.dart';
 ///
 class Level extends Object {
   final int _index;
-  Array2d grid;
+  late Array2d grid;
   final int _rows;
   final int _cols;
-  List<Objective> _objectives;
+  List<Objective>? _objectives;
   final int _maxMoves;
-  int _movesLeft;
-
+  int? _movesLeft;
+  Level(this._index, this._rows, this._cols, this._maxMoves);
   //
   // Variables that depend on the physical layout of the device
   //
@@ -30,39 +32,61 @@ class Level extends Object {
   double boardTop = 0.0;
 
   Level.fromJson(Map<String, dynamic> json)
-    : _index = json["level"],
-      _rows = json["rows"],
-      _cols = json["cols"],
-      _maxMoves = json["moves"]
-    {
-      // Initialize the grid to the dimensions
-      grid = Array2d(_rows, _cols);
+      : _index = json["level"] as int,
+        _rows = json["rows"] as int,
+        _cols = json["cols"] as int,
+        _maxMoves = json["moves"] as int {
+    print('create aray');
+    // Initialize the grid to the dimensions
+    try {
+      print('grid start');
+      print('rows $_rows');
+      print('columns $_cols');
+      grid = Array2d<String?>(_rows, _cols);
+    } catch (e) {
+      print(e);
+      print('grid failed');
+    }
+    // Populate the grid from the definition
+    //
+    // Trick
+    //  As the definition in the JSON file defines the
+    //  rows (top-down) and also because we are recording
+    //  the grid (bottom-up), we need to reverse the
+    //  definition from the JSON file.
+    //
+    print('next');
+    print('grid is ${json['grid'].runtimeType}');
+    final row = List.of((json['grid'] as List).reversed);
+    for (var rowIndex = 0; rowIndex < row.length; rowIndex++) {
+      print('grid row is ${row.runtimeType} ${row.toString()}');
+      final listCell = (row[rowIndex] as String).split(',');
+      for (var cellIndex = 0; cellIndex < listCell.length; cellIndex++) {
+        final cell = listCell[cellIndex];
+        print('grid value ${cell.toString()}');
+        try{
+          print('grid toStr ${grid.array!.length} ${grid.toString()}');
+        print('grid rowIndex ${rowIndex} , cellIndex ${cellIndex} ${cell.toString()}');
+        grid.array![rowIndex][cellIndex] = cell;
+        } catch (e){
+          print(e);
+          rethrow;
+        }
+      }
+    }
 
-      // Populate the grid from the definition
-        //
-        // Trick
-        //  As the definition in the JSON file defines the 
-        //  rows (top-down) and also because we are recording
-        //  the grid (bottom-up), we need to reverse the
-        //  definition from the JSON file.
-        //
-      enumerate((json["grid"] as List).reversed).forEach((row){
-        enumerate(row.value.split(',')).forEach((cell){
-          grid[row.index][cell.index] = cell.value;
-        });
-      });
+    print('next objectives');
+    // Retrieve the objectives
+    _objectives = (json["objective"] as List).map((item) {
+      return Objective(item);
+    }).toList();
 
-      // Retrieve the objectives
-      _objectives = (json["objective"] as List).map((item){
-        return Objective(item);
-      }).toList();
-
-      // First-time initialization
-      resetObjectives();
+    // First-time initialization
+    resetObjectives();
   }
 
   @override
-  String toString(){
+  String toString() {
     return "level: $index \n" + dumpArray2d(grid);
   }
 
@@ -70,21 +94,22 @@ class Level extends Object {
   int get numberOfCols => _cols;
   int get index => _index;
   int get maxMoves => _maxMoves;
-  int get movesLeft => _movesLeft;
-  List<Objective> get objectives => List.unmodifiable(_objectives);
+  int get movesLeft => _movesLeft ?? 0;
+  List<Objective> get objectives =>
+      List.unmodifiable(_objectives as List<Objective>);
 
   //
   // Reset the objectives
   //
-  void resetObjectives(){
-    _objectives.forEach((Objective objective) => objective.reset());
+  void resetObjectives() {
+    _objectives?.forEach((Objective objective) => objective.reset());
     _movesLeft = _maxMoves;
   }
 
   //
   // Decrement the number of moves left
   //
-  int decrementMove(){
-    return (--_movesLeft).clamp(0, _maxMoves);
+  int decrementMove() {
+    return (_movesLeft! - 1).clamp(0, _maxMoves);
   }
 }

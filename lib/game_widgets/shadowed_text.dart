@@ -7,12 +7,12 @@ import 'package:flutter/material.dart';
 ///
 class ShadowedText extends StatelessWidget {
   ShadowedText({
-    Key key,
-    @required this.text,
-    this.fontSize: 16.0,
-    this.color: Colors.white,
-    this.offset: const Offset(1.0, 1.0),
-    this.shadowOpacity: 1.0,
+    Key? key,
+    required this.text,
+    this.fontSize = 16.0,
+    this.color = Colors.white,
+    this.offset = const Offset(1.0, 1.0),
+    this.shadowOpacity = 1.0,
   }) : super(key: key);
 
   final String text;
