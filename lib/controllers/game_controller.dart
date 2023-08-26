@@ -548,7 +548,6 @@ PublishSubject<int> _movesLeftController = PublishSubject<int>();
 
 
 void playMove() {
-    print('playMode');
     int movesLeft = level!.decrementMove();
 
     // Emit the number of moves left (to refresh the moves left panel)

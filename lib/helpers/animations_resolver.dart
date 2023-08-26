@@ -461,7 +461,7 @@ class AnimationsResolver {
     int rowTop = _getEntryRowForColumn(col) + 1;
 
     // Count the number of moves
-    int countMoves = 0;
+    // int countMoves = 0;
 
     // The number of empty cells (resulting from a move)
     int empty = 0;
@@ -574,7 +574,7 @@ class AnimationsResolver {
         }
 
         // Increment the number of moves
-        countMoves++;
+        // countMoves++;
       }
     }
 
@@ -664,7 +664,7 @@ class AnimationsResolver {
           longestDelay = math.max(longestDelay, delay);
 
           // Increment the number of moves
-          countMoves++;
+          // countMoves++;
         }
       }
     }
@@ -784,7 +784,7 @@ class AnimationsResolver {
       // Record the sequence
       if (tileType != null) {
         sequences.add(AnimationSequence(
-          tileType: tileType!,
+          tileType: tileType,
           startDelay: startDelay,
           endDelay: endDelay,
           animations: animations,

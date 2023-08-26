@@ -3,11 +3,9 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:isolate';
 
 // import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/widgets.dart';
 import 'package:logging/logging.dart';
 
 /// Runs [mainFunction] in a guarded [Zone].

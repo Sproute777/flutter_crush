@@ -2,6 +2,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_crush/bloc/game_bloc.dart';
 import 'package:flutter_crush/controllers/game_controller.dart';
+import 'package:flutter_crush/controllers/status_controller.dart';
 import 'package:flutter_crush/pages/home_page.dart';
 import 'package:flutter/material.dart';
 
@@ -14,7 +15,10 @@ class Application extends StatelessWidget {
           create: (_) => GameBloc(),
         ),
         RepositoryProvider(
-          create: (context) => GameController(),
+          create: (_) => GameController(),
+        ),
+        RepositoryProvider(
+          create: (_) => StatusController(),
         ),
       ],
       child: MaterialApp(

@@ -74,7 +74,6 @@ class StreamObjectiveItemState extends State<StreamObjectiveItem> {
   void _disposeBloc() {
     _subscription?.cancel();
     _subscription = null;
-    _bloc?.dispose();
   }
 
   @override

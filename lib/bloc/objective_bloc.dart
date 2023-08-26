@@ -32,9 +32,5 @@ class ObjectiveBloc  {
                         .listen((event) => _objectiveCounterController.add(event.remaining));
   }
 
-  @override
-  void dispose() {
-    _objectivesController.close();
-    _objectiveCounterController.close();
-  }
+  
 }
