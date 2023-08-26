@@ -111,10 +111,10 @@ class _GamePageState extends State<GamePage>
           ),
         ),
         child: GestureDetector(
-          onPanDown: (DragDownDetails details) => _onPanDown(details),
+          onPanDown:  _onPanDown,
           onPanStart: _onPanStart,
           onPanEnd: _onPanEnd,
-          onPanUpdate: (DragUpdateDetails details) => _onPanUpdate(details),
+          onPanUpdate:  _onPanUpdate,
           onTap: _onTap,
           onTapUp: _onPanEnd,
           child: Stack(

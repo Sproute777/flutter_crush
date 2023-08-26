@@ -9,11 +9,11 @@ class AnimationChain extends StatefulWidget {
     Key? key,
     required this.animationSequence,
     required this.level,
-     this.onComplete,
+     required this.onComplete,
   }):super(key: key);
 
   final AnimationSequence animationSequence;
-  final VoidCallback? onComplete;
+  final VoidCallback onComplete;
   final Level level;
 
   @override
@@ -50,9 +50,8 @@ class _AnimationChainState extends State<AnimationChain> with SingleTickerProvid
     })
     ..addStatusListener((AnimationStatus status){
       if (status == AnimationStatus.completed){
-        if (widget.onComplete != null){
-          widget.onComplete!();
-        }
+          widget.onComplete();
+       
       }
     });
 
