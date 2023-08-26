@@ -22,6 +22,8 @@ import 'package:flutter_crush/model/row_col.dart';
 import 'package:flutter_crush/model/tile.dart';
 import 'package:flutter/material.dart';
 
+import '../controllers/game_controller.dart';
+
 class GamePage extends StatefulWidget {
   static Route<dynamic> route(Level level) {
     return MaterialPageRoute(
@@ -44,6 +46,7 @@ class _GamePageState extends State<GamePage>
   // late final AnimationController _controller;
   OverlayEntry? _gameSplash;
   GameBloc? gameBloc;
+  GameController? gameController;
   bool _allowGesture = true;
   StreamSubscription? _gameOverSubscription;
  late bool _gameOverReceived;
@@ -69,12 +72,13 @@ class _GamePageState extends State<GamePage>
 
     // Now that the context is available, retrieve the gameBloc
     gameBloc = RepositoryProvider.of<GameBloc>(context);
-
+    gameController = RepositoryProvider.of<GameController>(context);
+    gameController!.setLevel(widget.level);
     // Reset the objectives
-    gameBloc!.reset();
+    gameController!.reset();
 
     // Listen to "game over" notification
-    _gameOverSubscription = gameBloc!.gameIsOver.listen(_onGameOver);
+    _gameOverSubscription = gameController!.gameIsOver.listen(_onGameOver);
   }
 
   @override
@@ -199,7 +203,7 @@ class _GamePageState extends State<GamePage>
         if (snapshot.hasData) {
           print('buildTiles has data');
           List<Widget> tiles = <Widget>[];
-          Array2d<Tile?> grid = gameBloc!.gameController.grid!;
+          Array2d<Tile?> grid = gameController!.grid!;
           print('gameBloc grid ${grid.array?.length ?? 0}');
 
           for (int row = 0; row < widget.level.numberOfRows; row++) {
@@ -264,7 +268,7 @@ class _GamePageState extends State<GamePage>
         rowCol.col >= widget.level.numberOfCols) return;
 
     // Check if the [row,col] corresponds to a possible swap
-    Tile? selectedTile = gameBloc!.gameController.grid!.array![rowCol.row][rowCol.col];
+    Tile? selectedTile = gameController!.grid!.array![rowCol.row][rowCol.col];
     bool canBePlayed = false;
 
     // Reset
@@ -354,7 +358,7 @@ class _GamePageState extends State<GamePage>
             rowCol.row == widget.level.numberOfRows) {
           // Not possible, outside the boundaries
         } else {
-          Tile? destTile = gameBloc!.gameController.grid!.array![rowCol.row][rowCol.col];
+          Tile? destTile = gameController!.grid!.array![rowCol.row][rowCol.col];
           bool canBePlayed = false;
 
             //TODO:  Condition no longer necessary
@@ -363,7 +367,7 @@ class _GamePageState extends State<GamePage>
           if (canBePlayed) {
             // We need to test the swap
             bool swapAllowed =
-                gameBloc!.gameController.swapContains(gestureFromTile!, destTile);
+                gameController!.swapContains(gestureFromTile!, destTile);
 
             // Do not allow the gesture recognition during the animation
             _allowGesture = false;
@@ -377,10 +381,10 @@ class _GamePageState extends State<GamePage>
             Tile downTile = destTile.cloneForAnimation();
 
             // 3. Remove both tiles from the game grid
-            gameBloc!.gameController.grid!.array![rowCol.row][rowCol.col].visible =
+            gameController!.grid!.array![rowCol.row][rowCol.col].visible =
                 false;
-            gameBloc!
-                .gameController
+            
+                gameController!
                 .grid!.array![gestureFromRowCol!.row][gestureFromRowCol!.col]
                 .visible = false;
 
@@ -396,10 +400,10 @@ class _GamePageState extends State<GamePage>
                     swapAllowed: swapAllowed,
                     onComplete: () async {
                       // 5. Put back the tiles in the game grid
-                      gameBloc!.gameController.grid!.array![rowCol.row][rowCol.col]
+                      gameController!.grid!.array![rowCol.row][rowCol.col]
                           .visible = true;
-                      gameBloc!
-                          .gameController
+                      
+                          gameController!
                           .grid!.array![gestureFromRowCol!.row][gestureFromRowCol!.col]
                           .visible = true;
 
@@ -413,14 +417,14 @@ class _GamePageState extends State<GamePage>
                             Tile.isBomb(gestureFromTile!.type);
 
                         // Swap the 2 tiles
-                        gameBloc!.gameController
+                        gameController!
                             .swapTiles(gestureFromTile!, destTile);
 
                         // Get the tiles that need to be removed, following the swap
                         // We need to get the tiles from all possible combos
-                        Combo comboOne = gameBloc!.gameController
+                        Combo comboOne = gameController!
                             .getCombo(gestureFromTile!.row, gestureFromTile!.col);
-                        Combo comboTwo = gameBloc!.gameController
+                        Combo comboTwo = gameController!
                             .getCombo(destTile.row, destTile.col);
 
                         // Wait for both animations to complete
@@ -428,14 +432,14 @@ class _GamePageState extends State<GamePage>
                             [_animateCombo(comboOne), _animateCombo(comboTwo)]);
 
                         // Resolve the combos
-                        gameBloc!.gameController
-                            .resolveCombo(comboOne, gameBloc!);
-                        gameBloc!.gameController
-                            .resolveCombo(comboTwo, gameBloc!);
+                        gameController
+                            !.resolveCombo(comboOne, gameBloc!);
+                        gameController
+                            !.resolveCombo(comboTwo, gameBloc!);
 
                         // If the tile we moved is a bomb, we need to process the explosion
                         if (isSourceTileABomb) {
-                          gameBloc!.gameController.proceedWithExplosion(
+                          gameController!.proceedWithExplosion(
                               Tile(
                                   row: destTile.row,
                                   col: destTile.row,
@@ -447,10 +451,10 @@ class _GamePageState extends State<GamePage>
                         await _playAllAnimations();
 
                         // Once this is all done, we need to recalculate all the possible swaps
-                        gameBloc!.gameController.identifySwaps();
+                        gameController!.identifySwaps();
 
                         // Record the fact that we have played a move
-                        gameBloc!.playMove();
+                        gameController!.playMove();
                       }
 
                       // 7. Reset
@@ -483,7 +487,7 @@ class _GamePageState extends State<GamePage>
       // Audio.playAsset(AudioType.bomb);
 
       // Proceed with explosion
-      gameBloc!.gameController.proceedWithExplosion(gestureFromTile!, gameBloc!);
+      gameController!.proceedWithExplosion(gestureFromTile!, gameBloc!);
 
       // Rebuild the board and proceed with animations
       WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -491,13 +495,13 @@ class _GamePageState extends State<GamePage>
         await _playAllAnimations();
 
         // Once this is all done, we need to recalculate all the possible swaps
-        gameBloc!.gameController.identifySwaps();
+        gameController!.identifySwaps();
 
         // The user may now play
         _allowGesture = true;
 
         // Record the fact that we have played a move
-        gameBloc!.playMove();
+        gameController!.playMove();
       });
     }
   }
@@ -603,7 +607,7 @@ class _GamePageState extends State<GamePage>
     // need to be played as a consequence of a combo
     //
     AnimationsResolver animationResolver =
-        AnimationsResolver(gameBloc: gameBloc!, level: widget.level);
+        AnimationsResolver(gameController: gameController!, level: widget.level);
     animationResolver.resolve();
 
     // Determine the list of cells that are involved in the animation(s)
@@ -620,7 +624,7 @@ class _GamePageState extends State<GamePage>
 
     // Make all involved cells invisible
     animationResolver.involvedCells.forEach((RowCol rowCol) {
-      gameBloc!.gameController.grid!.array![rowCol.row][rowCol.col].visible = false;
+      gameController!.grid!.array![rowCol.row][rowCol.col].visible = false;
     });
 
     // Make a refresh of the board and the end of which we will play the animations
@@ -659,7 +663,7 @@ class _GamePageState extends State<GamePage>
                       entry = null;
                     });
 
-                    gameBloc!.gameController.refreshGridAfterAnimations(
+                    gameController!.refreshGridAfterAnimations(
                         animationResolver.resultingGridInTermsOfTileTypes,
                         animationResolver.involvedCells);
 

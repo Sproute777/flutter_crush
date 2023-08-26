@@ -95,7 +95,7 @@ class _HomePageState extends State<HomePage>
                   width: levelsWidth,
                   height: levelsWidth,
                   child: GridView.builder(
-                    itemCount: gameBloc.numberOfLevels,
+                    itemCount: gameBloc.levels.length,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
                       childAspectRatio: 1.01,
@@ -107,10 +107,9 @@ class _HomePageState extends State<HomePage>
                         borderRadius: 50.0,
                         text: 'Level ${index + 1}',
                         onTap: () async {
-                          Level? newLevel = await gameBloc.setLevel(index + 1);
+                          Level? newLevel = await gameBloc.levels[index];
 
                           // Open the Game page
-                          if(newLevel != null)
                           Navigator.of(context).push(GamePage.route(newLevel));
                         },
                       );

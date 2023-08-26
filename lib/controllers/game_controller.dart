@@ -11,11 +11,15 @@ import 'package:flutter_crush/model/swap.dart';
 import 'package:flutter_crush/model/swap_move.dart';
 import 'package:flutter_crush/model/tile.dart';
 import 'package:logging/logging.dart' hide Level;
+import 'package:rxdart/rxdart.dart';
+
+import '../model/objective.dart';
+import '../model/objective_event.dart';
 
 class GameController {
   static const tag = 'GameController';
   final _log = Logger(tag);
-  Level level;
+  Level? level;
    Array2d<Tile>? _grid;
   Array2d<Tile>? get grid => _grid;
   late math.Random _rnd;
@@ -96,11 +100,8 @@ class GameController {
   //
   // Initialization
   //
-  GameController({
-   required this.level,
-  }) {
+  GameController() {
     // Initialize the grid to the dimensions of the Level and fill it with "empty" tiles
-    _grid = Array2d<Tile>(level.numberOfRows, level.numberOfCols,defaultValue:  Tile(type: TileType.empty));
 
     // Initialize the Random generator
     _rnd = math.Random();
@@ -130,8 +131,8 @@ class GameController {
       //
       // 1. Fill the empty cells
       //
-      for (int row = 0; row < level.numberOfRows; row++) {
-        for (int col = 0; col < level.numberOfCols; col++) {
+      for (int row = 0; row < level!.numberOfRows; row++) {
+        for (int col = 0; col < level!.numberOfCols; col++) {
           // Only consider the empty cells
           if (_grid!.array![row][col].type != TileType.empty) {
 
@@ -139,7 +140,7 @@ class GameController {
             continue;
           }
          Tile? tile;
-          switch (level.grid.array![row][col]) {
+          switch (level!.grid.array![row][col]) {
             case '1': // Regular cell
             case '2': // Regular cell but frozen
               
@@ -151,7 +152,7 @@ class GameController {
                   (row > 1 &&
                       _grid!.array![row - 1][col].type == type &&
                       _grid!.array![row - 2][col].type == type));
-              tile = Tile(row: row, col: col, type: type, level: level, depth: (level.grid.array![row][col] == '2') ? 1 : 0);
+              tile = Tile(row: row, col: col, type: type, level: level, depth: (level!.grid.array![row][col] == '2') ? 1 : 0);
               break;
 
             case 'X':
@@ -180,8 +181,8 @@ class GameController {
     //
     // Once everything is set, build the tile Widgets
     //
-    for (int row = 0; row < level.numberOfRows; row++) {
-        for (int col = 0; col < level.numberOfCols; col++) {
+    for (int row = 0; row < level!.numberOfRows; row++) {
+        for (int col = 0; col < level!.numberOfCols; col++) {
           // Only consider the authorized cells (not forbidden)
           if (_grid!.array?[row][col].type == TileType.forbidden) continue;
 
@@ -406,7 +407,7 @@ class GameController {
         // Decrement the depth
         if (--grid!.array![tile.row][tile.col].depth  < 0){
           // Check for objectives
-          gameBloc.pushTileEvent(grid!.array![tile.row][tile.col].type, 1);
+          pushTileEvent(grid!.array![tile.row][tile.col].type, 1);
 
           // If the depth is lower than 0, this means that we can remove the tile
           grid!.array![tile.row][tile.col].type = TileType.empty;
@@ -423,7 +424,7 @@ class GameController {
         grid!.array![tile.row][tile.col].build();
 
         // We need to notify about the creation of a new tile
-        gameBloc.pushTileEvent(combo.resultingTileType, 1);
+        pushTileEvent(combo.resultingTileType, 1);
       }
     });
   }
@@ -461,9 +462,9 @@ class GameController {
       int col = tileExplosion.col + move.col;
 
       // Test if the cell is valid
-      if (row > -1 && row < level.numberOfRows && col > -1 && col < level.numberOfCols){
+      if (row > -1 && row < level!.numberOfRows && col > -1 && col < level!.numberOfCols){
         // And also if we may explode the tile
-        if (level.grid.array![row][col] == '1'){
+        if (level!.grid.array![row][col] == '1'){
           Tile? tile = _grid!.array![row][col];
 
           if ( Tile.isBomb(tile.type) && !skipThis){
@@ -471,7 +472,7 @@ class GameController {
             _subExplosions.add(tile);
           } else {
             // Notify that we removed some tiles
-            gameBloc.pushTileEvent(tile.type, 1);
+            pushTileEvent(tile.type, 1);
 
             // Empty the cell
             tile.type = TileType.empty;
@@ -486,4 +487,85 @@ class GameController {
       proceedWithExplosion(tile, gameBloc, skipThis: true);
     });
   }
+
+// Controller aimed at processing the Objective events
+  //
+  PublishSubject<ObjectiveEvent> _objectiveEventsController =
+      PublishSubject<ObjectiveEvent>();
+  void  setObjectiveEvent(ObjectiveEvent event) => _objectiveEventsController.sink.add(event);
+  Stream<ObjectiveEvent> get outObjectiveEvents =>
+      _objectiveEventsController.stream;
+
+PublishSubject<bool> _gameIsOverController = PublishSubject<bool>();
+  Stream<bool> get gameIsOver => _gameIsOverController.stream;
+
+
+      void pushTileEvent(TileType? tileType, int counter) {
+    // We first need to decrement the objective by the counter
+    print('ssetLevel');
+    Objective? objective;
+    try {
+      objective =
+          level!.objectives.firstWhere((o) => o.type == tileType);
+    } catch (_) {}
+    if (objective == null) {
+      return;
+    }
+
+    objective.decrement(counter);
+
+    // Send a notification
+    setObjectiveEvent(
+        ObjectiveEvent(type: tileType, remaining: objective.count));
+
+    // Check if the game is won
+    bool isWon = true;
+    level!.objectives.forEach((Objective? objective) {
+      if ((objective?.count ?? 0) > 0) {
+        isWon = false;
+      }
+    });
+
+    // If the game is won, send a notification
+    if (isWon) {
+      _gameIsOverController.sink.add(true);
+    }
+  }
+
+Future<void> setLevel(Level lvl) async {
+    level = lvl;    
+    _grid = Array2d<Tile>(level!.numberOfRows, level!.numberOfCols,defaultValue:  Tile(type: TileType.empty));
+    // Fill the Game with Tile and make sure there are possible Swaps
+    //
+    _log.fine('shufl _gameController');
+   await shuffle();
+  //  .timeout(Duration(seconds: 10));
+  }
+
+PublishSubject<int> _movesLeftController = PublishSubject<int>();
+  Stream<int> get movesLeftCount => _movesLeftController.stream;
+
+
+
+void playMove() {
+    print('playMode');
+    int movesLeft = level!.decrementMove();
+
+    // Emit the number of moves left (to refresh the moves left panel)
+    _movesLeftController.sink.add(movesLeft);
+
+    // There is no move left, so inform that the game is over
+    if (movesLeft == 0) {
+      _gameIsOverController.sink.add(false);
+    }
+  }
+
+
+
+
+void reset() {
+    level!.resetObjectives();
+  }
+
+
 }

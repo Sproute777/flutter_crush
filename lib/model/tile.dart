@@ -93,7 +93,7 @@ class Tile extends Object {
 
         default:
           try {
-            imageAsset = "tiles/${describeEnum(type)}.png";
+          imageAsset = "tiles/${describeEnum(type as Object)}.png";
           } catch(e){
             return Container();
           }

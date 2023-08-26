@@ -14,19 +14,19 @@ import 'package:flutter_crush/model/tile_animation.dart';
 import 'package:quiver/iterables.dart';
 
 class AnimationsResolver {
-  final GameBloc gameBloc;
+  // final GameBloc gameBloc;
   final Level level;
-  late GameController gameController;
+  final GameController gameController;
   late int rows;
   late int cols;
 
   AnimationsResolver({
-    required this.gameBloc,
+    // required this.gameBloc,
+    required this.gameController,
     required this.level,
   }) {
     rows = level.numberOfRows;
     cols = level.numberOfCols;
-    gameController = gameBloc.gameController;
   }
 
   // _state contains the states of the grid after each move
@@ -249,7 +249,7 @@ class AnimationsResolver {
           _involvedCells.add(from!);
 
           // At the same time, we need to check the objectives
-          gameBloc.pushTileEvent(_tiles.array![tile.row][tile.col]?.type, 1);
+          gameController.pushTileEvent(_tiles.array![tile.row][tile.col]?.type, 1);
         });
 
         // ... the delay for the next move

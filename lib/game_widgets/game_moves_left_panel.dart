@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_crush/bloc/game_bloc.dart';
+import 'package:flutter_crush/controllers/game_controller.dart';
 import 'package:flutter_crush/game_widgets/stream_moves_left_counter.dart';
 import 'package:flutter_crush/model/level.dart';
 import 'package:flutter/material.dart';
@@ -8,8 +8,8 @@ class GameMovesLeftPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final GameBloc gameBloc = RepositoryProvider.of<GameBloc>(context);
-    final Level? level = gameBloc.gameController.level;
+    final  gameController = RepositoryProvider.of<GameController>(context);
+    final Level? level = gameController.level;
     final Orientation orientation = MediaQuery.of(context).orientation;
     final EdgeInsets paddingTop = EdgeInsets.only(top: (orientation == Orientation.portrait ? 10.0 : 0.0));
 
