@@ -5,6 +5,8 @@ import 'package:flutter_crush/controllers/status_controller.dart';
 import 'package:flutter_crush/pages/home_page.dart';
 import 'package:flutter/material.dart';
 
+import 'bloc/ready_bloc.dart';
+
 class Application extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -12,6 +14,9 @@ class Application extends StatelessWidget {
       providers: [
         RepositoryProvider(
           create: (_) => GameBloc(),
+        ),
+        RepositoryProvider(
+          create: (_) => ReadyBloc(),
         ),
         RepositoryProvider(
           create: (_) => GameController(),

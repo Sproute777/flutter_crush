@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:logging/logging.dart' hide Level;
 // import 'package:quiver/iterables.dart';
 // import 'package:quiver/quiver.dart';
-import 'package:rxdart/rxdart.dart';
 
 class GameBloc {
   static const tag = 'GameBloc';
@@ -15,12 +14,6 @@ class GameBloc {
   static double kMaxTilesSize = 28.0;
 
  
-  BehaviorSubject<bool> _readyToDisplayTilesController =
-      BehaviorSubject<bool>();
-  Function get setReadyToDisplayTiles =>
-      _readyToDisplayTilesController.sink.add;
-  Stream<bool> get outReadyToDisplayTiles =>
-      _readyToDisplayTilesController.stream;
 
   final levels = <Level>[];
 

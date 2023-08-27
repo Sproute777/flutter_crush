@@ -6,8 +6,7 @@ import 'startapp.dart';
 
 Future<void> main() async {
   // await Audio.init();
-    await guardWithCrashlytics(() {
+  await guardWithCrashlytics(() {
     startApp();
   });
-
-  }
+}

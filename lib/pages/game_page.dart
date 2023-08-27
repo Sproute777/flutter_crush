@@ -14,7 +14,6 @@ import 'package:flutter_crush/game_widgets/objective_panel.dart';
 import 'package:flutter_crush/game_widgets/shadowed_text.dart';
 import 'package:flutter_crush/helpers/animations_resolver.dart';
 import 'package:flutter_crush/helpers/array_2d.dart';
-import 'package:flutter_crush/helpers/audio.dart';
 import 'package:flutter_crush/model/animation_sequence.dart';
 import 'package:flutter_crush/model/combo.dart';
 import 'package:flutter_crush/model/level.dart';
@@ -22,6 +21,7 @@ import 'package:flutter_crush/model/row_col.dart';
 import 'package:flutter_crush/model/tile.dart';
 import 'package:flutter/material.dart';
 
+import '../bloc/ready_bloc.dart';
 import '../controllers/game_controller.dart';
 
 class GamePage extends StatefulWidget {
@@ -46,6 +46,7 @@ class _GamePageState extends State<GamePage>
   // late final AnimationController _controller;
   OverlayEntry? _gameSplash;
   GameBloc? gameBloc;
+  ReadyBloc? readyBloc;
   GameController? gameController;
   bool _allowGesture = true;
   StreamSubscription? _gameOverSubscription;
@@ -72,6 +73,7 @@ class _GamePageState extends State<GamePage>
 
     // Now that the context is available, retrieve the gameBloc
     gameBloc = RepositoryProvider.of<GameBloc>(context);
+    readyBloc = RepositoryProvider.of<ReadyBloc>(context);
     gameController = RepositoryProvider.of<GameController>(context);
     gameController!.setLevel(widget.level);
     // Reset the objectives
@@ -196,7 +198,7 @@ class _GamePageState extends State<GamePage>
   //
   Widget _buildTiles() {
     return StreamBuilder<bool>(
-      stream: gameBloc!.outReadyToDisplayTiles,
+      stream: readyBloc!.outReadyToDisplayTiles,
       initialData: null,
       builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
         if (snapshot.hasData) {

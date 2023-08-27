@@ -5,6 +5,8 @@ import 'package:flutter_crush/helpers/array_2d.dart';
 import 'package:flutter_crush/model/level.dart';
 import 'package:flutter/material.dart';
 
+import '../bloc/ready_bloc.dart';
+
 class Board extends StatefulWidget {
   Board({
     Key? key,
@@ -31,8 +33,8 @@ class _BoardState extends State<Board> {
   GlobalKey _keyCheckerCell = GlobalKey();
 
   GameBloc? gameBloc;
+  ReadyBloc? readyBloc;
 
-  //
   void _buildDecorations() {
     if (_decorations != null) return;
 
@@ -90,7 +92,6 @@ class _BoardState extends State<Board> {
     }
   }
 
-  //
   void _buildChecker(){
     if (_checker != null) return;
 
@@ -114,6 +115,7 @@ class _BoardState extends State<Board> {
   @override
   Widget build(BuildContext context) {
     gameBloc = RepositoryProvider.of<GameBloc>(context);
+    readyBloc = RepositoryProvider.of<ReadyBloc>(context);
     final Size screenSize = MediaQuery.of(context).size;
     final double maxDimension = math.min(screenSize.width, screenSize.height);
     final double maxTileWidth = math.min(maxDimension / GameBloc.kMaxTilesPerRowAndColumn, GameBloc.kMaxTilesSize);
@@ -242,7 +244,7 @@ class _BoardState extends State<Board> {
       //
       // Send a notification to inform that we are ready to display the tiles from now on
       //
-      gameBloc!.setReadyToDisplayTiles(true);
+      readyBloc!.setReadyToDisplayTiles(true);
     }
   }
 }
