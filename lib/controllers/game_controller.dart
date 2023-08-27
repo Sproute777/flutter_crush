@@ -20,8 +20,8 @@ class GameController {
   static const tag = 'GameController';
   final _log = Logger(tag);
   Level? level;
-  Array2d<Tile>? _grid;
-  Array2d<Tile>? get grid => _grid;
+  Array2d<TileOld>? _grid;
+  Array2d<TileOld>? get grid => _grid;
   late math.Random _rnd;
 
   //
@@ -116,11 +116,11 @@ class GameController {
   ///
   Future<void> shuffle() async {
     TileType? type;
-    final clone = _grid!.copyWith() as Array2d<Tile>;
+    final clone = _grid!.copyWith() as Array2d<TileOld>;
     bool isFirst = true;
     do {
       if (!isFirst) {
-        _grid = clone.copyWith() as Array2d<Tile>;
+        _grid = clone.copyWith() as Array2d<TileOld>;
       }
       isFirst = false;
 
@@ -134,20 +134,20 @@ class GameController {
             // print('shufl continue ${_grid.array![row][col]?.type}');
             continue;
           }
-          Tile? tile;
+          TileOld? tile;
           switch (level!.grid.array![row][col]) {
             case '1': // Regular cell
             case '2': // Regular cell but frozen
 
               do {
-                type = Tile.random(_rnd);
+                type = TileOld.random(_rnd);
               } while ((col > 1 &&
                       _grid!.array![row][col - 1].type == type &&
                       _grid!.array![row][col - 2].type == type) ||
                   (row > 1 &&
                       _grid!.array![row - 1][col].type == type &&
                       _grid!.array![row - 2][col].type == type));
-              tile = Tile(
+              tile = TileOld(
                   row: row,
                   col: col,
                   type: type,
@@ -157,7 +157,7 @@ class GameController {
 
             case 'X':
               // No cell
-              tile = Tile(
+              tile = TileOld(
                   row: row,
                   col: col,
                   type: TileType.forbidden,
@@ -167,7 +167,7 @@ class GameController {
 
             case 'W':
               // A wall
-              tile = Tile(
+              tile = TileOld(
                   row: row,
                   col: col,
                   type: TileType.wall,
@@ -211,8 +211,8 @@ class GameController {
     int destCol;
     int totalRows = _grid!.height;
     int totalCols = _grid!.width;
-    Tile? fromTile;
-    Tile? toTile;
+    TileOld? fromTile;
+    TileOld? toTile;
     bool isSrcNormalTile;
     bool isSrcBombTile;
     bool isDestNormalTile;
@@ -224,8 +224,8 @@ class GameController {
       for (int col = 0; col < totalCols; col++) {
         index = -1;
         fromTile = _grid!.array![row][col];
-        isSrcNormalTile = Tile.isNormal(fromTile.type);
-        isSrcBombTile = Tile.isBomb(fromTile.type);
+        isSrcNormalTile = TileOld.isNormal(fromTile.type);
+        isSrcBombTile = TileOld.isBomb(fromTile.type);
 
         if (isSrcNormalTile || isSrcBombTile) {
           do {
@@ -249,8 +249,8 @@ class GameController {
                 continue;
               }
 
-              isDestNormalTile = Tile.isNormal(toTile.type);
-              isDestBombTile = Tile.isBomb(toTile.type);
+              isDestNormalTile = TileOld.isNormal(toTile.type);
+              isDestBombTile = TileOld.isBomb(toTile.type);
 
               // If the destination tile is a bomb, all swaps are possible
               if (isDestBombTile) {
@@ -265,8 +265,8 @@ class GameController {
               if (isDestNormalTile || toTile.type == TileType.empty) {
                 // Exchange the tiles
                 _grid!.array![destRow][destCol] =
-                    Tile(row: row, col: col, type: fromTile.type, level: level);
-                _grid!.array![row][col] = Tile(
+                    TileOld(row: row, col: col, type: fromTile.type, level: level);
+                _grid!.array![row][col] = TileOld(
                     row: destRow,
                     col: destCol,
                     type: toTile.type,
@@ -310,7 +310,7 @@ class GameController {
   // Since the hashCode varies with the direction of a swap, we need
   // to record both
   //
-  void _addSwaps(Tile fromTile, Tile toTile) {
+  void _addSwaps(TileOld fromTile, TileOld toTile) {
     Swap newSwap = Swap(from: fromTile, to: toTile);
     _swaps.putIfAbsent(newSwap.hashCode, () => newSwap);
 
@@ -391,7 +391,7 @@ class GameController {
   //
   // Check if the swap between 2 tiles is recognized
   //
-  bool swapContains(Tile source, Tile destination) {
+  bool swapContains(TileOld source, TileOld destination) {
     Swap testSwap = Swap(from: source, to: destination);
     return _swaps.keys.contains(testSwap.hashCode);
   }
@@ -399,11 +399,11 @@ class GameController {
   //
   // Swap 2 tiles
   //
-  void swapTiles(Tile source, Tile destination) {
+  void swapTiles(TileOld source, TileOld destination) {
     RowCol sourceRowCol = RowCol(row: source.row, col: source.col);
     RowCol destRowCol = RowCol(row: destination.row, col: destination.col);
     source.swapRowColWith(destination);
-    Tile? tft = grid!.array![sourceRowCol.row][sourceRowCol.col];
+    TileOld? tft = grid!.array![sourceRowCol.row][sourceRowCol.col];
     grid!.array![sourceRowCol.row][sourceRowCol.col] =
         grid!.array![destRowCol.row][destRowCol.col];
     grid!.array![destRowCol.row][destRowCol.col] = tft;
@@ -425,7 +425,7 @@ class GameController {
   void resolveCombo(Combo combo, GameBloc gameBloc) {
     // We now need to remove all the Tiles from the grid and change the type if necessary
     _log.finest('resolveCombo');
-    combo.tiles.forEach((Tile? tile) {
+    combo.tiles.forEach((TileOld? tile) {
       if (tile == null) return;
       if (tile != combo.commonTile) {
         // Decrement the depth
@@ -473,14 +473,14 @@ class GameController {
   // Proceed with an explosion
   // The spread of the explosion depends on the type of bomb
   //
-  void proceedWithExplosion(Tile tileExplosion, GameBloc gameBloc,
+  void proceedWithExplosion(TileOld tileExplosion, GameBloc gameBloc,
       {bool skipThis = false}) {
     // Retrieve the list of row/col variations
     List<SwapMove>? _swaps = _explosions[tileExplosion.type];
 
     // We will record any explosions that could happen should
     // a bomb make another bomb explode
-    List<Tile> _subExplosions = <Tile>[];
+    List<TileOld> _subExplosions = <TileOld>[];
 
     // All the tiles in that area will disappear
     _swaps?.forEach((SwapMove move) {
@@ -494,9 +494,9 @@ class GameController {
           col < level!.numberOfCols) {
         // And also if we may explode the tile
         if (level!.grid.array![row][col] == '1') {
-          Tile? tile = _grid!.array![row][col];
+          TileOld? tile = _grid!.array![row][col];
 
-          if (Tile.isBomb(tile.type) && !skipThis) {
+          if (TileOld.isBomb(tile.type) && !skipThis) {
             // Another bomb must explode
             _subExplosions.add(tile);
           } else {
@@ -512,7 +512,7 @@ class GameController {
     });
 
     // Proceed with chained explosions
-    _subExplosions.forEach((Tile tile) {
+    _subExplosions.forEach((TileOld tile) {
       proceedWithExplosion(tile, gameBloc, skipThis: true);
     });
   }
@@ -561,8 +561,8 @@ class GameController {
 
   Future<void> setLevel(Level lvl) async {
     level = lvl;
-    _grid = Array2d<Tile>(level!.numberOfRows, level!.numberOfCols,
-        defaultValue: Tile(type: TileType.empty));
+    _grid = Array2d<TileOld>(level!.numberOfRows, level!.numberOfCols,
+        defaultValue: TileOld(type: TileType.empty));
     // Fill the Game with Tile and make sure there are possible Swaps
     //
     _log.fine('shufl _gameController');

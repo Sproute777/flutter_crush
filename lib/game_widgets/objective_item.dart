@@ -18,7 +18,7 @@ class ObjectiveItem extends StatelessWidget {
     //
     // Trick to get the image of the tile
     //
-    Tile tile = Tile(type: objective.type, level: level);
+    TileOld tile = TileOld(type: objective.type, level: level);
     tile.build();
 
     return Container(

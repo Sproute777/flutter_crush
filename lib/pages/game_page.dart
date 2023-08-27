@@ -65,7 +65,7 @@ class _GameViewState extends State<GameView>
   StreamSubscription? _gameOverSubscription;
   late bool _gameOverReceived;
 
-  Tile? gestureFromTile;
+  TileOld? gestureFromTile;
   RowCol? gestureFromRowCol;
   Offset? gestureOffsetStart;
   bool gestureStarted = false;
@@ -216,7 +216,7 @@ class _GameViewState extends State<GameView>
       builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
         if (snapshot.hasData) {
           List<Widget> tiles = <Widget>[];
-          Array2d<Tile?> grid = gameController!.grid!;
+          Array2d<TileOld?> grid = gameController!.grid!;
 
           for (int row = 0; row < widget.level.numberOfRows; row++) {
             for (int col = 0; col < widget.level.numberOfCols; col++) {
@@ -279,7 +279,7 @@ class _GameViewState extends State<GameView>
         rowCol.col >= widget.level.numberOfCols) return;
 
     // Check if the [row,col] corresponds to a possible swap
-    Tile? selectedTile = gameController!.grid!.array![rowCol.row][rowCol.col];
+    TileOld? selectedTile = gameController!.grid!.array![rowCol.row][rowCol.col];
     bool canBePlayed = false;
 
     // Reset
@@ -369,7 +369,7 @@ class _GameViewState extends State<GameView>
             rowCol.row == widget.level.numberOfRows) {
           // Not possible, outside the boundaries
         } else {
-          Tile? destTile = gameController!.grid!.array![rowCol.row][rowCol.col];
+          TileOld? destTile = gameController!.grid!.array![rowCol.row][rowCol.col];
           bool canBePlayed = false;
 
           //TODO:  Condition no longer necessary
@@ -388,8 +388,8 @@ class _GameViewState extends State<GameView>
             _overlayEntryFromTile = null;
 
             // 2. Generate the up/down tiles
-            Tile upTile = gestureFromTile!.cloneForAnimation();
-            Tile downTile = destTile.cloneForAnimation();
+            TileOld upTile = gestureFromTile!.cloneForAnimation();
+            TileOld downTile = destTile.cloneForAnimation();
 
             // 3. Remove both tiles from the game grid
             gameController!.grid!.array![rowCol.row][rowCol.col].visible =
@@ -428,7 +428,7 @@ class _GameViewState extends State<GameView>
                       if (swapAllowed == true) {
                         // Remember if the tile we move is a bomb
                         bool isSourceTileABomb =
-                            Tile.isBomb(gestureFromTile!.type);
+                            TileOld.isBomb(gestureFromTile!.type);
 
                         // Swap the 2 tiles
                         gameController!.swapTiles(gestureFromTile!, destTile);
@@ -451,7 +451,7 @@ class _GameViewState extends State<GameView>
                         // If the tile we moved is a bomb, we need to process the explosion
                         if (isSourceTileABomb) {
                           gameController!.proceedWithExplosion(
-                              Tile(
+                              TileOld(
                                   row: destTile.row,
                                   col: destTile.row,
                                   type: gestureFromTile!.type),
@@ -490,7 +490,7 @@ class _GameViewState extends State<GameView>
   //
   void _onTap() {
     if (!_allowGesture) return;
-    if (gestureFromTile != null && Tile.isBomb(gestureFromTile!.type)) {
+    if (gestureFromTile != null && TileOld.isBomb(gestureFromTile!.type)) {
       // Prevent the user from playing during the animation
       _allowGesture = false;
 
@@ -522,7 +522,7 @@ class _GameViewState extends State<GameView>
   // This is used just before starting an animation
   //
   void _showComboTilesForAnimation(Combo combo, bool visible) {
-    combo.tiles.forEach((Tile? tile) => tile?.visible = visible);
+    combo.tiles.forEach((TileOld? tile) => tile?.visible = visible);
     setState(() {});
   }
 
@@ -571,7 +571,7 @@ class _GameViewState extends State<GameView>
         _showComboTilesForAnimation(combo, false);
 
         // We need to create the resulting tile
-        Tile? resultingTile = Tile(
+        TileOld? resultingTile = TileOld(
           col: combo.commonTile!.col,
           row: combo.commonTile!.row,
           type: combo.resultingTileType,

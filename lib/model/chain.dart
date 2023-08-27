@@ -9,8 +9,8 @@ class Chain {
   ChainType? type;
 
   // List of the tiles, part of the chain
-  HashMap<int, Tile?> _tiles = HashMap<int, Tile?>();
-  List<Tile?> get tiles => _tiles.values.toList();
+  HashMap<int, TileOld?> _tiles = HashMap<int, TileOld?>();
+  List<TileOld?> get tiles => _tiles.values.toList();
 
   // Constructor
   Chain({
@@ -19,7 +19,7 @@ class Chain {
   });
 
   // Add a tile to the list of unique ones belonging to the chain
-  void addTile(Tile? tile){
+  void addTile(TileOld? tile){
     _tiles.putIfAbsent(tile.hashCode, () => tile);
     length = _tiles.length;
   }

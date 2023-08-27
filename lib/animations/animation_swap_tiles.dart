@@ -11,8 +11,8 @@ class AnimationSwapTiles extends StatefulWidget {
     required this.swapAllowed,
   }): super(key: key);
 
-  final Tile upTile;
-  final Tile downTile;
+  final TileOld upTile;
+  final TileOld downTile;
   final VoidCallback? onComplete;
   final bool swapAllowed;
 

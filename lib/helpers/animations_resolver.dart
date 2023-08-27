@@ -39,8 +39,8 @@ class AnimationsResolver {
   Array2d<TileType> get resultingGridInTermsOfTileTypes => _types;
 
   // _tiles contains the definitions of the tiles (type, depth, widget)
-  late Array2d<Tile?> _tiles;
-  Array2d<Tile?> get resultingGridInTermsOfTiles => _tiles;
+  late Array2d<TileOld?> _tiles;
+  Array2d<TileOld?> get resultingGridInTermsOfTiles => _tiles;
 
   // _names contains the tiles identities
   // Identities are important since animations will be played in sequence
@@ -90,7 +90,7 @@ class AnimationsResolver {
     //
     _state = Array2d<int>(rows, cols, defaultValue: -1);
     _types = Array2d<TileType>(rows, cols, defaultValue: TileType.empty);
-    _tiles = Array2d<Tile?>(rows, cols, defaultValue: null);
+    _tiles = Array2d<TileOld?>(rows, cols, defaultValue: null);
     _identities = Array2d<int>(rows, cols, defaultValue: -1);
     _nextIdentity = 0;
 
@@ -101,7 +101,7 @@ class AnimationsResolver {
           _types.array![row][col] = TileType.forbidden;
           _tiles.array![row][col] = null;
         } else {
-          Tile? tile = gameController.grid!.array![row][col];
+          TileOld? tile = gameController.grid!.array![row][col];
           if (tile.type == TileType.empty) {
             _state.array![row][col] = 0;
             _types.array![row][col] = TileType.empty;
@@ -225,7 +225,7 @@ class AnimationsResolver {
         }
 
         // We need to register the animations (combo)
-        combo.tiles.forEach((Tile? tile) {
+        combo.tiles.forEach((TileOld? tile) {
           if (tile == null) return;
           from = RowCol(row: tile.row, col: tile.col);
           final id = _identities.array![tile.row][tile.col];
@@ -260,7 +260,7 @@ class AnimationsResolver {
         // Let's update the _state and _types at destination.
         // Except a potential common tile (combo of more than 3 tiles)
         // would remain
-        combo.tiles.forEach((Tile? tile) {
+        combo.tiles.forEach((TileOld? tile) {
           if (tile == null) return;
           if (tile != combo.commonTile) {
             _state.array![tile.row][tile.col] = 0;
@@ -605,10 +605,10 @@ class AnimationsResolver {
         // Consider each empty
         for (int i = 0; i < empty; i++) {
           TileType newTileType =
-              Tile.random(math.Random()); // Generate a new random tile type
+              TileOld.random(math.Random()); // Generate a new random tile type
           _state.array![dest][col] = 1;
           _types.array![dest][col] = newTileType;
-          _tiles.array![dest][col] = Tile(
+          _tiles.array![dest][col] = TileOld(
             row: row,
             col: col,
             depth: 0,
@@ -718,7 +718,7 @@ class AnimationsResolver {
       int endDelay = 0;
       TileType? tileType;
       TileAnimation? tileAnimation;
-      Tile? tile;
+      TileOld? tile;
       if (delays != null)
         for (var delayIndex = 0; delayIndex < delays.length; delayIndex++) {
           final item = delays[delayIndex];
@@ -732,7 +732,7 @@ class AnimationsResolver {
               tile = tileAnimation.tile;
             }
             if (tile == null) {
-              tile = Tile(
+              tile = TileOld(
                 row: tileAnimation!.from.row,
                 col: tileAnimation.from.col,
                 depth: 0,

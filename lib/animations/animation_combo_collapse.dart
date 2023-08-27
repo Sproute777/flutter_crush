@@ -13,7 +13,7 @@ class AnimationComboCollapse extends StatefulWidget {
 
   final Combo combo;
   final VoidCallback onComplete;
-  final Tile resultingTile;
+  final TileOld resultingTile;
 
   @override
   _AnimationComboCollapseState createState() => _AnimationComboCollapseState();
@@ -51,7 +51,7 @@ class _AnimationComboCollapseState extends State<AnimationComboCollapse> with Si
     final double destinationY = widget.resultingTile.y;
   //  Logger.root.warning('build animation combo');
     // Tiles are collapsing at the position of the resulting tile
-    List<Widget> children = widget.combo.tiles.map((Tile? tile){
+    List<Widget> children = widget.combo.tiles.map((TileOld? tile){
       if(tile == null){
         return Positioned(child: SizedBox());
       }

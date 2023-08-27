@@ -49,7 +49,7 @@ class _AnimationComboThreeState extends State<AnimationComboThree> with SingleTi
   Widget build(BuildContext context) {
   //  Logger.root.warning('build animation combo three');
     return Stack(
-      children: widget.combo.tiles.map((Tile? tile){
+      children: widget.combo.tiles.map((TileOld? tile){
         if(tile == null){
           return Positioned(child: SizedBox());
         }

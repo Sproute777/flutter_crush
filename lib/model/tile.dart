@@ -4,7 +4,144 @@ import 'package:flutter_crush/model/level.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart' hide Level;
 
-class Tile extends Object {
+class TileNew extends StatefulWidget {
+  final TileType type;
+  final int row;
+  final int col;
+  final Level level;
+  final int depth;
+  final double x;
+  final double y;
+
+  const TileNew({
+    super.key,
+    required this.type,
+    this.row = 0,
+    this.col = 0,
+    required this.level,
+    this.depth = 0,
+    this.x = 0,
+    this.y = 0,
+  });
+
+  @override
+  State<TileNew> createState() => _TileNewState();
+}
+
+class _TileNewState extends State<TileNew> {
+ late final TileType type;
+ late int depth;
+ late double x;
+ late double y;
+  bool visible = true;
+  bool computePosition = true;
+
+  @override
+  void initState() {
+    super.initState();
+    x = widget.x;
+    y = widget.y;
+    depth = widget.depth;
+    type = widget.type;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (depth > 0 && type != TileType.wall) {
+      return Stack(
+        children: <Widget>[
+          Opacity(
+            opacity: 0.7,
+            child: Transform.scale(
+              scale: 0.8,
+              child: _buildDecoration(),
+            ),
+          ),
+          _buildDecoration(MyAssets.images.deco.ice02.path),
+        ],
+      );
+    } else if (type == TileType.empty) {
+      return SizedBox();
+    } else {
+      return _buildDecoration();
+    }
+  }
+
+  Widget _buildDecoration([String path = ""]) {
+    String imageAsset = path;
+    if (imageAsset == "") {
+      switch (type) {
+        case TileType.wall:
+          imageAsset = MyAssets.images.deco.wall.path;
+          break;
+
+        case TileType.bomb:
+          imageAsset = MyAssets.images.bombs.mine.path;
+          break;
+
+        case TileType.flare:
+          imageAsset = MyAssets.images.bombs.tnt.path;
+          break;
+
+        case TileType.wrapped:
+          imageAsset = MyAssets.images.tiles.multicolor.path;
+          break;
+
+        case TileType.fireball:
+          imageAsset = MyAssets.images.bombs.rocket.path;
+          break;
+
+        case TileType.blue:
+          imageAsset = MyAssets.images.tiles.blue.path;
+          break;
+        case TileType.green:
+          imageAsset = MyAssets.images.tiles.green.path;
+          break;
+        case TileType.orange:
+          imageAsset = MyAssets.images.tiles.orange.path;
+          break;
+        case TileType.purple:
+          imageAsset = MyAssets.images.tiles.purple.path;
+          break;
+        case TileType.red:
+          imageAsset = MyAssets.images.tiles.red.path;
+          break;
+        case TileType.yellow:
+          imageAsset = MyAssets.images.tiles.yellow.path;
+          break;
+        case TileType.forbidden:
+        case TileType.empty:
+        case TileType.last:
+          break;
+      }
+    }
+    if (imageAsset == '') return SizedBox();
+    return Container(
+      decoration: BoxDecoration(
+          image: DecorationImage(
+        image: AssetImage(imageAsset),
+        fit: BoxFit.contain,
+      )),
+    );
+  }
+
+  //
+  // Returns the position of this tile in the checkerboard
+  // based on its position in the grid (row, col) and
+  // the dimensions of the board and a tile
+  //
+  void setPosition() {
+    final level = widget.level;
+    double bottom =
+        level.boardTop + (level.numberOfRows - 1) * level.tileHeight;
+    x = level.boardLeft + widget.col * level.tileWidth;
+    y = bottom - widget.row * level.tileHeight;
+    if (mounted) setState(() {});
+  }
+}
+
+//------------------------------
+class TileOld extends Object {
   TileType? type;
   int row;
   int col;
@@ -15,7 +152,7 @@ class Tile extends Object {
   late double y;
   bool visible;
 
-  Tile({
+  TileOld({
     required this.type,
     this.row = 0,
     this.col = 0,
@@ -65,7 +202,7 @@ class Tile extends Object {
     }
   }
 
-  Widget _buildDecoration(TileType tileType,[String path = ""]) {
+  Widget _buildDecoration(TileType tileType, [String path = ""]) {
     String imageAsset = path;
     if (imageAsset == "") {
       switch (tileType) {
@@ -108,14 +245,12 @@ class Tile extends Object {
           imageAsset = MyAssets.images.tiles.yellow.path;
           break;
         case TileType.forbidden:
-            imageAsset = MyAssets.images.tiles.yellow.path;
-          break;
         case TileType.empty:
         case TileType.last:
-            break;
+          break;
       }
     }
-    if(imageAsset == '')return SizedBox();
+    if (imageAsset == '') return SizedBox();
     return Container(
       decoration: BoxDecoration(
           image: DecorationImage(
@@ -141,8 +276,8 @@ class Tile extends Object {
   //
   // Generate a tile to be used during the swap animations
   //
-  Tile cloneForAnimation() {
-    Tile tile = Tile(level: level, type: type, row: row, col: col);
+  TileOld cloneForAnimation() {
+    TileOld tile = TileOld(level: level, type: type, row: row, col: col);
     tile.build();
 
     return tile;
@@ -151,7 +286,7 @@ class Tile extends Object {
   //
   // Swaps this tile (row, col) with the ones of another Tile
   //
-  void swapRowColWith(Tile destTile) {
+  void swapRowColWith(TileOld destTile) {
     int tft = destTile.row;
     Logger.root.fine('Tile tft ${destTile.row} ${destTile.col}');
     destTile.row = row;

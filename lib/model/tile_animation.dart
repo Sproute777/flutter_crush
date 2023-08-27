@@ -17,7 +17,7 @@ class TileAnimation{
   final RowCol from;
   final RowCol to;
   final TileType? tileType;
-  Tile? tile;
+  TileOld? tile;
 }
 
 enum TileAnimationType {
