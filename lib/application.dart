@@ -5,6 +5,7 @@ import 'package:flutter_crush/controllers/status_controller.dart';
 import 'package:flutter_crush/pages/home_page.dart';
 import 'package:flutter/material.dart';
 
+import 'bloc/gameover_bloc.dart';
 import 'bloc/ready_bloc.dart';
 
 class Application extends StatelessWidget {
@@ -17,6 +18,9 @@ class Application extends StatelessWidget {
         ),
         RepositoryProvider(
           create: (_) => ReadyBloc(),
+        ),
+       RepositoryProvider(
+          create: (_) => GameoverBloc(),
         ),
         RepositoryProvider(
           create: (_) => GameController(),

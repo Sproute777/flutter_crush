@@ -195,9 +195,7 @@ class Tile extends Object {
   static bool canBePlayed(TileType? type) => (type != TileType.wall && type != TileType.forbidden);
 }
 
-//
-// Types of tiles
-//
+
 enum TileType {
   forbidden,
   empty,

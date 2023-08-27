@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_crush/model/objective_event.dart';
 import 'package:flutter_crush/model/tile.dart';
+import 'package:logging/logging.dart';
 import 'package:rxdart/rxdart.dart';
 
 class ObjectiveBloc {
@@ -30,8 +31,14 @@ class ObjectiveBloc {
     //
     _objectivesController.stream
         // but, we only consider the ones that matches THIS one
-        .where((e) => e.type == tileType)
+        .where((e) {
+          Logger.root.fine('objectiveCtr type ${e.type} ${tileType}');
+          return e.type == tileType;
+        })
         // if any, we emit the corresponding counter
-        .listen((event) => _objectiveCounterController.add(event.remaining));
+        .listen((event) {
+          Logger.root.fine('objectiveCtr ${event.remaining}');
+          _objectiveCounterController.add(event.remaining);
+        });
   }
 }

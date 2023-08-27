@@ -7,6 +7,7 @@ import 'package:flutter_crush/controllers/game_controller.dart';
 import 'package:flutter_crush/model/objective.dart';
 import 'package:flutter_crush/model/tile.dart';
 import 'package:flutter/material.dart';
+import 'package:logging/logging.dart';
 
 class StreamObjectiveItem extends StatefulWidget {
   StreamObjectiveItem({
@@ -68,7 +69,11 @@ class StreamObjectiveItemState extends State<StreamObjectiveItem> {
 
     // Simple pipe from the stream that lists all the ObjectiveEvents into
     // the BLoC that processes THIS particular Objective type
-    _subscription = gameController!.outObjectiveEvents.listen((o)=> _bloc!.setObjectives);
+    _subscription?.cancel();
+    _subscription = gameController!.outObjectiveEvents.listen((o) {
+      Logger.root.fine(' listen ourObjectiveEvents');
+      _bloc!.setObjectives(o);
+    });
   }
 
   void _disposeBloc() {
