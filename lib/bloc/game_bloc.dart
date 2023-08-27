@@ -35,9 +35,11 @@ class GameBloc {
       (list["levels"] as List).forEach((levelItem) {
         print(levelItem.toString());
         try {
-          final l = Level.fromJson(levelItem);
+          final settings = LevelSettings.fromJson(levelItem);
+          final l = Level.fromSettings(settings);
           levels.add(l);
         } catch (e,stack) {
+          print('$stack');
          _log.severe('crash during parse fromJson',e,stack);
         }
       });

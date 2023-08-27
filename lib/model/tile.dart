@@ -15,10 +15,10 @@ class TileNew extends StatefulWidget {
 
   const TileNew({
     super.key,
-    required this.type,
+     this.type = TileType.empty,
     this.row = 0,
     this.col = 0,
-    required this.level,
+     required this.level ,
     this.depth = 0,
     this.x = 0,
     this.y = 0,

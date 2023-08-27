@@ -19,7 +19,7 @@ import '../model/objective_event.dart';
 class GameController {
   static const tag = 'GameController';
   final _log = Logger(tag);
-  Level? level;
+  late Level level; 
   Array2d<TileOld>? _grid;
   Array2d<TileOld>? get grid => _grid;
   late math.Random _rnd;
@@ -127,15 +127,15 @@ class GameController {
       //
       // 1. Fill the empty cells
       //
-      for (int row = 0; row < level!.numberOfRows; row++) {
-        for (int col = 0; col < level!.numberOfCols; col++) {
+      for (int row = 0; row < level.numberOfRows; row++) {
+        for (int col = 0; col < level.numberOfCols; col++) {
           // Only consider the empty cells
           if (_grid!.array![row][col].type != TileType.empty) {
             // print('shufl continue ${_grid.array![row][col]?.type}');
             continue;
           }
           TileOld? tile;
-          switch (level!.grid.array![row][col]) {
+          switch (level.grid.array![row][col]) {
             case '1': // Regular cell
             case '2': // Regular cell but frozen
 
@@ -152,7 +152,7 @@ class GameController {
                   col: col,
                   type: type,
                   level: level,
-                  depth: (level!.grid.array![row][col] == '2') ? 1 : 0);
+                  depth: (level.grid.array![row][col] == '2') ? 1 : 0);
               break;
 
             case 'X':
@@ -190,8 +190,8 @@ class GameController {
     //
     // Once everything is set, build the tile Widgets
     //
-    for (int row = 0; row < level!.numberOfRows; row++) {
-      for (int col = 0; col < level!.numberOfCols; col++) {
+    for (int row = 0; row < level.numberOfRows; row++) {
+      for (int col = 0; col < level.numberOfCols; col++) {
         // Only consider the authorized cells (not forbidden)
         if (_grid!.array?[row][col].type == TileType.forbidden) continue;
 
@@ -489,11 +489,11 @@ class GameController {
 
       // Test if the cell is valid
       if (row > -1 &&
-          row < level!.numberOfRows &&
+          row < level.numberOfRows &&
           col > -1 &&
-          col < level!.numberOfCols) {
+          col < level.numberOfCols) {
         // And also if we may explode the tile
-        if (level!.grid.array![row][col] == '1') {
+        if (level.grid.array![row][col] == '1') {
           TileOld? tile = _grid!.array![row][col];
 
           if (TileOld.isBomb(tile.type) && !skipThis) {
@@ -533,7 +533,7 @@ class GameController {
     // We first need to decrement the objective by the counter
     Objective? objective;
     try {
-      objective = level!.objectives.firstWhere((o) => o.type == tileType);
+      objective = level.objectives.firstWhere((o) => o.type == tileType);
     } catch (_) {}
     if (objective == null) {
       return;
@@ -547,7 +547,7 @@ class GameController {
 
     // Check if the game is won
     bool isWon = true;
-    level!.objectives.forEach((Objective? objective) {
+    level.objectives.forEach((Objective? objective) {
       if ((objective?.count ?? 0) > 0) {
         isWon = false;
       }
@@ -561,11 +561,10 @@ class GameController {
 
   Future<void> setLevel(Level lvl) async {
     level = lvl;
-    _grid = Array2d<TileOld>(level!.numberOfRows, level!.numberOfCols,
+    _grid = Array2d<TileOld>(level.numberOfRows, level.numberOfCols,
         defaultValue: TileOld(type: TileType.empty));
     // Fill the Game with Tile and make sure there are possible Swaps
     //
-    _log.fine('shufl _gameController');
     await shuffle();
     //  .timeout(Duration(seconds: 10));
   }
@@ -574,7 +573,7 @@ class GameController {
   Stream<int> get movesLeftCount => _movesLeftController.stream;
 
   void playMove() {
-    int movesLeft = level!.decrementMove();
+    int movesLeft = level.decrementMove();
     print('movesLeft new $movesLeft');
     // Emit the number of moves left (to refresh the moves left panel)
     _movesLeftController.sink.add(movesLeft);
@@ -586,6 +585,6 @@ class GameController {
   }
 
   void reset() {
-    level!.resetObjectives();
+    level.resetObjectives();
   }
 }

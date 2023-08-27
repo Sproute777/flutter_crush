@@ -1,16 +1,38 @@
-
+import 'package:equatable/equatable.dart';
 import 'package:flutter_crush/helpers/array_2d.dart';
 import 'package:flutter_crush/model/objective.dart';
+import 'package:json_annotation/json_annotation.dart';
 
-/// Definition of a level in terms of:
-///  - grid template
-///  - maximum number of moves
-///  - number of columns
-///  - number of rows
-///  - list of objectives
-/// 
-/// 
-// todo LevelConfig and Level
+part 'level.g.dart';
+@JsonSerializable(explicitToJson: false)
+class LevelSettings extends Equatable {
+  @JsonKey(name: 'level')
+  final int index;
+  final int rows;
+  final int cols;
+  final int moves;
+  @JsonKey(name: 'grid')
+  final List<String> gridConfig;
+  @JsonKey(name: 'objective')
+  final List<String> aimConfig;
+
+  LevelSettings({
+    required this.index,
+    required this.rows,
+    required this.cols,
+    required this.moves,
+    required this.gridConfig,
+    required this.aimConfig,
+  });
+
+  @override
+  List<Object?> get props => [index, rows, cols, moves, gridConfig, aimConfig];
+
+  factory LevelSettings.fromJson(Map<String, dynamic> json) {
+    return _$LevelSettingsFromJson(json);
+  }
+}
+
 class Level extends Object {
   final int _index;
   late Array2d grid;
@@ -28,14 +50,14 @@ class Level extends Object {
   double boardLeft = 0.0;
   double boardTop = 0.0;
 
-  Level.fromJson(Map<String, dynamic> json)
-      : _index = json["level"] as int,
-        _rows = json["rows"] as int,
-        _cols = json["cols"] as int,
-        _maxMoves = json["moves"] as int {
+  Level.fromSettings(LevelSettings settings)
+      : _index = settings.index,
+        _rows = settings.rows,
+        _cols = settings.cols,
+        _maxMoves = settings.moves {
     // Initialize the grid to the dimensions
-      grid = Array2d<String>(_rows, _cols,defaultValue: '');
-      _movesLeft = _maxMoves;
+    grid = Array2d<String>(_rows, _cols, defaultValue: '');
+    _movesLeft = _maxMoves;
     // Populate the grid from the definition
     //
     // Trick
@@ -44,14 +66,14 @@ class Level extends Object {
     //  the grid (bottom-up), we need to reverse the
     //  definition from the JSON file.
     //
-    final row = List.of((json['grid'] as List).reversed);
+    final row = List.of(settings.gridConfig.reversed);
     for (var rowIndex = 0; rowIndex < row.length; rowIndex++) {
-      final listCell = (row[rowIndex] as String).split(',');
+      final listCell = row[rowIndex].split(',');
       for (var cellIndex = 0; cellIndex < listCell.length; cellIndex++) {
         final cell = listCell[cellIndex];
-        try{
-        grid.array![rowIndex][cellIndex] = cell;
-        } catch (e){
+        try {
+          grid.array![rowIndex][cellIndex] = cell;
+        } catch (e) {
           print(e);
           rethrow;
         }
@@ -60,7 +82,7 @@ class Level extends Object {
 
     print('next objectives');
     // Retrieve the objectives
-    _objectives = (json["objective"] as List).map((item) {
+    _objectives = settings.aimConfig.map((item) {
       return Objective(item);
     }).toList();
 
@@ -93,7 +115,7 @@ class Level extends Object {
   // Decrement the number of moves left
   //
   int decrementMove() {
-    _movesLeft =  (_movesLeft! - 1).clamp(0, _maxMoves);
+    _movesLeft = (_movesLeft! - 1).clamp(0, _maxMoves);
     return _movesLeft!;
   }
 }
