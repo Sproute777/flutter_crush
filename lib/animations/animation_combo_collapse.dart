@@ -1,17 +1,18 @@
 import 'package:flutter_crush/model/combo.dart';
 import 'package:flutter_crush/model/tile.dart';
 import 'package:flutter/material.dart';
+import 'package:logging/logging.dart';
 
 class AnimationComboCollapse extends StatefulWidget {
   AnimationComboCollapse({
     Key? key,
     required this.combo,
     required this.resultingTile,
-    this.onComplete,
+    required this.onComplete,
   }):super(key: key);
 
   final Combo combo;
-  final VoidCallback? onComplete;
+  final VoidCallback onComplete;
   final Tile resultingTile;
 
   @override
@@ -31,9 +32,7 @@ class _AnimationComboCollapseState extends State<AnimationComboCollapse> with Si
     })
     ..addStatusListener((AnimationStatus status){
       if (status == AnimationStatus.completed){
-        if (widget.onComplete != null){
-          widget.onComplete!();
-        }
+          widget.onComplete();
       }
     });
 
@@ -50,7 +49,7 @@ class _AnimationComboCollapseState extends State<AnimationComboCollapse> with Si
   Widget build(BuildContext context) {
     final double destinationX = widget.resultingTile.x;
     final double destinationY = widget.resultingTile.y;
-
+  //  Logger.root.warning('build animation combo');
     // Tiles are collapsing at the position of the resulting tile
     List<Widget> children = widget.combo.tiles.map((Tile? tile){
       if(tile == null){

@@ -1,5 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_crush/animations/shine_effect.dart';
 import 'package:flutter_crush/bloc/game_bloc.dart';
 import 'package:flutter_crush/game_widgets/double_curved_container.dart';
 import 'package:flutter_crush/game_widgets/game_level_button.dart';
@@ -130,9 +129,6 @@ class _HomePageState extends State<HomePage>
                   innerColor: Colors.blue,
                   child: Stack(
                     children: <Widget>[
-                      ShineEffect(
-                        offset: Offset(100.0, 100.0),
-                      ),
                       Align(
                         alignment: Alignment.center,
                         child: ShadowedText(

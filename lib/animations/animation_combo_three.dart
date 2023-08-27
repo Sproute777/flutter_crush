@@ -1,6 +1,7 @@
 import 'package:flutter_crush/model/combo.dart';
 import 'package:flutter_crush/model/tile.dart';
 import 'package:flutter/material.dart';
+import 'package:logging/logging.dart';
 
 class AnimationComboThree extends StatefulWidget {
   AnimationComboThree({
@@ -46,6 +47,7 @@ class _AnimationComboThreeState extends State<AnimationComboThree> with SingleTi
   
   @override
   Widget build(BuildContext context) {
+  //  Logger.root.warning('build animation combo three');
     return Stack(
       children: widget.combo.tiles.map((Tile? tile){
         if(tile == null){

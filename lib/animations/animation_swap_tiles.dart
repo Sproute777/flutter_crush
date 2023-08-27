@@ -1,5 +1,6 @@
 import 'package:flutter_crush/model/tile.dart';
 import 'package:flutter/material.dart';
+import 'package:logging/logging.dart';
 
 class AnimationSwapTiles extends StatefulWidget {
   AnimationSwapTiles({
@@ -63,6 +64,8 @@ class _AnimationSwapTilesState extends State<AnimationSwapTiles> with SingleTick
     final double deltaX = widget.upTile.x - widget.downTile.x;
     final double deltaY = widget.upTile.y - widget.downTile.y;
 
+
+  //  Logger.root.warning('build animation swap tiles');
     return Stack(
       children: <Widget>[
         Positioned(
