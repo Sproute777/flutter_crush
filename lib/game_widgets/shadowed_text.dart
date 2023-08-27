@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-
-///
-/// ShadowedText
-/// 
 /// Simple widget that displays a text with its shadow
 ///
 class ShadowedText extends StatelessWidget {

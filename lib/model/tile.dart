@@ -2,10 +2,8 @@ import 'dart:math' as math;
 import 'package:flutter_crush/model/level.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:logging/logging.dart' hide Level;
 
-///
-/// Tile
-/// 
 class Tile extends Object {
    TileType? type;
   int row;
@@ -137,11 +135,12 @@ class Tile extends Object {
   //
   void swapRowColWith(Tile destTile){
     int tft = destTile.row;
+    Logger.root.fine('Tile tft ${destTile.row} ${destTile.col}');
     destTile.row = row;
     row = tft;
-
     tft = destTile.col;
     destTile.col = col;
+    Logger.root.fine('Tile destTile ${destTile.row} ${destTile.col} ');
     col = tft;
   }
 

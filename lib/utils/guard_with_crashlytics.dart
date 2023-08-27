@@ -27,7 +27,7 @@ Future<void> guardWithCrashlytics(
   await runZonedGuarded<Future<void>>(() async {
     if (kDebugMode) {
       // Log more when in debug mode.
-      Logger.root.level = Level.FINE;
+      Logger.root.level = Level.FINEST;
     }
     // Subscribe to log messages. filter loggerName is here
     Logger.root.onRecord.listen((record) {

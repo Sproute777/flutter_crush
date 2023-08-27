@@ -1,9 +1,6 @@
 import 'package:flutter_crush/model/tile.dart';
 import 'package:flutter_crush/model/tile_animation.dart';
 
-///
-/// AnimationSequence
-///
 class AnimationSequence {
   // Range of time for this sequence of animations
   int startDelay;

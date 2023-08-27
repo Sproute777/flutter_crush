@@ -28,6 +28,8 @@ class Objective extends Object {
   @override
   int get hashCode => type.index;
 
+
+
   //
   // Decrements the number of times this objective needs to be met.
   // Once the objective has been reached, sets it to "completed"
@@ -46,5 +48,10 @@ class Objective extends Object {
   //
   void reset(){
     count = initialValue;
+  }
+
+@override
+String toString() {
+    return 'Objective{type=$type, count=$count, initialValue=$initialValue, completed=$completed}';
   }
 }

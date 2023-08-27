@@ -195,28 +195,23 @@ class _GamePageState extends State<GamePage>
   // Builds the tiles
   //
   Widget _buildTiles() {
-    print('build tiles');
     return StreamBuilder<bool>(
       stream: gameBloc!.outReadyToDisplayTiles,
       initialData: null,
       builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
         if (snapshot.hasData) {
-          print('buildTiles has data');
           List<Widget> tiles = <Widget>[];
           Array2d<Tile?> grid = gameController!.grid!;
-          print('gameBloc grid ${grid.array?.length ?? 0}');
 
           for (int row = 0; row < widget.level.numberOfRows; row++) {
             for (int col = 0; col < widget.level.numberOfCols; col++) {
               final tile = grid.array![row][col];
-              print('tile isNull ? $tile');
               if (tile != null && tile.type != TileType.empty &&
                   tile.type != TileType.forbidden &&
                   tile.visible) {
                 //
                 // Make sure the widget is correctly positioned
                 //
-                print('tile pos ${tile.x}');
                 tile.setPosition();
                 tiles.add(Positioned(
                   left: tile.x,

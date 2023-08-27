@@ -1,9 +1,6 @@
 import 'package:flutter_crush/model/row_col.dart';
 import 'package:flutter_crush/model/tile.dart';
 
-///
-/// TileAnimation
-///
 /// Class which is used to register a Tile animation
 class TileAnimation{
   TileAnimation({
@@ -23,9 +20,6 @@ class TileAnimation{
   Tile? tile;
 }
 
-//
-// Types of animations
-//
 enum TileAnimationType {
   moveDown,
   avalanche,

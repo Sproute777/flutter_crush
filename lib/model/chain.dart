@@ -1,9 +1,6 @@
 import 'dart:collection';
 import 'package:flutter_crush/model/tile.dart';
 
-///
-/// Chain
-///
 class Chain {
   // Number of tiles that compose the chain
   int length = 0;

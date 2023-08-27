@@ -2,10 +2,6 @@ import 'dart:collection';
 import 'package:flutter_crush/model/chain.dart';
 import 'package:flutter_crush/model/tile.dart';
 
-///
-/// Combo
-///
-///
 class Combo {
   // List of all the tiles, part of the combo
   HashMap<int, Tile?> _tiles = HashMap<int, Tile?>();

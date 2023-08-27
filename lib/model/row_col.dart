@@ -1,25 +1,15 @@
-///
-/// RowCol
-///
-/// Contains the position of a cell, in terms of row and col
-/// 
-class RowCol extends Object {
-  int row;
-  int col;
+import 'package:equatable/equatable.dart';
 
-  RowCol({
+class RowCol extends Equatable {
+  final int row;
+  final int col;
+
+  const RowCol({
     required this.row,
     required this.col,
   });
 
-  @override
-  bool operator==(dynamic other) => identical(this, other) || this.hashCode == other.hashCode;
-
-  @override
-  int get hashCode => row * 1000 + col;
   
   @override
-  String toString(){
-    return '[$row][$col]';
-  }
+  List<Object?> get props => [row,col];
 }

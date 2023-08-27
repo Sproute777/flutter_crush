@@ -2,16 +2,12 @@
 import 'package:flutter_crush/helpers/array_2d.dart';
 import 'package:flutter_crush/model/objective.dart';
 
-///
-/// Level
-///
 /// Definition of a level in terms of:
 ///  - grid template
 ///  - maximum number of moves
 ///  - number of columns
 ///  - number of rows
 ///  - list of objectives
-///
 class Level extends Object {
   final int _index;
   late Array2d grid;
