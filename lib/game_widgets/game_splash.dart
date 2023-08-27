@@ -7,11 +7,11 @@ import 'package:flutter/material.dart';
 class GameSplash extends StatefulWidget {
   GameSplash({
     Key? key,
-    required this.level,
+    required this.levelNtf,
     this.onComplete,
   }) : super(key: key);
 
-  final Level level;
+  final ValueNotifier<Level?> levelNtf;
   final VoidCallback? onComplete;
 
   @override
@@ -77,10 +77,10 @@ class _GameSplashState extends State<GameSplash>
     // Build the objectives
     //
     List<Widget> objectiveWidgets =
-        widget.level.objectives.map((Objective obj) {
+        widget.levelNtf.value!.objectives.map((Objective obj) {
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 4.0),
-        child: ObjectiveItem(objective: obj, level: widget.level),
+        child: ObjectiveItem(objective: obj, levelNtf: widget.levelNtf),
       );
     }).toList();
 
@@ -100,7 +100,7 @@ class _GameSplashState extends State<GameSplash>
               children: <Widget>[
                 Container(
                     child: Text(
-                  'Level:  ${widget.level.index}',
+                  'Level:  ${widget.levelNtf.value!.index}',
                   style: TextStyle(fontSize: 24.0, color: Colors.white),
                 )),
                 SizedBox(height: 8.0),

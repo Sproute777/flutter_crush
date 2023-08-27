@@ -9,7 +9,7 @@ class GameMovesLeftPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final  gameController = RepositoryProvider.of<GameController>(context);
-    final Level? level = gameController.level;
+    final ValueNotifier<Level?> levelNtf = gameController.levelNtf;
     final Orientation orientation = MediaQuery.of(context).orientation;
     final EdgeInsets paddingTop = EdgeInsets.only(top: (orientation == Orientation.portrait ? 10.0 : 0.0));
 
@@ -31,7 +31,7 @@ class GameMovesLeftPanel extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                'Level: ${level?.index}',
+                'Level: ${levelNtf.value?.index}',
                 style: TextStyle(fontSize: 14.0, color: Colors.black,)
               ),
             ),

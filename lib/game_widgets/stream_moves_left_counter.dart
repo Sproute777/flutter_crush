@@ -15,7 +15,7 @@ class StreamMovesLeftCounter extends StatelessWidget {
         const Icon(Icons.swap_horiz, color: Colors.black,),
         SizedBox(width: 8.0),
         StreamBuilder<int>(
-          initialData: gameController.level!.maxMoves,
+          initialData: gameController.levelNtf.value!.maxMoves,
           stream: gameController.movesLeftCount,
           builder: (BuildContext context, AsyncSnapshot<int> snapshot){
             return Text('${snapshot.data}', style: TextStyle(color: Colors.black, fontSize: 16.0,),);

@@ -133,7 +133,7 @@ class _TileNewState extends State<TileNew> {
   void setPosition() {
     final level = widget.level;
     double bottom =
-        level.boardTop + (level.numberOfRows - 1) * level.tileHeight;
+        level.boardTop + (level.rows - 1) * level.tileHeight;
     x = level.boardLeft + widget.col * level.tileWidth;
     y = bottom - widget.row * level.tileHeight;
     if (mounted) setState(() {});
@@ -145,24 +145,25 @@ class TileOld extends Object {
   TileType? type;
   int row;
   int col;
-  Level? level;
+  ValueNotifier<Level?> levelNtf;
   int depth;
   late Widget _widget;
   late double x;
   late double y;
   bool visible;
+  final _log = Logger('TileOld');
 
   TileOld({
     required this.type,
     this.row = 0,
     this.col = 0,
-    this.level,
+    required this.levelNtf,
     this.depth = 0,
     this.visible = true,
   });
 
   @override
-  int get hashCode => row * (level?.numberOfRows ?? 0) + col;
+  int get hashCode => row * (levelNtf.value?.rows ?? 0) + col;
 
   @override
   bool operator ==(dynamic other) {
@@ -178,6 +179,7 @@ class TileOld extends Object {
   // Builds the tile in terms of "decoration" ( = image )
   //
   void build({bool computePosition = true}) {
+    // Logger.root.info('(Tile.buld()) $type');
     if (depth > 0 && type != TileType.wall) {
       _widget = Stack(
         children: <Widget>[
@@ -198,6 +200,7 @@ class TileOld extends Object {
     }
 
     if (computePosition) {
+          Logger.root.info('(Tile.buld() setPosition ) $type');
       setPosition();
     }
   }
@@ -207,6 +210,7 @@ class TileOld extends Object {
     if (imageAsset == "") {
       switch (tileType) {
         case TileType.wall:
+        // _log.info('buildDecoration wall'); 
           imageAsset = MyAssets.images.deco.wall.path;
           break;
 
@@ -227,9 +231,11 @@ class TileOld extends Object {
           break;
 
         case TileType.blue:
+        // _log.info('buildDecoration blue'); 
           imageAsset = MyAssets.images.tiles.blue.path;
           break;
         case TileType.green:
+        // _log.info('buildDecoration green'); 
           imageAsset = MyAssets.images.tiles.green.path;
           break;
         case TileType.orange:
@@ -251,6 +257,7 @@ class TileOld extends Object {
       }
     }
     if (imageAsset == '') return SizedBox();
+    // _log.fine('_buildDecoration widget');
     return Container(
       decoration: BoxDecoration(
           image: DecorationImage(
@@ -266,18 +273,18 @@ class TileOld extends Object {
   // the dimensions of the board and a tile
   //
   void setPosition() {
-    if (level == null) return;
+    if (levelNtf.value == null) return;
     double bottom =
-        level!.boardTop + (level!.numberOfRows - 1) * level!.tileHeight;
-    x = level!.boardLeft + col * level!.tileWidth;
-    y = bottom - row * level!.tileHeight;
+        levelNtf.value!.boardTop + (levelNtf.value!.rows - 1) * levelNtf.value!.tileHeight;
+    x = levelNtf.value!.boardLeft + col * levelNtf.value!.tileWidth;
+    y = bottom - row * levelNtf.value!.tileHeight;
   }
 
   //
   // Generate a tile to be used during the swap animations
   //
   TileOld cloneForAnimation() {
-    TileOld tile = TileOld(level: level, type: type, row: row, col: col);
+    TileOld tile = TileOld(levelNtf: levelNtf, type: type, row: row, col: col);
     tile.build();
 
     return tile;
@@ -300,7 +307,7 @@ class TileOld extends Object {
   //
   // Returns the Widget to be used to render the Tile
   //
-  Widget get widget => getWidgetSized(level!.tileWidth, level!.tileHeight);
+  Widget get widget => getWidgetSized(levelNtf.value!.tileWidth, levelNtf.value!.tileHeight);
 
   Widget getWidgetSized(double width, double height) => Container(
         width: width,

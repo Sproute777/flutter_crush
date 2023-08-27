@@ -20,6 +20,7 @@ import 'package:flutter_crush/model/level.dart';
 import 'package:flutter_crush/model/row_col.dart';
 import 'package:flutter_crush/model/tile.dart';
 import 'package:flutter/material.dart';
+import 'package:logging/logging.dart' hide Level;
 
 import '../bloc/aim_bloc/level_aim_bloc.dart';
 import '../bloc/ready_bloc.dart';
@@ -43,8 +44,8 @@ class GamePage extends StatelessWidget {
 }
 
 class GameView extends StatefulWidget {
-  final Level level;
 
+  final Level level;
   GameView({
     Key? key,
     required this.level,
@@ -90,7 +91,7 @@ class _GameViewState extends State<GameView>
     gameController = RepositoryProvider.of<GameController>(context);
     gameController!.setLevel(widget.level);
     // Reset the objectives
-    gameController!.reset();
+    gameController!.resetAims();
 
     // Listen to "game over" notification
     _gameOverSubscription = gameController!.gameIsOver.listen(_onGameOver);
@@ -110,39 +111,45 @@ class _GameViewState extends State<GameView>
   @override
   Widget build(BuildContext context) {
     Orientation orientation = MediaQuery.of(context).orientation;
-
-    return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.close),
-        onPressed: () {
-          Navigator.of(context).pop();
-        },
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/images/background/background2.jpeg'),
-            fit: BoxFit.cover,
+    gameController = RepositoryProvider.of<GameController>(context);
+    return ValueListenableBuilder(
+      valueListenable: gameController!.levelNtf,
+      builder: (context, level,_) {
+        return Scaffold(
+          floatingActionButton: FloatingActionButton(
+            child: Icon(Icons.close),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
           ),
-        ),
-        child: GestureDetector(
-          onPanDown: _onPanDown,
-          onPanStart: _onPanStart,
-          onPanEnd: _onPanEnd,
-          onPanUpdate: _onPanUpdate,
-          onTap: _onTap,
-          onTapUp: _onPanEnd,
-          child: Stack(
-            children: <Widget>[
-              _buildAuthor(),
-              _buildMovesLeftPanel(orientation),
-              _buildObjectivePanel(orientation),
-              _buildBoard(),
-              _buildTiles(),
-            ],
+          body: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/background/background2.jpeg'),
+                fit: BoxFit.cover,
+              ),
+            ),
+            child: GestureDetector(
+              onPanDown: _onPanDown,
+              onPanStart: _onPanStart,
+              onPanEnd: _onPanEnd,
+              onPanUpdate: _onPanUpdate,
+              onTap: _onTap,
+              onTapUp: _onPanEnd,
+              child: Stack(
+                children: <Widget>[
+                  _buildAuthor(),
+                  _buildMovesLeftPanel(orientation),
+                  _buildObjectivePanel(orientation),
+                  _buildBoard( gameController!.levelNtf),
+                  _buildTiles(),
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+        
+      }
     );
   }
 
@@ -195,13 +202,16 @@ class _GameViewState extends State<GameView>
   //
   // Builds the game board
   //
-  Widget _buildBoard() {
+  Widget _buildBoard(ValueNotifier<Level?> levelNtf) {
+    if(levelNtf.value == null) {
+      return SizedBox();
+    }
     return Align(
       alignment: Alignment.center,
       child: Board(
-        rows: widget.level.numberOfRows,
-        cols: widget.level.numberOfCols,
-        level: widget.level,
+        rows: levelNtf.value!.rows,
+        cols: levelNtf.value!.cols,
+        levelNtf: levelNtf,
       ),
     );
   }
@@ -218,8 +228,8 @@ class _GameViewState extends State<GameView>
           List<Widget> tiles = <Widget>[];
           Array2d<TileOld?> grid = gameController!.grid!;
 
-          for (int row = 0; row < widget.level.numberOfRows; row++) {
-            for (int col = 0; col < widget.level.numberOfCols; col++) {
+          for (int row = 0; row < gameController!.levelNtf.value!.rows; row++) {
+            for (int col = 0; col < gameController!.levelNtf.value!.cols; col++) {
               final tile = grid.array![row][col];
               if (tile != null &&
                   tile.type != TileType.empty &&
@@ -253,12 +263,13 @@ class _GameViewState extends State<GameView>
   //
 
   RowCol _rowColFromGlobalPosition(Offset globalPosition) {
-    final double top = globalPosition.dy - widget.level.boardTop;
-    final double left = globalPosition.dx - widget.level.boardLeft;
+    final double top = globalPosition.dy - gameController!.levelNtf.value!.boardTop;
+    final double left = globalPosition.dx - gameController!.levelNtf.value!.boardLeft;
+    Logger.root.info('(_rowColFromGlobalPosition) . $top $left ${gameController!.levelNtf.value!.tileWidth} ${gameController!.levelNtf.value!.tileHeight}');
     return RowCol(
-      col: (left / widget.level.tileWidth).floor(),
-      row: widget.level.numberOfRows -
-          (top / widget.level.tileHeight).floor() -
+      col: (left / gameController!.levelNtf.value!.tileWidth).floor(),
+      row: gameController!.levelNtf.value!.rows -
+          (top / gameController!.levelNtf.value!.tileHeight).floor() -
           1,
     );
   }
@@ -274,9 +285,9 @@ class _GameViewState extends State<GameView>
 
     // Ignore if we touched outside the grid
     if (rowCol.row < 0 ||
-        rowCol.row >= widget.level.numberOfRows ||
+        rowCol.row >= gameController!.levelNtf.value!.rows ||
         rowCol.col < 0 ||
-        rowCol.col >= widget.level.numberOfCols) return;
+        rowCol.col >= gameController!.levelNtf.value!.cols) return;
 
     // Check if the [row,col] corresponds to a possible swap
     TileOld? selectedTile = gameController!.grid!.array![rowCol.row][rowCol.col];
@@ -364,9 +375,9 @@ class _GameViewState extends State<GameView>
             row: gestureFromRowCol!.row + deltaRow,
             col: gestureFromRowCol!.col + deltaCol);
         if (rowCol.col < 0 ||
-            rowCol.col == widget.level.numberOfCols ||
+            rowCol.col == gameController!.levelNtf.value!.cols ||
             rowCol.row < 0 ||
-            rowCol.row == widget.level.numberOfRows) {
+            rowCol.row == gameController!.levelNtf.value!.rows) {
           // Not possible, outside the boundaries
         } else {
           TileOld? destTile = gameController!.grid!.array![rowCol.row][rowCol.col];
@@ -454,6 +465,7 @@ class _GameViewState extends State<GameView>
                               TileOld(
                                   row: destTile.row,
                                   col: destTile.row,
+                                  levelNtf: gameController!.levelNtf,
                                   type: gestureFromTile!.type),
                               gameBloc!);
                         }
@@ -575,7 +587,7 @@ class _GameViewState extends State<GameView>
           col: combo.commonTile!.col,
           row: combo.commonTile!.row,
           type: combo.resultingTileType,
-          level: widget.level,
+          levelNtf: gameController!.levelNtf,
           depth: 0,
         );
         resultingTile.build();
@@ -618,7 +630,7 @@ class _GameViewState extends State<GameView>
     // need to be played as a consequence of a combo
     //
     AnimationsResolver animationResolver = AnimationsResolver(
-        gameController: gameController!, level: widget.level);
+        gameController: gameController!, levelNtf: gameController!.levelNtf);
     animationResolver.resolve();
 
     // Determine the list of cells that are involved in the animation(s)
@@ -657,7 +669,7 @@ class _GameViewState extends State<GameView>
             opaque: false,
             builder: (BuildContext context) {
               return AnimationChain(
-                level: widget.level,
+                levelNtf: gameController!.levelNtf,
                 animationSequence: animationSequence,
                 onComplete: () {
                   // Decrement the number of pending animations
@@ -725,7 +737,7 @@ class _GameViewState extends State<GameView>
         builder: (BuildContext context) {
           return GameOverSplash(
             success: success,
-            level: widget.level,
+            level: gameController!.levelNtf.value!,
             onComplete: () {
               _gameSplash?.remove();
               _gameSplash = null;
@@ -752,7 +764,7 @@ class _GameViewState extends State<GameView>
         opaque: false,
         builder: (BuildContext context) {
           return GameSplash(
-            level: widget.level,
+            levelNtf: gameController!.levelNtf,
             onComplete: () {
               _gameSplash?.remove();
               _gameSplash = null;

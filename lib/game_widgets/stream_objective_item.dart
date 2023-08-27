@@ -86,7 +86,7 @@ class StreamObjectiveItemState extends State<StreamObjectiveItem> {
     //
     // Trick to get the image of the tile
     //
-    TileOld tile = TileOld(type: widget.objective.type, level: gameController!.level);
+    TileOld tile = TileOld(type: widget.objective.type, levelNtf: gameController!.levelNtf);
     tile.build();
 
     return Container(

@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'dart:math' as math;
 
+import 'package:flutter/material.dart';
 import 'package:flutter_crush/bloc/game_bloc.dart';
 import 'package:flutter_crush/helpers/array_2d.dart';
 import 'package:flutter_crush/model/chain.dart';
@@ -19,11 +20,11 @@ import '../model/objective_event.dart';
 class GameController {
   static const tag = 'GameController';
   final _log = Logger(tag);
-  late Level level; 
   Array2d<TileOld>? _grid;
   Array2d<TileOld>? get grid => _grid;
   late math.Random _rnd;
 
+final levelNtf = ValueNotifier<Level?>(null); 
   //
   // List of all possible Swaps
   //
@@ -127,15 +128,15 @@ class GameController {
       //
       // 1. Fill the empty cells
       //
-      for (int row = 0; row < level.numberOfRows; row++) {
-        for (int col = 0; col < level.numberOfCols; col++) {
+      for (int row = 0; row < levelNtf.value!.rows; row++) {
+        for (int col = 0; col < levelNtf.value!.cols; col++) {
           // Only consider the empty cells
           if (_grid!.array![row][col].type != TileType.empty) {
             // print('shufl continue ${_grid.array![row][col]?.type}');
             continue;
           }
           TileOld? tile;
-          switch (level.grid.array![row][col]) {
+          switch (levelNtf.value!.grid.array![row][col]) {
             case '1': // Regular cell
             case '2': // Regular cell but frozen
 
@@ -151,8 +152,8 @@ class GameController {
                   row: row,
                   col: col,
                   type: type,
-                  level: level,
-                  depth: (level.grid.array![row][col] == '2') ? 1 : 0);
+                  levelNtf: levelNtf,
+                  depth: (levelNtf.value!.grid.array![row][col] == '2') ? 1 : 0);
               break;
 
             case 'X':
@@ -161,7 +162,7 @@ class GameController {
                   row: row,
                   col: col,
                   type: TileType.forbidden,
-                  level: level,
+                  levelNtf: levelNtf,
                   depth: 1);
               break;
 
@@ -171,7 +172,7 @@ class GameController {
                   row: row,
                   col: col,
                   type: TileType.wall,
-                  level: level,
+                  levelNtf: levelNtf,
                   depth: 1);
               break;
           }
@@ -190,8 +191,8 @@ class GameController {
     //
     // Once everything is set, build the tile Widgets
     //
-    for (int row = 0; row < level.numberOfRows; row++) {
-      for (int col = 0; col < level.numberOfCols; col++) {
+    for (int row = 0; row < levelNtf.value!.rows; row++) {
+      for (int col = 0; col < levelNtf.value!.cols; col++) {
         // Only consider the authorized cells (not forbidden)
         if (_grid!.array?[row][col].type == TileType.forbidden) continue;
 
@@ -264,13 +265,13 @@ class GameController {
 
               if (isDestNormalTile || toTile.type == TileType.empty) {
                 // Exchange the tiles
-                _grid!.array![destRow][destCol] =
-                    TileOld(row: row, col: col, type: fromTile.type, level: level);
+                _grid!.array![destRow][destCol] = TileOld(
+                    row: row, col: col, type: fromTile.type, levelNtf: levelNtf);
                 _grid!.array![row][col] = TileOld(
                     row: destRow,
                     col: destCol,
                     type: toTile.type,
-                    level: level);
+                    levelNtf: levelNtf);
 
                 //
                 // check if this change creates a chain
@@ -488,12 +489,9 @@ class GameController {
       int col = tileExplosion.col + move.col;
 
       // Test if the cell is valid
-      if (row > -1 &&
-          row < level.numberOfRows &&
-          col > -1 &&
-          col < level.numberOfCols) {
+      if (row > -1 && row < levelNtf.value!.rows && col > -1 && col < levelNtf.value!.cols) {
         // And also if we may explode the tile
-        if (level.grid.array![row][col] == '1') {
+        if (levelNtf.value!.grid.array![row][col] == '1') {
           TileOld? tile = _grid!.array![row][col];
 
           if (TileOld.isBomb(tile.type) && !skipThis) {
@@ -533,7 +531,7 @@ class GameController {
     // We first need to decrement the objective by the counter
     Objective? objective;
     try {
-      objective = level.objectives.firstWhere((o) => o.type == tileType);
+      objective = levelNtf.value!.objectives.firstWhere((o) => o.type == tileType);
     } catch (_) {}
     if (objective == null) {
       return;
@@ -547,7 +545,7 @@ class GameController {
 
     // Check if the game is won
     bool isWon = true;
-    level.objectives.forEach((Objective? objective) {
+    levelNtf.value!.objectives.forEach((Objective? objective) {
       if ((objective?.count ?? 0) > 0) {
         isWon = false;
       }
@@ -560,9 +558,10 @@ class GameController {
   }
 
   Future<void> setLevel(Level lvl) async {
-    level = lvl;
-    _grid = Array2d<TileOld>(level.numberOfRows, level.numberOfCols,
-        defaultValue: TileOld(type: TileType.empty));
+    levelNtf.value = lvl;
+    _log.info(lvl);
+    _grid = Array2d<TileOld>(lvl.rows, lvl.cols,
+        defaultValue: TileOld(type: TileType.empty, levelNtf: ValueNotifier<Level?>(null)));
     // Fill the Game with Tile and make sure there are possible Swaps
     //
     await shuffle();
@@ -573,18 +572,48 @@ class GameController {
   Stream<int> get movesLeftCount => _movesLeftController.stream;
 
   void playMove() {
-    int movesLeft = level.decrementMove();
-    print('movesLeft new $movesLeft');
+    levelDecrementMove();
     // Emit the number of moves left (to refresh the moves left panel)
-    _movesLeftController.sink.add(movesLeft);
+    _movesLeftController.sink.add(levelNtf.value!.movesLeft);
 
     // There is no move left, so inform that the game is over
-    if (movesLeft == 0) {
+    if (levelNtf.value!.movesLeft == 0) {
       _gameIsOverController.sink.add(false);
     }
   }
 
-  void reset() {
-    level.resetObjectives();
+  void setBoardTop(double value) {
+    _log.warning('setBoardTop $value');
+    levelNtf.value = levelNtf.value!.copyWith(boardTop: value);
+    _log.warning('setBoardTop value ${levelNtf.value}');
+  }
+
+  void setBoardLeft(double value) {
+    _log.warning('setBoardLeft $value');
+    levelNtf.value = levelNtf.value!.copyWith(boardLeft: value);
+    _log.warning('setBoardTop value ${levelNtf.value}');
+  }
+
+  void setTileWidth(double value) {
+    _log.warning('setTileWidth $value');
+     levelNtf.value = levelNtf.value!.copyWith(tileWidth: value);
+    _log.warning('setBoardTop value ${levelNtf.value}');
+  }
+
+  void setTileHeight(double value) {
+    _log.warning('setTileHeight $value');
+     levelNtf.value = levelNtf.value!.copyWith(tileHeight: value);
+    _log.warning('setBoardTop value ${levelNtf.value}');
+  }
+
+  void levelDecrementMove() {
+    final movesLeft = (levelNtf.value!.movesLeft - 1).clamp(0, levelNtf.value!.maxMoves);
+    levelNtf.value = levelNtf.value!.copyWith(movesLeft: movesLeft);
+  }
+
+  void resetAims() {
+    levelNtf.value?.objectives.forEach((element) {
+      element.reset();
+    });
   }
 }

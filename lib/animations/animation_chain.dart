@@ -8,13 +8,13 @@ class AnimationChain extends StatefulWidget {
   AnimationChain({
     Key? key,
     required this.animationSequence,
-    required this.level,
+    required this.levelNtf,
      required this.onComplete,
   }):super(key: key);
 
   final AnimationSequence animationSequence;
   final VoidCallback onComplete;
-  final Level level;
+  final ValueNotifier<Level?> levelNtf;
 
   @override
   _AnimationChainState createState() => _AnimationChainState();
@@ -143,7 +143,7 @@ class _AnimationChainState extends State<AnimationChain> with SingleTickerProvid
   //
   Widget _buildSubAnimationAppearance(int index, TileAnimation tileAnimation, Widget? childWidget){
     return Transform.translate(
-      offset: Offset(0.0, -widget.level.tileHeight + widget.level.tileHeight * _animations[index].value),
+      offset: Offset(0.0, -widget.levelNtf.value!.tileHeight + widget.levelNtf.value!.tileHeight * _animations[index].value),
       child: _buildSubAnimationMoveDown(index, tileAnimation, childWidget),
     );
   }
@@ -152,7 +152,7 @@ class _AnimationChainState extends State<AnimationChain> with SingleTickerProvid
   // A move down animation consists in moving the tile down to its final position
   //
   Widget _buildSubAnimationMoveDown(int index, TileAnimation tileAnimation, Widget? childWidget){
-    final double distance = (tileAnimation.to.row - tileAnimation.from.row) * widget.level.tileHeight;
+    final double distance = (tileAnimation.to.row - tileAnimation.from.row) * widget.levelNtf.value!.tileHeight;
 
     return Transform.translate(
       offset: Offset(0.0, -_animations[index].value * distance),
@@ -164,8 +164,8 @@ class _AnimationChainState extends State<AnimationChain> with SingleTickerProvid
   // A slide consists in moving the tile horizontally
   //
   Widget _buildSubAnimationSlide(int index, TileAnimation tileAnimation, Widget? childWidget){
-    final double distanceX = (tileAnimation.to.col - tileAnimation.from.col) * widget.level.tileWidth;
-    final double distanceY = (tileAnimation.to.row - tileAnimation.from.row) * widget.level.tileHeight;
+    final double distanceX = (tileAnimation.to.col - tileAnimation.from.col) * widget.levelNtf.value!.tileWidth;
+    final double distanceY = (tileAnimation.to.row - tileAnimation.from.row) * widget.levelNtf.value!.tileHeight;
     return Transform.translate(
       offset: Offset(_animations[index].value * distanceX, -_animations[index].value * distanceY),
       child: childWidget,      
@@ -186,8 +186,8 @@ class _AnimationChainState extends State<AnimationChain> with SingleTickerProvid
   // A collapse consists in moving the tile to the destination tile position
   //
   Widget _buildSubAnimationCollapse(int index, TileAnimation tileAnimation, Widget? childWidget){
-    final double distanceX = (tileAnimation.to.col - tileAnimation.from.col) * widget.level.tileWidth;
-    final double distanceY = (tileAnimation.to.row - tileAnimation.from.row) * widget.level.tileHeight;
+    final double distanceX = (tileAnimation.to.col - tileAnimation.from.col) * widget.levelNtf.value!.tileWidth;
+    final double distanceY = (tileAnimation.to.row - tileAnimation.from.row) * widget.levelNtf.value!.tileHeight;
     return Transform.translate(
       offset: Offset(_animations[index].value * distanceX, -_animations[index].value * distanceY),
       child: childWidget,      

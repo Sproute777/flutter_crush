@@ -1,9 +1,11 @@
 import 'dart:math' as math;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_crush/bloc/game_bloc.dart';
+import 'package:flutter_crush/controllers/game_controller.dart';
 import 'package:flutter_crush/helpers/array_2d.dart';
 import 'package:flutter_crush/model/level.dart';
 import 'package:flutter/material.dart';
+import 'package:logging/logging.dart' hide Level;
 
 import '../bloc/ready_bloc.dart';
 
@@ -12,12 +14,12 @@ class Board extends StatefulWidget {
     Key? key,
     this.cols = 0,
     this.rows = 0,
-    required this.level,
+    required this.levelNtf,
   }) : super(key: key);
 
   final int rows;
   final int cols;
-  final Level level;
+  final ValueNotifier<Level?> levelNtf;
 
   @override
   State<Board> createState() => _BoardState();
@@ -33,13 +35,14 @@ class _BoardState extends State<Board> {
   GlobalKey _keyCheckerCell = GlobalKey();
 
   GameBloc? gameBloc;
+  GameController? gameController;
   ReadyBloc? readyBloc;
 
   void _buildDecorations() {
     if (_decorations != null) return;
-
     _decorations = Array2d<BoxDecoration?>(widget.cols + 1, widget.rows + 1,defaultValue: null);
 
+   Logger.root.info('_buildDecorations');
     for (int row = 0; row <= widget.rows; row++) {
       for (int col = 0; col <= widget.cols; col++) {
         // If there is nothing at (row, col) => no decoration
@@ -51,12 +54,12 @@ class _BoardState extends State<Board> {
 
         if (col > 0) {
           if (row < widget.rows) {
-            if (widget.level.grid.array![row][col - 1] != 'X') {
+            if (widget.levelNtf.value!.grid.array![row][col - 1] != 'X') {
               topLeft = 1;
             }
           }
           if (row > 0) {
-            if (widget.level.grid.array![row - 1][col - 1] != 'X') {
+            if (widget.levelNtf.value!.grid.array![row - 1][col - 1] != 'X') {
               bottomLeft = 1;
             }
           }
@@ -64,12 +67,12 @@ class _BoardState extends State<Board> {
 
         if (col < widget.cols) {
           if (row < widget.rows) {
-            if (widget.level.grid.array![row][col] != 'X') {
+            if (widget.levelNtf.value!.grid.array![row][col] != 'X') {
               topRight = 1;
             }
           }
           if (row > 0) {
-            if (widget.level.grid.array![row - 1][col] != 'X') {
+            if (widget.levelNtf.value!.grid.array![row - 1][col] != 'X') {
               bottomRight = 1;
             }
           }
@@ -95,6 +98,7 @@ class _BoardState extends State<Board> {
   void _buildChecker(){
     if (_checker != null) return;
 
+   Logger.root.info('_buildChecker');
     _checker = Array2d<Color?>(widget.rows, widget.cols,defaultValue: null);
     int counter = 0;
 
@@ -103,7 +107,7 @@ class _BoardState extends State<Board> {
       for (int col = 0; col < widget.cols; col++) {
         final double opacity = ((counter + col) % 2 == 1) ? 0.3 : 0.1;
 
-        Color color = (widget.level.grid.array![row][col] == 'X')
+        Color color = (widget.levelNtf.value!.grid.array![row][col] == 'X')
             ? Colors.transparent
             : Colors.white.withOpacity(opacity);
 
@@ -115,6 +119,7 @@ class _BoardState extends State<Board> {
   @override
   Widget build(BuildContext context) {
     gameBloc = RepositoryProvider.of<GameBloc>(context);
+    gameController = RepositoryProvider.of<GameController>(context);
     readyBloc = RepositoryProvider.of<ReadyBloc>(context);
     final Size screenSize = MediaQuery.of(context).size;
     final double maxDimension = math.min(screenSize.width, screenSize.height);
@@ -134,22 +139,28 @@ class _BoardState extends State<Board> {
     final double width = maxTileWidth * (widget.cols + 1) * 1.1;
     final double height = maxTileWidth * (widget.rows + 1) * 1.1;
 
-    return Container(
-      padding: const EdgeInsets.all(0.0),
-      width: width,
-      height: height,
-      color: Colors.transparent,
-      child: Stack(
-        children: <Widget>[
-          _showDecorations(maxTileWidth),
-          _showGrid(maxTileWidth,
-              gameBloc!), // We pass the gameBloc since we will need to use it to pass the dimensions and coordinates
-        ],
-      ),
+    return ValueListenableBuilder(
+      valueListenable: gameController!.levelNtf,
+      builder: (context,level,_) {
+        return Container(
+          padding: const EdgeInsets.all(0.0),
+          width: width,
+          height: height,
+          color: Colors.transparent,
+          child: Stack(
+            children: <Widget>[
+              _showDecorations(maxTileWidth),
+              _showGrid(maxTileWidth,
+                  gameBloc!), // We pass the gameBloc since we will need to use it to pass the dimensions and coordinates
+            ],
+          ),
+        );
+      }
     );
   }
 
   Widget _showDecorations(double width) {
+   Logger.root.info('_showDecorations');
     return GridView.builder(
       padding: const EdgeInsets.all(0.0),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -174,6 +185,7 @@ class _BoardState extends State<Board> {
   Widget _showGrid(double width, GameBloc gameBloc) {
     bool isFirst = true;
 
+   Logger.root.info('_showGrid');
     return Padding(
       padding: EdgeInsets.all(width * 0.6),
       child: GridView.builder(
@@ -218,6 +230,7 @@ class _BoardState extends State<Board> {
 
   //
   void _afterBuild() {
+   Logger.root.info('_afterBuild');
     //
     // Let's get the dimensions and position of the exact position of the board
     //
@@ -227,8 +240,12 @@ class _BoardState extends State<Board> {
       //
       // Save the position of the board
       //
-        widget.level.boardLeft = rectBoard.left;
-        widget.level.boardTop = rectBoard.top;
+
+  //  Logger.root.info('_afterBuild top${rectBoard.top}');
+  //  Logger.root.info('_afterBuild left ${rectBoard.left}');
+      gameController!
+      ..setBoardTop(rectBoard.top) 
+      ..setBoardLeft(rectBoard.left);
 
       //
       // Let's get the dimensions of one cell of the board
@@ -238,13 +255,19 @@ class _BoardState extends State<Board> {
       //
       // Save it for later reuse
       //
-      widget.level.tileWidth = rectBoardSquare.width;
-      widget.level.tileHeight = rectBoardSquare.height;
+      gameController!
+      ..setTileWidth(rectBoardSquare.width) 
+      ..setTileHeight(rectBoardSquare.height);
+
+
 
       //
       // Send a notification to inform that we are ready to display the tiles from now on
       //
       readyBloc!.setReadyToDisplayTiles(true);
+      // setState(() {
+        
+      // });
     }
   }
 }

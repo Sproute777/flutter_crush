@@ -1,6 +1,6 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
-export "FLUTTER_ROOT=/Users/dmitrybannikov/.puro/envs/flutter_3_10_0/flutter"
+export "FLUTTER_ROOT=/Users/dmitrybannikov/.puro/envs/flutter_3_13_0/flutter"
 export "FLUTTER_APPLICATION_PATH=/Users/dmitrybannikov/StudioProjects/flutter_crush"
 export "COCOAPODS_PARALLEL_CODE_SIGN=true"
 export "FLUTTER_TARGET=lib/main.dart"

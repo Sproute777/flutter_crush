@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:flutter/material.dart';
 import 'package:flutter_crush/controllers/game_controller.dart';
 import 'package:flutter_crush/helpers/array_2d.dart';
 import 'package:flutter_crush/model/animation_sequence.dart';
@@ -13,7 +14,7 @@ import 'package:flutter_crush/model/tile_animation.dart';
 
 class AnimationsResolver {
   // final GameBloc gameBloc;
-  final Level level;
+  final ValueNotifier<Level?> levelNtf;
   final GameController gameController;
   late int rows;
   late int cols;
@@ -21,10 +22,10 @@ class AnimationsResolver {
   AnimationsResolver({
     // required this.gameBloc,
     required this.gameController,
-    required this.level,
+    required this.levelNtf,
   }) {
-    rows = level.numberOfRows;
-    cols = level.numberOfCols;
+    rows = levelNtf.value!.rows;
+    cols = levelNtf.value!.cols;
   }
 
   // _state contains the states of the grid after each move
@@ -96,7 +97,7 @@ class AnimationsResolver {
 
     for (int row = 0; row < rows; row++) {
       for (int col = 0; col < cols; col++) {
-        if (level.grid.array![row][col] == "X") {
+        if (levelNtf.value!.grid.array![row][col] == "X") {
           _state.array![row][col] = -1;
           _types.array![row][col] = TileType.forbidden;
           _tiles.array![row][col] = null;
@@ -612,7 +613,7 @@ class AnimationsResolver {
             row: row,
             col: col,
             depth: 0,
-            level: level,
+            levelNtf: levelNtf,
             type: newTileType,
             visible: true,
           ); // We will build it later
@@ -736,7 +737,7 @@ class AnimationsResolver {
                 row: tileAnimation!.from.row,
                 col: tileAnimation.from.col,
                 depth: 0,
-                level: level,
+                levelNtf: levelNtf,
                 type: tileType!,
                 visible: true,
               );

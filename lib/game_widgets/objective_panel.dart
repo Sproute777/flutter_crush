@@ -11,7 +11,7 @@ class ObjectivePanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final  gameController = RepositoryProvider.of<GameController>(context);
-    final Level level = gameController.level!;
+    final Level level = gameController.levelNtf.value!;
     final Orientation orientation = MediaQuery.of(context).orientation;
     final EdgeInsets paddingTop = EdgeInsets.only(top: (orientation == Orientation.portrait ? 10.0 : 0.0));
     //

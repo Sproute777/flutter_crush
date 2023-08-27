@@ -7,18 +7,18 @@ class ObjectiveItem extends StatelessWidget {
   ObjectiveItem({
     Key? key,
     required this.objective,
-    required this.level,
+    required this.levelNtf,
   }): super(key: key);
 
   final Objective objective;
-  final Level level;
+  final ValueNotifier<Level?> levelNtf;
 
   @override
   Widget build(BuildContext context) {
     //
     // Trick to get the image of the tile
     //
-    TileOld tile = TileOld(type: objective.type, level: level);
+    TileOld tile = TileOld(type: objective.type, levelNtf: levelNtf);
     tile.build();
 
     return Container(
