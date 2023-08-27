@@ -24,7 +24,7 @@ class StreamObjectiveItem extends StatefulWidget {
 }
 
 class StreamObjectiveItemState extends State<StreamObjectiveItem> {
-   ObjectiveBloc? _bloc;
+   AimBloc? _bloc;
     GameBloc? gameBloc;
     GameController? gameController;
 
@@ -65,7 +65,7 @@ class StreamObjectiveItemState extends State<StreamObjectiveItem> {
   }
 
   void _createBloc() {
-    _bloc = ObjectiveBloc(widget.objective.type);
+    _bloc = AimBloc(widget.objective.type);
 
     // Simple pipe from the stream that lists all the ObjectiveEvents into
     // the BLoC that processes THIS particular Objective type
@@ -94,7 +94,7 @@ class StreamObjectiveItemState extends State<StreamObjectiveItem> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          Container(
+          SizedBox(
             width: 32.0,
             height: 32.0,
             child: tile.widget,

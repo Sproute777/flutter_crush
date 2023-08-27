@@ -1,14 +1,14 @@
 import 'dart:math' as math;
+import 'package:flutter_crush/gen/assets.gen.dart';
 import 'package:flutter_crush/model/level.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart' hide Level;
 
 class Tile extends Object {
-   TileType? type;
+  TileType? type;
   int row;
   int col;
-   Level? level;
+  Level? level;
   int depth;
   late Widget _widget;
   late double x;
@@ -19,11 +19,11 @@ class Tile extends Object {
     required this.type,
     this.row = 0,
     this.col = 0,
-     this.level,
+    this.level,
     this.depth = 0,
     this.visible = true,
   });
-  
+
   @override
   int get hashCode => row * (level?.numberOfRows ?? 0) + col;
 
@@ -33,78 +33,95 @@ class Tile extends Object {
   }
 
   @override
-  String toString(){
+  String toString() {
     return '[$row][$col] => ${type}';
   }
 
   //
   // Builds the tile in terms of "decoration" ( = image )
   //
-  void build({bool computePosition = true}){
-    if (depth > 0 && type != TileType.wall){
+  void build({bool computePosition = true}) {
+    if (depth > 0 && type != TileType.wall) {
       _widget = Stack(
         children: <Widget>[
           Opacity(
-            opacity: 0.7, 
+            opacity: 0.7,
             child: Transform.scale(
               scale: 0.8,
-              child: _buildDecoration(),
+              child: _buildDecoration(type!),
             ),
           ),
-          _buildDecoration('deco/ice_02.png'),
+          _buildDecoration(type!, MyAssets.images.deco.ice02.path),
         ],
       );
     } else if (type == TileType.empty) {
-      _widget = Container();
+      _widget = SizedBox();
     } else {
-      _widget = _buildDecoration(); 
+      _widget = _buildDecoration(type!);
     }
 
-    if (computePosition){
+    if (computePosition) {
       setPosition();
     }
   }
 
-  Widget _buildDecoration([String path = ""]){
+  Widget _buildDecoration(TileType tileType,[String path = ""]) {
     String imageAsset = path;
-    if (imageAsset == ""){
-      switch(type){
+    if (imageAsset == "") {
+      switch (tileType) {
         case TileType.wall:
-          imageAsset = "deco/wall.png";
+          imageAsset = MyAssets.images.deco.wall.path;
           break;
 
         case TileType.bomb:
-          imageAsset = "bombs/mine.png";
+          imageAsset = MyAssets.images.bombs.mine.path;
           break;
 
         case TileType.flare:
-          imageAsset = "bombs/tnt.png";
+          imageAsset = MyAssets.images.bombs.tnt.path;
           break;
 
         case TileType.wrapped:
-          imageAsset = "tiles/multicolor.png";
+          imageAsset = MyAssets.images.tiles.multicolor.path;
           break;
 
         case TileType.fireball:
-          imageAsset = "bombs/rocket.png";
+          imageAsset = MyAssets.images.bombs.rocket.path;
           break;
 
-        default:
-          try {
-          imageAsset = "tiles/${describeEnum(type as Object)}.png";
-          } catch(e){
-            return Container();
-          }
+        case TileType.blue:
+          imageAsset = MyAssets.images.tiles.blue.path;
           break;
+        case TileType.green:
+          imageAsset = MyAssets.images.tiles.green.path;
+          break;
+        case TileType.orange:
+          imageAsset = MyAssets.images.tiles.orange.path;
+          break;
+        case TileType.purple:
+          imageAsset = MyAssets.images.tiles.purple.path;
+          break;
+        case TileType.red:
+          imageAsset = MyAssets.images.tiles.red.path;
+          break;
+        case TileType.yellow:
+          imageAsset = MyAssets.images.tiles.yellow.path;
+          break;
+        case TileType.forbidden:
+            imageAsset = MyAssets.images.tiles.yellow.path;
+          break;
+        case TileType.empty:
+        case TileType.last:
+            break;
       }
     }
+    if(imageAsset == '')return SizedBox();
     return Container(
       decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('assets/images/$imageAsset'),
-          fit: BoxFit.contain,
-        )
-      ),
+          image: DecorationImage(
+        image: AssetImage(imageAsset),
+        fit: BoxFit.contain,
+      )),
     );
   }
 
@@ -113,9 +130,10 @@ class Tile extends Object {
   // based on its position in the grid (row, col) and
   // the dimensions of the board and a tile
   //
-  void setPosition(){
-    if(level == null) return;
-    double bottom = level!.boardTop + (level!.numberOfRows - 1) * level!.tileHeight;
+  void setPosition() {
+    if (level == null) return;
+    double bottom =
+        level!.boardTop + (level!.numberOfRows - 1) * level!.tileHeight;
     x = level!.boardLeft + col * level!.tileWidth;
     y = bottom - row * level!.tileHeight;
   }
@@ -123,7 +141,7 @@ class Tile extends Object {
   //
   // Generate a tile to be used during the swap animations
   //
-  Tile cloneForAnimation(){
+  Tile cloneForAnimation() {
     Tile tile = Tile(level: level, type: type, row: row, col: col);
     tile.build();
 
@@ -133,7 +151,7 @@ class Tile extends Object {
   //
   // Swaps this tile (row, col) with the ones of another Tile
   //
-  void swapRowColWith(Tile destTile){
+  void swapRowColWith(Tile destTile) {
     int tft = destTile.row;
     Logger.root.fine('Tile tft ${destTile.row} ${destTile.col}');
     destTile.row = row;
@@ -150,10 +168,10 @@ class Tile extends Object {
   Widget get widget => getWidgetSized(level!.tileWidth, level!.tileHeight);
 
   Widget getWidgetSized(double width, double height) => Container(
-    width: width,
-    height: height,
-    child: _widget,
-  );
+        width: width,
+        height: height,
+        child: _widget,
+      );
 
   //
   // Can the Tile move?
@@ -163,38 +181,42 @@ class Tile extends Object {
   //
   // Can a Tile fall?
   //
-  bool get canFall => type != TileType.wall && type != TileType.forbidden && type != TileType.empty;
+  bool get canFall =>
+      type != TileType.wall &&
+      type != TileType.forbidden &&
+      type != TileType.empty;
 
   // ################  HELPERS  ######################
   //
   // Generate a random tile
   //
-  static TileType random(math.Random rnd){
+  static TileType random(math.Random rnd) {
     int minValue = _firstNormalTile;
     int maxValue = _lastNormalTile;
     int value = rnd.nextInt(maxValue - minValue) + minValue;
     return TileType.values[value];
   }
-  
-  static int  get _firstNormalTile => TileType.red.index;
-  static int  get _lastNormalTile => TileType.yellow.index;
-  static int  get _firstBombTile => TileType.bomb.index;
-  static int  get _lastBombTile => TileType.fireball.index;
-  
-  static bool isNormal(TileType? type){
+
+  static int get _firstNormalTile => TileType.red.index;
+  static int get _lastNormalTile => TileType.yellow.index;
+  static int get _firstBombTile => TileType.bomb.index;
+  static int get _lastBombTile => TileType.fireball.index;
+
+  static bool isNormal(TileType? type) {
     int? index = type?.index;
-    if(index == null) return false;
+    if (index == null) return false;
     return (index >= _firstNormalTile && index <= _lastNormalTile);
   }
 
-  static bool isBomb(TileType? type){
+  static bool isBomb(TileType? type) {
     int? index = type?.index;
-    if(index == null) return false;
+    if (index == null) return false;
     return (index >= _firstBombTile && index <= _lastBombTile);
   }
-  static bool canBePlayed(TileType? type) => (type != TileType.wall && type != TileType.forbidden);
-}
 
+  static bool canBePlayed(TileType? type) =>
+      (type != TileType.wall && type != TileType.forbidden);
+}
 
 enum TileType {
   forbidden,

@@ -27,6 +27,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   json_serializable: ^6.7.1
+  flutter_gen_runner: ^5.3.1
 
 flutter:
 
@@ -41,3 +42,35 @@ flutter:
     - assets/images/deco/
     - assets/images/bombs/
     - assets/audio/
+
+#=========================================================
+#=================== flutter gen =========================
+flutter_gen:
+  output: lib/gen/ # Optional (default: lib/gen/)
+  line_length: 80 # Optional (default: 80)
+
+  integrations:
+    flutter_svg: true
+    flare_flutter: true
+    rive: true
+    lottie: true
+
+  assets:
+    enabled: true
+
+    outputs:
+      class_name: MyAssets
+      package_parameter_enabled: false
+      # Assets.imagesChip
+      # style: camel-case
+
+      # Assets.images_chip
+      # style: snake-case
+
+      # Assets.images.chip (default style)
+      style: dot-delimiter
+
+    exclude:
+      - assets/images/chip3/chip3.jpg
+      - pictures/chip5.jpg
+      - assets/flare/

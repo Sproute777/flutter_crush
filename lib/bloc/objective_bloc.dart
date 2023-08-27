@@ -5,7 +5,7 @@ import 'package:flutter_crush/model/tile.dart';
 import 'package:logging/logging.dart';
 import 'package:rxdart/rxdart.dart';
 
-class ObjectiveBloc {
+class AimBloc {
   ///
   /// A stream only meant to return whether THIS objective type is part of the Objective events
   ///
@@ -25,7 +25,7 @@ class ObjectiveBloc {
   ///
   /// Constructor
   ///
-  ObjectiveBloc(TileType tileType) {
+  AimBloc(TileType tileType) {
     //
     // We are listening to all Objective events
     //

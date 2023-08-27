@@ -21,27 +21,40 @@ import 'package:flutter_crush/model/row_col.dart';
 import 'package:flutter_crush/model/tile.dart';
 import 'package:flutter/material.dart';
 
+import '../bloc/aim_bloc/level_aim_bloc.dart';
 import '../bloc/ready_bloc.dart';
 import '../controllers/game_controller.dart';
 
-class GamePage extends StatefulWidget {
+class GamePage extends StatelessWidget {
+  const GamePage({super.key, required this.level});
+  final Level level;
   static Route<dynamic> route(Level level) {
     return MaterialPageRoute(
         builder: (BuildContext context) => GamePage(level: level));
   }
 
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => LevelAimBloc(),
+      child: GameView(level: level),
+    );
+  }
+}
+
+class GameView extends StatefulWidget {
   final Level level;
 
-  GamePage({
+  GameView({
     Key? key,
     required this.level,
   }) : super(key: key);
 
   @override
-  _GamePageState createState() => _GamePageState();
+  _GameViewState createState() => _GameViewState();
 }
 
-class _GamePageState extends State<GamePage>
+class _GameViewState extends State<GameView>
     with SingleTickerProviderStateMixin {
   // late final AnimationController _controller;
   OverlayEntry? _gameSplash;
@@ -50,7 +63,7 @@ class _GamePageState extends State<GamePage>
   GameController? gameController;
   bool _allowGesture = true;
   StreamSubscription? _gameOverSubscription;
- late bool _gameOverReceived;
+  late bool _gameOverReceived;
 
   Tile? gestureFromTile;
   RowCol? gestureFromRowCol;
@@ -113,10 +126,10 @@ class _GamePageState extends State<GamePage>
           ),
         ),
         child: GestureDetector(
-          onPanDown:  _onPanDown,
+          onPanDown: _onPanDown,
           onPanStart: _onPanStart,
           onPanEnd: _onPanEnd,
-          onPanUpdate:  _onPanUpdate,
+          onPanUpdate: _onPanUpdate,
           onTap: _onTap,
           onTapUp: _onPanEnd,
           child: Stack(
@@ -208,7 +221,8 @@ class _GamePageState extends State<GamePage>
           for (int row = 0; row < widget.level.numberOfRows; row++) {
             for (int col = 0; col < widget.level.numberOfCols; col++) {
               final tile = grid.array![row][col];
-              if (tile != null && tile.type != TileType.empty &&
+              if (tile != null &&
+                  tile.type != TileType.empty &&
                   tile.type != TileType.forbidden &&
                   tile.visible) {
                 //
@@ -358,8 +372,8 @@ class _GamePageState extends State<GamePage>
           Tile? destTile = gameController!.grid!.array![rowCol.row][rowCol.col];
           bool canBePlayed = false;
 
-            //TODO:  Condition no longer necessary
-            canBePlayed = destTile.canMove || destTile.type == TileType.empty;
+          //TODO:  Condition no longer necessary
+          canBePlayed = destTile.canMove || destTile.type == TileType.empty;
 
           if (canBePlayed) {
             // We need to test the swap
@@ -380,9 +394,10 @@ class _GamePageState extends State<GamePage>
             // 3. Remove both tiles from the game grid
             gameController!.grid!.array![rowCol.row][rowCol.col].visible =
                 false;
-            
-                gameController!
-                .grid!.array![gestureFromRowCol!.row][gestureFromRowCol!.col]
+
+            gameController!
+                .grid!
+                .array![gestureFromRowCol!.row][gestureFromRowCol!.col]
                 .visible = false;
 
             setState(() {});
@@ -397,11 +412,13 @@ class _GamePageState extends State<GamePage>
                     swapAllowed: swapAllowed,
                     onComplete: () async {
                       // 5. Put back the tiles in the game grid
-                      gameController!.grid!.array![rowCol.row][rowCol.col]
-                          .visible = true;
-                      
-                          gameController!
-                          .grid!.array![gestureFromRowCol!.row][gestureFromRowCol!.col]
+                      gameController!
+                          .grid!.array![rowCol.row][rowCol.col].visible = true;
+
+                      gameController!
+                          .grid!
+                          .array![gestureFromRowCol!.row]
+                              [gestureFromRowCol!.col]
                           .visible = true;
 
                       // 6. Remove the overlay Entry
@@ -414,13 +431,12 @@ class _GamePageState extends State<GamePage>
                             Tile.isBomb(gestureFromTile!.type);
 
                         // Swap the 2 tiles
-                        gameController!
-                            .swapTiles(gestureFromTile!, destTile);
+                        gameController!.swapTiles(gestureFromTile!, destTile);
 
                         // Get the tiles that need to be removed, following the swap
                         // We need to get the tiles from all possible combos
-                        Combo comboOne = gameController!
-                            .getCombo(gestureFromTile!.row, gestureFromTile!.col);
+                        Combo comboOne = gameController!.getCombo(
+                            gestureFromTile!.row, gestureFromTile!.col);
                         Combo comboTwo = gameController!
                             .getCombo(destTile.row, destTile.col);
 
@@ -429,10 +445,8 @@ class _GamePageState extends State<GamePage>
                             [_animateCombo(comboOne), _animateCombo(comboTwo)]);
 
                         // Resolve the combos
-                        gameController
-                            !.resolveCombo(comboOne, gameBloc!);
-                        gameController
-                            !.resolveCombo(comboTwo, gameBloc!);
+                        gameController!.resolveCombo(comboOne, gameBloc!);
+                        gameController!.resolveCombo(comboTwo, gameBloc!);
 
                         // If the tile we moved is a bomb, we need to process the explosion
                         if (isSourceTileABomb) {
@@ -461,9 +475,9 @@ class _GamePageState extends State<GamePage>
                     },
                   );
                 });
-                if(_overlayEntryAnimateSwapTiles != null){
-            Overlay.of(context).insert(_overlayEntryAnimateSwapTiles!);
-                }
+            if (_overlayEntryAnimateSwapTiles != null) {
+              Overlay.of(context).insert(_overlayEntryAnimateSwapTiles!);
+            }
           }
         }
       }
@@ -603,8 +617,8 @@ class _GamePageState extends State<GamePage>
     // Determine all animations (and sequence of animations) that
     // need to be played as a consequence of a combo
     //
-    AnimationsResolver animationResolver =
-        AnimationsResolver(gameController: gameController!, level: widget.level);
+    AnimationsResolver animationResolver = AnimationsResolver(
+        gameController: gameController!, level: widget.level);
     animationResolver.resolve();
 
     // Determine the list of cells that are involved in the animation(s)
