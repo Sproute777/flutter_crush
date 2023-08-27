@@ -575,7 +575,7 @@ class GameController {
 
   void playMove() {
     int movesLeft = level!.decrementMove();
-
+    print('movesLeft new $movesLeft');
     // Emit the number of moves left (to refresh the moves left panel)
     _movesLeftController.sink.add(movesLeft);
 

@@ -8,6 +8,9 @@ import 'package:flutter_crush/model/objective.dart';
 ///  - number of columns
 ///  - number of rows
 ///  - list of objectives
+/// 
+/// 
+// todo LevelConfig and Level
 class Level extends Object {
   final int _index;
   late Array2d grid;
@@ -32,6 +35,7 @@ class Level extends Object {
         _maxMoves = json["moves"] as int {
     // Initialize the grid to the dimensions
       grid = Array2d<String>(_rows, _cols,defaultValue: '');
+      _movesLeft = _maxMoves;
     // Populate the grid from the definition
     //
     // Trick
@@ -73,7 +77,7 @@ class Level extends Object {
   int get numberOfCols => _cols;
   int get index => _index;
   int get maxMoves => _maxMoves;
-  int get movesLeft => _movesLeft ?? 0;
+  int get movesLeft => _movesLeft!;
   List<Objective> get objectives =>
       List.unmodifiable(_objectives as List<Objective>);
 
@@ -89,6 +93,7 @@ class Level extends Object {
   // Decrement the number of moves left
   //
   int decrementMove() {
-    return (_movesLeft! - 1).clamp(0, _maxMoves);
+    _movesLeft =  (_movesLeft! - 1).clamp(0, _maxMoves);
+    return _movesLeft!;
   }
 }
