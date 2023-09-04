@@ -47,8 +47,8 @@ class _AnimationComboCollapseState extends State<AnimationComboCollapse> with Si
 
   @override
   Widget build(BuildContext context) {
-    final double destinationX = widget.resultingTile.x;
-    final double destinationY = widget.resultingTile.y;
+    final double destinationX = widget.resultingTile.location.x;
+    final double destinationY = widget.resultingTile.location.y;
   //  Logger.root.warning('build animation combo');
     // Tiles are collapsing at the position of the resulting tile
     List<Widget> children = widget.combo.tiles.map((TileOld? tile){
@@ -56,8 +56,8 @@ class _AnimationComboCollapseState extends State<AnimationComboCollapse> with Si
         return Positioned(child: SizedBox());
       }
       return Positioned(
-          left: tile.x + (1.0 - _controller.value) * (tile.x - destinationX),
-          top: tile.y + (1.0 - _controller.value) * (destinationY - tile.y),
+          left: tile.location.x + (1.0 - _controller.value) * (tile.location.x - destinationX),
+          top: tile.location.y + (1.0 - _controller.value) * (destinationY - tile.location.y),
           child: Transform.scale(
             scale: 1.0 - _controller.value,
             child: tile.widget,

@@ -61,21 +61,21 @@ class _AnimationSwapTilesState extends State<AnimationSwapTiles> with SingleTick
 
   @override
   Widget build(BuildContext context) {
-    final double deltaX = widget.upTile.x - widget.downTile.x;
-    final double deltaY = widget.upTile.y - widget.downTile.y;
+    final double deltaX = widget.upTile.location.x - widget.downTile.location.x;
+    final double deltaY = widget.upTile.location.y - widget.downTile.location.y;
 
 
   //  Logger.root.warning('build animation swap tiles');
     return Stack(
       children: <Widget>[
         Positioned(
-          left: widget.downTile.x + deltaX * _controller.value,
-          top: widget.downTile.y + deltaY * _controller.value,
+          left: widget.downTile.location.x + deltaX * _controller.value,
+          top: widget.downTile.location.y + deltaY * _controller.value,
           child: widget.downTile.widget,
         ),
         Positioned(
-          left: widget.upTile.x - deltaX * _controller.value,
-          top: widget.upTile.y - deltaY * _controller.value,
+          left: widget.upTile.location.x - deltaX * _controller.value,
+          top: widget.upTile.location.y - deltaY * _controller.value,
           child: widget.upTile.widget,
         ),
       ],

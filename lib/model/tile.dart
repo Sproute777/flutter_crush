@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'dart:math';
 import 'package:flutter_crush/gen/assets.gen.dart';
 import 'package:flutter_crush/model/level.dart';
 import 'package:flutter/material.dart';
@@ -148,8 +149,7 @@ class TileOld extends Object {
   ValueNotifier<Level?> levelNtf;
   int depth;
   late Widget _widget;
-  late double x;
-  late double y;
+  late Point<double> location;
   bool visible;
   final _log = Logger('TileOld');
 
@@ -276,8 +276,9 @@ class TileOld extends Object {
     if (levelNtf.value == null) return;
     double bottom =
         levelNtf.value!.boardTop + (levelNtf.value!.rows - 1) * levelNtf.value!.tileHeight;
-    x = levelNtf.value!.boardLeft + col * levelNtf.value!.tileWidth;
-    y = bottom - row * levelNtf.value!.tileHeight;
+   final x = levelNtf.value!.boardLeft + col * levelNtf.value!.tileWidth;
+   final y = bottom - row * levelNtf.value!.tileHeight;
+   location = Point<double>(x,y);
   }
 
   //

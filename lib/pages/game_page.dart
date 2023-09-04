@@ -25,6 +25,7 @@ import 'package:logging/logging.dart' hide Level;
 import '../bloc/aim_bloc/level_aim_bloc.dart';
 import '../bloc/ready_bloc.dart';
 import '../controllers/game_controller.dart';
+import 'tile_flow_delegate.dart';
 
 class GamePage extends StatelessWidget {
   const GamePage({super.key, required this.level});
@@ -239,9 +240,10 @@ class _GameViewState extends State<GameView>
                 // Make sure the widget is correctly positioned
                 //
                 tile.setPosition();
-                tiles.add(Positioned(
-                  left: tile.x,
-                  top: tile.y,
+                tiles.add(
+                  Positioned(
+                  left: tile.location.x,
+                  top: tile.location.y,
                   child: tile.widget,
                 ));
               }
@@ -251,9 +253,10 @@ class _GameViewState extends State<GameView>
           return Stack(
             children: tiles,
           );
+          // return Flow(delegate: TileFlowDelegate(),);
         }
         // If nothing is ready, simply return an empty container
-        return Container();
+        return SizedBox();
       },
     );
   }
@@ -312,8 +315,8 @@ class _GameViewState extends State<GameView>
           opaque: false,
           builder: (BuildContext context) {
             return Positioned(
-              left: gestureFromTile!.x,
-              top: gestureFromTile!.y,
+              left: gestureFromTile!.location.x,
+              top: gestureFromTile!.location.y,
               child: Transform.scale(
                 scale: 1.1,
                 child: gestureFromTile!.widget,

@@ -54,8 +54,8 @@ class _AnimationComboThreeState extends State<AnimationComboThree> with SingleTi
           return Positioned(child: SizedBox());
         }
         return Positioned(
-          left: tile.x,
-          top: tile.y,
+          left: tile.location.x,
+          top: tile.location.y,
           child: Transform.scale(
             scale: 1.0 - _controller.value,
             child: tile.widget,

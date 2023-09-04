@@ -107,8 +107,8 @@ class _AnimationChainState extends State<AnimationChain> with SingleTickerProvid
     return Stack(
       children: [
         Positioned(
-          left: firstAnimation.tile?.x,
-          top: firstAnimation.tile?.y,
+          left: firstAnimation.tile?.location.x,
+          top: firstAnimation.tile?.location.y,
           child: theWidget ?? SizedBox(),
         ),
       ],
