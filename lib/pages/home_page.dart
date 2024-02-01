@@ -7,6 +7,10 @@ import 'package:flutter_crush/model/level.dart';
 import 'package:flutter_crush/pages/game_page.dart';
 import 'package:flutter/material.dart';
 
+import '../get_it.dart';
+import '../level/view/levels_cubit.dart';
+import '../level/view/selected_level_cubit.dart';
+
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
@@ -52,21 +56,23 @@ class _HomePageState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
-   final gameBloc = RepositoryProvider.of<GameBloc>(context);
-   final mediaQueryData = MediaQuery.of(context);
-   final  screenSize = mediaQueryData.size;
-   final levelsWidth = -50.0 +
+    final mediaQueryData = MediaQuery.of(context);
+    final screenSize = mediaQueryData.size;
+    final levelsWidth = -50.0 +
         ((mediaQueryData.orientation == Orientation.portrait)
             ? screenSize.width
             : screenSize.height);
-    debugPrint(' HomePage build');
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Stack(
+    // debugPrint(' HomePage build');
+    return BlocProvider(
+      lazy: false,
+      create: (_) => getIt<LevelsCubit>()..init(),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Stack(
           children: <Widget>[
             Positioned.fill(
               child: SizedBox(
-                height:400, 
+                height: 400,
                 width: 400,
                 child: Image.asset(
                   'assets/images/background/background2.jpeg',
@@ -93,27 +99,32 @@ class _HomePageState extends State<HomePage>
                 child: Container(
                   width: levelsWidth,
                   height: levelsWidth,
-                  child: GridView.builder(
-                    itemCount: gameBloc.levels.length,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      childAspectRatio: 1.01,
-                    ),
-                    itemBuilder: (BuildContext context, int index) {
-                      return GameLevelButton(
-                        width: 80.0,
-                        height: 60.0,
-                        borderRadius: 50.0,
-                        text: 'Level ${index + 1}',
-                        onTap: () async {
-                          Level? newLevel = await gameBloc.levels[index];
+                  child: BlocBuilder<LevelsCubit, LevelsState>(
+                      builder: (context, state) {
+                        debugPrint('item builder ${state.levels}');
+                    return GridView.builder(
+                      itemCount: state.levels.length,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        childAspectRatio: 1.01,
+                      ),
+                      itemBuilder: (BuildContext context, int index) {
+                        return GameLevelButton(
+                          width: 80.0,
+                          height: 60.0,
+                          borderRadius: 50.0,
+                          text: 'Level ${index + 1}',
+                          onTap: () async {
+                            Level? newLevel = state.levels[index];
 
-                          // Open the Game page
-                          Navigator.of(context).push(GamePage.route(newLevel));
-                        },
-                      );
-                    },
-                  ),
+                            // Open the Game page
+                            Navigator.of(context)
+                                .push(GamePage.route(newLevel));
+                          },
+                        );
+                      },
+                    );
+                  }),
                 ),
               ),
             ),
@@ -146,6 +157,7 @@ class _HomePageState extends State<HomePage>
             ),
           ],
         ),
+      ),
     );
   }
 }

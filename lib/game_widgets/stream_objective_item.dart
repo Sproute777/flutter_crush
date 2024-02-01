@@ -25,7 +25,7 @@ class StreamObjectiveItem extends StatefulWidget {
 
 class StreamObjectiveItemState extends State<StreamObjectiveItem> {
    AimBloc? _bloc;
-    GameBloc? gameBloc;
+    // GameBloc? gameBloc;
     GameController? gameController;
 
   ///
@@ -41,7 +41,7 @@ class StreamObjectiveItemState extends State<StreamObjectiveItem> {
     super.didChangeDependencies();
 
     // Now that the context is available, retrieve the gameBloc
-    gameBloc = RepositoryProvider.of<GameBloc>(context);
+    // gameBloc = RepositoryProvider.of<GameBloc>(context);
     gameController = RepositoryProvider.of<GameController>(context);
     _createBloc();
   } 

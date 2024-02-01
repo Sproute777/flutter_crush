@@ -13,9 +13,7 @@ class Application extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider(
-          create: (_) => GameBloc(),
-        ),
+        
         RepositoryProvider(
           create: (_) => ReadyBloc(),
         ),

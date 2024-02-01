@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:logging/logging.dart' hide Level;
 
 import '../bloc/ready_bloc.dart';
+import '../level/domain/level_const.dart';
 
 class Board extends StatefulWidget {
   Board({
@@ -34,15 +35,16 @@ class _BoardState extends State<Board> {
 
   GlobalKey _keyCheckerCell = GlobalKey();
 
-  GameBloc? gameBloc;
+  // GameBloc? gameBloc;
   GameController? gameController;
   ReadyBloc? readyBloc;
 
   void _buildDecorations() {
     if (_decorations != null) return;
-    _decorations = Array2d<BoxDecoration?>(widget.cols + 1, widget.rows + 1,defaultValue: null);
+    _decorations = Array2d<BoxDecoration?>(widget.cols + 1, widget.rows + 1,
+        defaultValue: null);
 
-   Logger.root.info('_buildDecorations');
+    Logger.root.info('_buildDecorations');
     for (int row = 0; row <= widget.rows; row++) {
       for (int col = 0; col <= widget.cols; col++) {
         // If there is nothing at (row, col) => no decoration
@@ -95,11 +97,11 @@ class _BoardState extends State<Board> {
     }
   }
 
-  void _buildChecker(){
+  void _buildChecker() {
     if (_checker != null) return;
 
-   Logger.root.info('_buildChecker');
-    _checker = Array2d<Color?>(widget.rows, widget.cols,defaultValue: null);
+    Logger.root.info('_buildChecker');
+    _checker = Array2d<Color?>(widget.rows, widget.cols, defaultValue: null);
     int counter = 0;
 
     for (int row = 0; row < widget.rows; row++) {
@@ -118,12 +120,13 @@ class _BoardState extends State<Board> {
 
   @override
   Widget build(BuildContext context) {
-    gameBloc = RepositoryProvider.of<GameBloc>(context);
     gameController = RepositoryProvider.of<GameController>(context);
     readyBloc = RepositoryProvider.of<ReadyBloc>(context);
     final Size screenSize = MediaQuery.of(context).size;
     final double maxDimension = math.min(screenSize.width, screenSize.height);
-    final double maxTileWidth = math.min(maxDimension / GameBloc.kMaxTilesPerRowAndColumn, GameBloc.kMaxTilesSize);
+    final double maxTileWidth = math.min(
+        maxDimension / LevelConst.kMaxTilesPerRowAndColumn,
+        LevelConst.kMaxTilesSize);
 
     WidgetsBinding.instance.addPostFrameCallback((_) => _afterBuild());
 
@@ -140,27 +143,26 @@ class _BoardState extends State<Board> {
     final double height = maxTileWidth * (widget.rows + 1) * 1.1;
 
     return ValueListenableBuilder(
-      valueListenable: gameController!.levelNtf,
-      builder: (context,level,_) {
-        return Container(
-          padding: const EdgeInsets.all(0.0),
-          width: width,
-          height: height,
-          color: Colors.transparent,
-          child: Stack(
-            children: <Widget>[
-              _showDecorations(maxTileWidth),
-              _showGrid(maxTileWidth,
-                  gameBloc!), // We pass the gameBloc since we will need to use it to pass the dimensions and coordinates
-            ],
-          ),
-        );
-      }
-    );
+        valueListenable: gameController!.levelNtf,
+        builder: (context, level, _) {
+          return Container(
+            padding: const EdgeInsets.all(0.0),
+            width: width,
+            height: height,
+            color: Colors.transparent,
+            child: Stack(
+              children: <Widget>[
+                _showDecorations(maxTileWidth),
+                _showGrid(
+                    maxTileWidth), // We pass the gameBloc since we will need to use it to pass the dimensions and coordinates
+              ],
+            ),
+          );
+        });
   }
 
   Widget _showDecorations(double width) {
-   Logger.root.info('_showDecorations');
+    Logger.root.info('_showDecorations');
     return GridView.builder(
       padding: const EdgeInsets.all(0.0),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -182,10 +184,10 @@ class _BoardState extends State<Board> {
   }
 
   //
-  Widget _showGrid(double width, GameBloc gameBloc) {
+  Widget _showGrid(double width) {
     bool isFirst = true;
 
-   Logger.root.info('_showGrid');
+    Logger.root.info('_showGrid');
     return Padding(
       padding: EdgeInsets.all(width * 0.6),
       child: GridView.builder(
@@ -193,7 +195,7 @@ class _BoardState extends State<Board> {
         padding: const EdgeInsets.all(0.0),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: widget.cols,
-          childAspectRatio: 1.01,   // 1.01 solves an issue with floating numbers
+          childAspectRatio: 1.01, // 1.01 solves an issue with floating numbers
         ),
         itemCount: widget.cols * widget.rows,
         itemBuilder: (BuildContext context, int index) {
@@ -220,8 +222,7 @@ class _BoardState extends State<Board> {
   Rect _getDimensionsFromContext(BuildContext context) {
     final RenderBox box = context.findRenderObject() as RenderBox;
 
-    final Offset topLeft =
-        box.size.topLeft(box.localToGlobal(Offset.zero));
+    final Offset topLeft = box.size.topLeft(box.localToGlobal(Offset.zero));
     final Offset bottomRight =
         box.size.bottomRight(box.localToGlobal(Offset.zero));
     return Rect.fromLTRB(
@@ -230,43 +231,43 @@ class _BoardState extends State<Board> {
 
   //
   void _afterBuild() {
-   Logger.root.info('_afterBuild');
+    Logger.root.info('_afterBuild');
     //
     // Let's get the dimensions and position of the exact position of the board
     //
-    if (_keyChecker.currentContext != null){
-      final Rect rectBoard = _getDimensionsFromContext(_keyChecker.currentContext!);
+    if (_keyChecker.currentContext != null) {
+      final Rect rectBoard =
+          _getDimensionsFromContext(_keyChecker.currentContext!);
 
       //
       // Save the position of the board
       //
 
-  //  Logger.root.info('_afterBuild top${rectBoard.top}');
-  //  Logger.root.info('_afterBuild left ${rectBoard.left}');
+      //  Logger.root.info('_afterBuild top${rectBoard.top}');
+      //  Logger.root.info('_afterBuild left ${rectBoard.left}');
       gameController!
-      ..setBoardTop(rectBoard.top) 
-      ..setBoardLeft(rectBoard.left);
+        ..setBoardTop(rectBoard.top)
+        ..setBoardLeft(rectBoard.left);
 
       //
       // Let's get the dimensions of one cell of the board
       //
-      final Rect rectBoardSquare = _getDimensionsFromContext(_keyCheckerCell.currentContext!);
+      final Rect rectBoardSquare =
+          _getDimensionsFromContext(_keyCheckerCell.currentContext!);
 
       //
       // Save it for later reuse
       //
       gameController!
-      ..setTileWidth(rectBoardSquare.width) 
-      ..setTileHeight(rectBoardSquare.height);
-
-
+        ..setTileWidth(rectBoardSquare.width)
+        ..setTileHeight(rectBoardSquare.height);
 
       //
       // Send a notification to inform that we are ready to display the tiles from now on
       //
       readyBloc!.setReadyToDisplayTiles(true);
       // setState(() {
-        
+
       // });
     }
   }

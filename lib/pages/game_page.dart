@@ -60,7 +60,6 @@ class _GameViewState extends State<GameView>
     with SingleTickerProviderStateMixin {
   // late final AnimationController _controller;
   OverlayEntry? _gameSplash;
-  GameBloc? gameBloc;
   ReadyBloc? readyBloc;
   GameController? gameController;
   bool _allowGesture = true;
@@ -87,7 +86,6 @@ class _GameViewState extends State<GameView>
     super.didChangeDependencies();
 
     // Now that the context is available, retrieve the gameBloc
-    gameBloc = RepositoryProvider.of<GameBloc>(context);
     readyBloc = RepositoryProvider.of<ReadyBloc>(context);
     gameController = RepositoryProvider.of<GameController>(context);
     gameController!.setLevel(widget.level);
@@ -459,8 +457,8 @@ class _GameViewState extends State<GameView>
                             [_animateCombo(comboOne), _animateCombo(comboTwo)]);
 
                         // Resolve the combos
-                        gameController!.resolveCombo(comboOne, gameBloc!);
-                        gameController!.resolveCombo(comboTwo, gameBloc!);
+                        gameController!.resolveCombo(comboOne );
+                        gameController!.resolveCombo(comboTwo );
 
                         // If the tile we moved is a bomb, we need to process the explosion
                         if (isSourceTileABomb) {
@@ -470,7 +468,7 @@ class _GameViewState extends State<GameView>
                                   col: destTile.row,
                                   levelNtf: gameController!.levelNtf,
                                   type: gestureFromTile!.type),
-                              gameBloc!);
+                              );
                         }
 
                         // Proceed with the falling tiles
@@ -513,7 +511,7 @@ class _GameViewState extends State<GameView>
       // Audio.playAsset(AudioType.bomb);
 
       // Proceed with explosion
-      gameController!.proceedWithExplosion(gestureFromTile!, gameBloc!);
+      gameController!.proceedWithExplosion(gestureFromTile! );
 
       // Rebuild the board and proceed with animations
       WidgetsBinding.instance.addPostFrameCallback((_) async {

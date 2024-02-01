@@ -423,7 +423,7 @@ final levelNtf = ValueNotifier<Level?>(null);
   //
   // Resolves a combo
   //
-  void resolveCombo(Combo combo, GameBloc gameBloc) {
+  void resolveCombo(Combo combo) {
     // We now need to remove all the Tiles from the grid and change the type if necessary
     _log.finest('resolveCombo');
     combo.tiles.forEach((TileOld? tile) {
@@ -474,7 +474,7 @@ final levelNtf = ValueNotifier<Level?>(null);
   // Proceed with an explosion
   // The spread of the explosion depends on the type of bomb
   //
-  void proceedWithExplosion(TileOld tileExplosion, GameBloc gameBloc,
+  void proceedWithExplosion(TileOld tileExplosion, 
       {bool skipThis = false}) {
     // Retrieve the list of row/col variations
     List<SwapMove>? _swaps = _explosions[tileExplosion.type];
@@ -511,7 +511,7 @@ final levelNtf = ValueNotifier<Level?>(null);
 
     // Proceed with chained explosions
     _subExplosions.forEach((TileOld tile) {
-      proceedWithExplosion(tile, gameBloc, skipThis: true);
+      proceedWithExplosion(tile,  skipThis: true);
     });
   }
 
