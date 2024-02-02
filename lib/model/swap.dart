@@ -15,6 +15,6 @@ class Swap extends Object {
 
   @override
   bool operator==(dynamic other){
-    return identical(other, this) || other.hashCode == this.hashCode;
+    return identical(other, this) || other.hashCode == hashCode;
   }
 }

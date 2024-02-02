@@ -98,16 +98,16 @@ class AnimationsResolver {
 
     for (int row = 0; row < rows; row++) {
       for (int col = 0; col < cols; col++) {
-        if (levelNtf.value!.grid.array![row][col] == "X") {
+        if (levelNtf.value!.grid.array![row][col] == 'X') {
           _state.array![row][col] = -1;
           _types.array![row][col] = TileType.forbidden;
           _tiles.array![row][col] = null;
         } else {
-          TileOld? tile = gameController.grid!.array![row][col];
+          final TileOld tile = gameController.grid!.array![row][col];
           if (tile.type == TileType.empty) {
             _state.array![row][col] = 0;
             _types.array![row][col] = TileType.empty;
-          } else if (tile.canMove) {
+          } else if (tile.canMove ) {
             _state.array![row][col] = 1;
             _types.array![row][col] = tile.type!;
           } else {
@@ -132,7 +132,7 @@ class AnimationsResolver {
     //
     // Initialize the list of all animations per delay, and per identity
     //
-    _animationsPerIdentityAndDelay = Map<int, Map<int, TileAnimation>>();
+    _animationsPerIdentityAndDelay = <int, Map<int, TileAnimation>>{};
     _animationsIdentitiesPerDelay = Map<int, List<int>>();
 
     //
@@ -460,7 +460,7 @@ class AnimationsResolver {
   //
   int _processColumn(int col, int startDelay) {
     // Retrieve the entry row for this column
-    int rowTop = _getEntryRowForColumn(col) + 1;
+    final int rowTop = _getEntryRowForColumn(col) + 1;
 
     // Count the number of moves
     // int countMoves = 0;
@@ -517,8 +517,8 @@ class AnimationsResolver {
       // Case where there is a tile
       //
       if (_state.array![row][col] == 1 && dest != -1) {
-        RowCol from = RowCol(row: row, col: col);
-        RowCol to = RowCol(row: dest, col: col);
+        final RowCol from = RowCol(row: row, col: col);
+        final RowCol to = RowCol(row: dest, col: col);
 
         // There will be an animation (move down)
         final id = _identities.array![row][col];
@@ -606,7 +606,7 @@ class AnimationsResolver {
 
         // Consider each empty
         for (int i = 0; i < empty; i++) {
-          TileType newTileType =
+          final TileType newTileType =
               TileOld.random(math.Random()); // Generate a new random tile type
           _state.array![dest][col] = 1;
           _types.array![dest][col] = newTileType;
@@ -624,8 +624,8 @@ class AnimationsResolver {
           _identities.array![dest][col] = _nextIdentity++;
 
           // Record a new tile injection animation
-          RowCol from = RowCol(row: row, col: col);
-          RowCol to = RowCol(row: dest, col: col);
+          final RowCol from = RowCol(row: row, col: col);
+          final RowCol to = RowCol(row: dest, col: col);
 
           final id = _identities.array![dest][col];
           _registerAnimation(

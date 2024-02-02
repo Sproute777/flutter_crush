@@ -131,6 +131,7 @@ class GameViewState extends State<GameView>
               onTapUp: _onPanEnd,
               child: Stack(
                 children: <Widget>[
+                  _buildAuthor(),
                   _buildMovesLeftPanel(orientation),
                   _buildObjectivePanel(orientation),
                   _buildBoard( gameController!.levelNtf),
@@ -145,19 +146,35 @@ class GameViewState extends State<GameView>
     );
   }
 
- 
+  //
+  // Puts the author text
+  //
+  Widget _buildAuthor() {
+    return const Align(
+      alignment: Alignment.bottomLeft,
+      child: Padding(
+        padding: EdgeInsets.all(8.0),
+        child: ShadowedText(
+          text: 'by Didier Boelens',
+          // color: Colors.white,
+          fontSize: 12.0,
+          // offset: Offset(1.0, 1.0),
+        ),
+      ),
+    );
+  }
 
   //
   // Builds the score panel
   //
   Widget _buildMovesLeftPanel(Orientation orientation) {
-    final Alignment alignment = orientation == Orientation.portrait
+    final  alignment = orientation == Orientation.portrait
         ? Alignment.topLeft
         : Alignment.topLeft;
 
     return Align(
       alignment: alignment,
-      child: GameMovesLeftPanel(),
+      child: const GameMovesLeftPanel(),
     );
   }
 
@@ -165,13 +182,13 @@ class GameViewState extends State<GameView>
   // Builds the objective panel
   //
   Widget _buildObjectivePanel(Orientation orientation) {
-    final Alignment alignment = orientation == Orientation.portrait
+    final  alignment = orientation == Orientation.portrait
         ? Alignment.topRight
         : Alignment.bottomLeft;
 
     return Align(
       alignment: alignment,
-      child: const ObjectivePanel(),
+      child: ObjectivePanel(),
     );
   }
 
@@ -183,6 +200,7 @@ class GameViewState extends State<GameView>
       return const SizedBox();
     }
     return Align(
+      // alignment: Alignment.center,
       child: Board(
         rows: levelNtf.value!.rows,
         cols: levelNtf.value!.cols,
@@ -197,10 +215,11 @@ class GameViewState extends State<GameView>
   Widget _buildTiles() {
     return StreamBuilder<bool>(
       stream: readyBloc!.outReadyToDisplayTiles,
+      // initialData: null,
       builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
         if (snapshot.hasData) {
-          List<Widget> tiles = <Widget>[];
-          Array2d<TileOld?> grid = gameController!.grid!;
+          final List<Widget> tiles = <Widget>[];
+          final Array2d<TileOld?> grid = gameController!.grid!;
 
           for (int row = 0; row < gameController!.levelNtf.value!.rows; row++) {
             for (int col = 0; col < gameController!.levelNtf.value!.cols; col++) {
@@ -263,7 +282,9 @@ class GameViewState extends State<GameView>
     if (rowCol.row < 0 ||
         rowCol.row >= gameController!.levelNtf.value!.rows ||
         rowCol.col < 0 ||
-        rowCol.col >= gameController!.levelNtf.value!.cols) return;
+        rowCol.col >= gameController!.levelNtf.value!.cols) {
+      return;
+    }
 
     // Check if the [row,col] corresponds to a possible swap
     TileOld? selectedTile = gameController!.grid!.array![rowCol.row][rowCol.col];
@@ -285,7 +306,7 @@ class GameViewState extends State<GameView>
       // Let's position the tile on the Overlay and inflate it a bit to make it more visible
       //
       _overlayEntryFromTile = OverlayEntry(
-          opaque: false,
+          // opaque: false,
           builder: (BuildContext context) {
             return Positioned(
               left: gestureFromTile!.location.x,
@@ -304,7 +325,9 @@ class GameViewState extends State<GameView>
   // The pointer starts to move
   //
   void _onPanStart(DragStartDetails details) {
-    if (!_allowGesture) return;
+    if (!_allowGesture) {
+      return;
+    }
     if (gestureFromTile != null) {
       gestureStarted = true;
       gestureOffsetStart = details.globalPosition;
@@ -315,7 +338,9 @@ class GameViewState extends State<GameView>
   // The user releases the pointer from the screen
   //
   void _onPanEnd(_) {
-    if (!_allowGesture) return;
+    if (!_allowGesture) {
+      return;
+    }
 
     gestureStarted = false;
     gestureOffsetStart = null;
@@ -327,7 +352,9 @@ class GameViewState extends State<GameView>
   // The pointer has been moved since its last "start"
   //
   void _onPanUpdate(DragUpdateDetails details) {
-    if (!_allowGesture) return;
+    if (!_allowGesture) {
+      return;
+    }
 
     if (gestureStarted) {
       // Try to determine the move type (up, down, left, right)
@@ -346,7 +373,7 @@ class GameViewState extends State<GameView>
         test = true;
       }
 
-      if (test == true) {
+      if (test) {
         RowCol rowCol = RowCol(
             row: gestureFromRowCol!.row + deltaRow,
             col: gestureFromRowCol!.col + deltaCol);
@@ -356,7 +383,7 @@ class GameViewState extends State<GameView>
             rowCol.row == gameController!.levelNtf.value!.rows) {
           // Not possible, outside the boundaries
         } else {
-           TileOld? destTile = gameController!.grid!.array![rowCol.row][rowCol.col];
+          TileOld? destTile = gameController!.grid!.array![rowCol.row][rowCol.col];
           bool canBePlayed = false;
 
           //TODO:  Condition no longer necessary
@@ -391,6 +418,7 @@ class GameViewState extends State<GameView>
 
             // 4. Animate both tiles
             _overlayEntryAnimateSwapTiles = OverlayEntry(
+                // opaque: false,
                 builder: (BuildContext context) {
                   return AnimationSwapTiles(
                     upTile: upTile,
@@ -413,7 +441,7 @@ class GameViewState extends State<GameView>
 
                       if (swapAllowed == true) {
                         // Remember if the tile we move is a bomb
-                        final bool isSourceTileABomb =
+                        bool isSourceTileABomb =
                             TileOld.isBomb(gestureFromTile!.type);
 
                         // Swap the 2 tiles
@@ -421,9 +449,9 @@ class GameViewState extends State<GameView>
 
                         // Get the tiles that need to be removed, following the swap
                         // We need to get the tiles from all possible combos
-                        final Combo comboOne = gameController!.getCombo(
+                        Combo comboOne = gameController!.getCombo(
                             gestureFromTile!.row, gestureFromTile!.col);
-                        final Combo comboTwo = gameController!
+                        Combo comboTwo = gameController!
                             .getCombo(destTile.row, destTile.col);
 
                         // Wait for both animations to complete
@@ -476,7 +504,9 @@ class GameViewState extends State<GameView>
   // If yes make it explode
   //
   void _onTap() {
-    if (!_allowGesture) return;
+    if (!_allowGesture) {
+      return;
+    }
     if (gestureFromTile != null && TileOld.isBomb(gestureFromTile!.type)) {
       // Prevent the user from playing during the animation
       _allowGesture = false;
@@ -509,9 +539,7 @@ class GameViewState extends State<GameView>
   // This is used just before starting an animation
   //
   void _showComboTilesForAnimation(Combo combo, bool visible) {
-    for (final tile in combo.tiles) {
-      tile?.visible = visible;
-    }
+    combo.tiles.forEach((TileOld? tile) => tile?.visible = visible);
     setState(() {});
   }
 
@@ -546,12 +574,14 @@ class GameViewState extends State<GameView>
         // await Audio.playAsset(AudioType.move_down);
 
         Overlay.of(context).insert(overlayEntry!);
+        break;
 
       case ComboType.none:
       case ComboType.one:
       case ComboType.two:
         // These type of combos are not possible, therefore directly return
         completer.complete(null);
+        break;
 
       default:
         // Hide the tiles before starting the animation
@@ -604,7 +634,7 @@ class GameViewState extends State<GameView>
     // Determine all animations (and sequence of animations) that
     // need to be played as a consequence of a combo
     //
-    AnimationsResolver animationResolver = AnimationsResolver(
+    final AnimationsResolver animationResolver = AnimationsResolver(
         gameController: gameController!, levelNtf: gameController!.levelNtf);
     animationResolver.resolve();
 
@@ -685,7 +715,7 @@ class GameViewState extends State<GameView>
     setState(() {});
 
     return completer.future;
-  }
+  } 
 
   //
   // The game is over

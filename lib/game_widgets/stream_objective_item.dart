@@ -1,25 +1,25 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../bloc/game_bloc.dart';
+import 'package:logging/logging.dart';
+
 import '../bloc/objective_bloc.dart';
 import '../controllers/game_controller.dart';
 import '../model/objective.dart';
 import '../model/tile.dart';
-import 'package:flutter/material.dart';
-import 'package:logging/logging.dart';
 
 class StreamObjectiveItem extends StatefulWidget {
-  StreamObjectiveItem({
-    Key? key,
+  const StreamObjectiveItem({
+    super.key,
     required this.objective,
-  }): super(key: key);
+  });
 
   final Objective objective;
 
   @override
   StreamObjectiveItemState createState() {
-    return new StreamObjectiveItemState();
+    return StreamObjectiveItemState();
   }
 }
 

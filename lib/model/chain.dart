@@ -32,4 +32,3 @@ enum ChainType {
   horizontal,
   vertical,
 }
-

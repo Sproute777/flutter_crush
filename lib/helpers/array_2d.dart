@@ -18,12 +18,16 @@ _generated();
 
 
   set width(int v) {
-    if(array == null) return;
+    if(array == null) {
+      return;
+    }
     _width = v;
-    while (array!.length > v) array!.removeLast();
+    while (array!.length > v) {
+      array!.removeLast();
+    }
     while (array!.length < v) {
-      List<T> newList = <T>[];
-      if (array!.length > 0) {
+      final newList = <T>[];
+      if (array!.isNotEmpty) {
         for (int y = 0; y < array!.first.length; y++) {
            newList.add(defaultValue!);
         }
@@ -33,14 +37,20 @@ _generated();
   }
 
   set height(int v) {
-    if(array == null) return;
+    if(array == null) {
+      return;
+    }
     _height = v;
     while (array!.first.length > v) {
-      for (int x = 0; x < array!.length; x++) array![x].removeLast();
+      for (int x = 0; x < array!.length; x++) {
+        array![x].removeLast();
+      }
     }
     while (array!.first.length < v) {
       for (int x = 0; x < array!.length; x++) {
-        if (defaultValue != null) array![x].add(defaultValue);
+        if (defaultValue != null) {
+          array![x].add(defaultValue);
+        }
       }
     }
   }
@@ -77,14 +87,14 @@ return newArray2d;
 }
 
 String dumpArray2d(Array2d grid) {
-  String string = "";
+  String string = '';
   for (int row = grid.height; row > 0; row--) {
-    List<String> values = <String>[];
+    final values = <String>[];
     for (int col = 0; col < grid.width; col++) {
-      var cell = grid.array![row - 1][col];
-      values.add(cell == null ? " " : cell.toString());
+      final cell = grid.array![row - 1][col];
+      values.add(cell == null ? ' ' : cell.toString());
     }
-    string += (values.join(" ") + "\n");
+    string += '${values.join(' ')}\n';
   }
   return string;
 }

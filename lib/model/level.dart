@@ -56,4 +56,3 @@ class Level with _$Level {
     );
   }
 }
-

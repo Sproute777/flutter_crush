@@ -1,10 +1,13 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
-import '../controllers/game_controller.dart';
-import 'stream_moves_left_counter.dart';
-import '../model/level.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../controllers/game_controller.dart';
+import '../model/level.dart';
+import 'stream_moves_left_counter.dart';
 
 class GameMovesLeftPanel extends StatelessWidget {
+  const GameMovesLeftPanel({super.key});
+
 
   @override
   Widget build(BuildContext context) {
@@ -25,17 +28,17 @@ class GameMovesLeftPanel extends StatelessWidget {
         height: 80.0,
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
+          // mainAxisAlignment: MainAxisAlignment.start,
+          // crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
                 'Level: ${levelNtf.value?.id.index}',
-                style: TextStyle(fontSize: 14.0, color: Colors.black,)
+                style: const TextStyle(fontSize: 14.0, color: Colors.black,)
               ),
             ),
-            StreamMovesLeftCounter(),
+            const StreamMovesLeftCounter(),
           ],
         ),
       ),

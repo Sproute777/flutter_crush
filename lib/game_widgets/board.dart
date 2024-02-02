@@ -31,9 +31,9 @@ class _BoardState extends State<Board> {
 
   Array2d<Color?>? _checker;
 
-  GlobalKey _keyChecker = GlobalKey();
+  final _keyChecker = GlobalKey();
 
-  GlobalKey _keyCheckerCell = GlobalKey();
+  final _keyCheckerCell = GlobalKey();
 
   // GameBloc? gameBloc;
   GameController? gameController;
@@ -81,9 +81,9 @@ class _BoardState extends State<Board> {
         }
 
         int value = topLeft;
-        value |= (topRight << 1);
-        value |= (bottomLeft << 2);
-        value |= (bottomRight << 3);
+        value |= topRight << 1;
+        value |= bottomLeft << 2;
+        value |= bottomRight << 3;
 
         if (value != 0 && value != 6 && value != 9) {
           boxDecoration = BoxDecoration(
@@ -146,7 +146,7 @@ class _BoardState extends State<Board> {
         valueListenable: gameController!.levelNtf,
         builder: (context, level, _) {
           return Container(
-            padding: const EdgeInsets.all(0.0),
+            padding: EdgeInsets.zero,
             width: width,
             height: height,
             color: Colors.transparent,
@@ -164,7 +164,7 @@ class _BoardState extends State<Board> {
   Widget _showDecorations(double width) {
     Logger.root.info('_showDecorations');
     return GridView.builder(
-      padding: const EdgeInsets.all(0.0),
+      padding: EdgeInsets.zero,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: widget.cols + 1,
         childAspectRatio: 1.01,
@@ -192,7 +192,7 @@ class _BoardState extends State<Board> {
       padding: EdgeInsets.all(width * 0.6),
       child: GridView.builder(
         key: _keyChecker,
-        padding: const EdgeInsets.all(0.0),
+        padding: EdgeInsets.zero,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: widget.cols,
           childAspectRatio: 1.01, // 1.01 solves an issue with floating numbers

@@ -13,7 +13,7 @@ class Objective extends Object {
 
   // Constructor
   Objective(String string){
-    List<String> parts = string.split(";");
+    final parts = string.split(';');
     
     // Retrieve the type by its name (as a string)
     type = TileType.values.firstWhere((e)=> e.toString().split('.')[1] == parts[1]);
@@ -23,7 +23,7 @@ class Objective extends Object {
   }
 
   @override
-  bool operator==(dynamic other) => identical(this, other) || this.type == other.type;
+  bool operator==(dynamic other) => identical(this, other) || type == other.type;
 
   @override
   int get hashCode => type.index;

@@ -5,6 +5,8 @@ import '../controllers/game_controller.dart';
 
 
 class StreamMovesLeftCounter extends StatelessWidget {
+  const StreamMovesLeftCounter({super.key});
+
   @override
   Widget build(BuildContext context) {
     final gameController = RepositoryProvider.of<GameController>(context);
