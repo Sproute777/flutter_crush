@@ -2,20 +2,19 @@ import 'dart:collection';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:flutter_crush/bloc/game_bloc.dart';
-import 'package:flutter_crush/helpers/array_2d.dart';
-import 'package:flutter_crush/model/chain.dart';
-import 'package:flutter_crush/model/combo.dart';
-import 'package:flutter_crush/model/level.dart';
-import 'package:flutter_crush/model/row_col.dart';
-import 'package:flutter_crush/model/swap.dart';
-import 'package:flutter_crush/model/swap_move.dart';
-import 'package:flutter_crush/model/tile.dart';
 import 'package:logging/logging.dart' hide Level;
 import 'package:rxdart/rxdart.dart';
 
+import '../helpers/array_2d.dart';
+import '../model/chain.dart';
+import '../model/combo.dart';
+import '../model/level.dart';
 import '../model/objective.dart';
 import '../model/objective_event.dart';
+import '../model/row_col.dart';
+import '../model/swap.dart';
+import '../model/swap_move.dart';
+import '../model/tile.dart';
 
 class GameController {
   static const tag = 'GameController';
@@ -35,18 +34,18 @@ final levelNtf = ValueNotifier<Level?>(null);
   // Helper to identify the variations of a move
   // (used to determine the possible swaps)
   //
-  static List<SwapMove> _moves = <SwapMove>[
-    const SwapMove(row: 0, col: -1),
-    const SwapMove(row: 0, col: 1),
-    const SwapMove(row: -1, col: 0),
-    const SwapMove(row: 1, col: 0),
+  static const List<SwapMove> _moves = <SwapMove>[
+     SwapMove(row: 0, col: -1),
+     SwapMove(row: 0, col: 1),
+     SwapMove(row: -1, col: 0),
+     SwapMove(row: 1, col: 0),
   ];
 
   //
   // Helper to identity the variations of positions
   // depending on an explosion type
   //
-  Map<TileType, List<SwapMove>> _explosions = {
+  final Map<TileType, List<SwapMove>> _explosions = {
     TileType.flare: <SwapMove>[
       const SwapMove(row: 0, col: -1),
       const SwapMove(row: 0, col: 1),

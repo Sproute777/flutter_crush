@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:injectable/injectable.dart';
 
 import '../../model/level.dart';
+import '../../model/level_settings.dart';
 
 abstract class ILevelRepository {
   Future<List<Level>> loadLevels();

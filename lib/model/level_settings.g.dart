@@ -1,13 +1,13 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'level.dart';
+part of 'level_settings.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-LevelSettings _$LevelSettingsFromJson(Map<String, dynamic> json) =>
-    LevelSettings(
+_$$LevelSettingsImpl _$$$LevelSettingsImplFromJson(Map<String, dynamic> json) =>
+    _$$LevelSettingsImpl(
       index: json['level'] as int,
       rows: json['rows'] as int,
       cols: json['cols'] as int,
@@ -17,13 +17,3 @@ LevelSettings _$LevelSettingsFromJson(Map<String, dynamic> json) =>
       aimConfig:
           (json['objective'] as List<dynamic>).map((e) => e as String).toList(),
     );
-
-Map<String, dynamic> _$LevelSettingsToJson(LevelSettings instance) =>
-    <String, dynamic>{
-      'level': instance.index,
-      'rows': instance.rows,
-      'cols': instance.cols,
-      'moves': instance.moves,
-      'grid': instance.gridConfig,
-      'objective': instance.aimConfig,
-    };
