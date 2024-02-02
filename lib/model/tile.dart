@@ -64,61 +64,52 @@ class _TileNewState extends State<TileNew> {
         ],
       );
     } else if (type == TileType.empty) {
-      return SizedBox();
+      return const SizedBox();
     } else {
       return _buildDecoration();
     }
   }
 
-  Widget _buildDecoration([String path = ""]) {
+  Widget _buildDecoration([String path = '']) {
     String imageAsset = path;
-    if (imageAsset == "") {
+    if (imageAsset == '') {
       switch (type) {
         case TileType.wall:
           imageAsset = MyAssets.images.deco.wall.path;
-          break;
 
         case TileType.bomb:
           imageAsset = MyAssets.images.bombs.mine.path;
-          break;
 
         case TileType.flare:
           imageAsset = MyAssets.images.bombs.tnt.path;
-          break;
 
         case TileType.wrapped:
           imageAsset = MyAssets.images.tiles.multicolor.path;
-          break;
 
         case TileType.fireball:
           imageAsset = MyAssets.images.bombs.rocket.path;
-          break;
 
         case TileType.blue:
           imageAsset = MyAssets.images.tiles.blue.path;
-          break;
         case TileType.green:
           imageAsset = MyAssets.images.tiles.green.path;
-          break;
         case TileType.orange:
           imageAsset = MyAssets.images.tiles.orange.path;
-          break;
         case TileType.purple:
           imageAsset = MyAssets.images.tiles.purple.path;
-          break;
         case TileType.red:
           imageAsset = MyAssets.images.tiles.red.path;
-          break;
         case TileType.yellow:
           imageAsset = MyAssets.images.tiles.yellow.path;
-          break;
         case TileType.forbidden:
         case TileType.empty:
         case TileType.last:
           break;
       }
     }
-    if (imageAsset == '') return SizedBox();
+    if (imageAsset == '') {
+      return const SizedBox();
+    }
     return Container(
       decoration: BoxDecoration(
           image: DecorationImage(
@@ -135,11 +126,13 @@ class _TileNewState extends State<TileNew> {
   //
   void setPosition() {
     final level = widget.level;
-    double bottom =
+    final bottom =
         level.boardTop + (level.rows - 1) * level.tileHeight;
     x = level.boardLeft + widget.col * level.tileWidth;
     y = bottom - widget.row * level.tileHeight;
-    if (mounted) setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 }
 
@@ -169,12 +162,12 @@ class TileOld extends Object {
 
   @override
   bool operator ==(dynamic other) {
-    return identical(this, other) || other.hashCode == this.hashCode;
+    return identical(this, other) || other.hashCode == hashCode;
   }
 
   @override
   String toString() {
-    return '[$row][$col] => ${type}';
+    return '[$row][$col] => $type';
   }
 
   //
@@ -207,58 +200,49 @@ class TileOld extends Object {
     }
   }
 
-  Widget _buildDecoration(TileType tileType, [String path = ""]) {
+  Widget _buildDecoration(TileType tileType, [String path = '']) {
     String imageAsset = path;
-    if (imageAsset == "") {
+    if (imageAsset == '') {
       switch (tileType) {
         case TileType.wall:
         // _log.info('buildDecoration wall'); 
           imageAsset = MyAssets.images.deco.wall.path;
-          break;
 
         case TileType.bomb:
           imageAsset = MyAssets.images.bombs.mine.path;
-          break;
 
         case TileType.flare:
           imageAsset = MyAssets.images.bombs.tnt.path;
-          break;
 
         case TileType.wrapped:
           imageAsset = MyAssets.images.tiles.multicolor.path;
-          break;
 
         case TileType.fireball:
           imageAsset = MyAssets.images.bombs.rocket.path;
-          break;
 
         case TileType.blue:
         // _log.info('buildDecoration blue'); 
           imageAsset = MyAssets.images.tiles.blue.path;
-          break;
         case TileType.green:
         // _log.info('buildDecoration green'); 
           imageAsset = MyAssets.images.tiles.green.path;
-          break;
         case TileType.orange:
           imageAsset = MyAssets.images.tiles.orange.path;
-          break;
         case TileType.purple:
           imageAsset = MyAssets.images.tiles.purple.path;
-          break;
         case TileType.red:
           imageAsset = MyAssets.images.tiles.red.path;
-          break;
         case TileType.yellow:
           imageAsset = MyAssets.images.tiles.yellow.path;
-          break;
         case TileType.forbidden:
         case TileType.empty:
         case TileType.last:
           break;
       }
     }
-    if (imageAsset == '') return SizedBox();
+    if (imageAsset == '') {
+      return const SizedBox();
+    }
     // _log.fine('_buildDecoration widget');
     return Container(
       decoration: BoxDecoration(
@@ -275,7 +259,9 @@ class TileOld extends Object {
   // the dimensions of the board and a tile
   //
   void setPosition() {
-    if (levelNtf.value == null) return;
+    if (levelNtf.value == null) {
+      return;
+    }
     double bottom =
         levelNtf.value!.boardTop + (levelNtf.value!.rows - 1) * levelNtf.value!.tileHeight;
    final x = levelNtf.value!.boardLeft + col * levelNtf.value!.tileWidth;
@@ -312,7 +298,7 @@ class TileOld extends Object {
   //
   Widget get widget => getWidgetSized(levelNtf.value!.tileWidth, levelNtf.value!.tileHeight);
 
-  Widget getWidgetSized(double width, double height) => Container(
+  Widget getWidgetSized(double width, double height) => SizedBox(
         width: width,
         height: height,
         child: _widget,
@@ -349,13 +335,17 @@ class TileOld extends Object {
 
   static bool isNormal(TileType? type) {
     int? index = type?.index;
-    if (index == null) return false;
-    return (index >= _firstNormalTile && index <= _lastNormalTile);
+    if (index == null) {
+      return false;
+    }
+    return index >= _firstNormalTile && index <= _lastNormalTile;
   }
 
   static bool isBomb(TileType? type) {
     int? index = type?.index;
-    if (index == null) return false;
+    if (index == null) {
+      return false;
+    }
     return index >= _firstBombTile && index <= _lastBombTile;
   }
 

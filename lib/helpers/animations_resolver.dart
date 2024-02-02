@@ -133,7 +133,7 @@ class AnimationsResolver {
     // Initialize the list of all animations per delay, and per identity
     //
     _animationsPerIdentityAndDelay = <int, Map<int, TileAnimation>>{};
-    _animationsIdentitiesPerDelay = Map<int, List<int>>();
+    _animationsIdentitiesPerDelay = <int, List<int>>{};
 
     //
     // delay before starting an animation
@@ -195,12 +195,12 @@ class AnimationsResolver {
     int delay = startDelay;
     bool hasCombo = false;
 
-    _lastMoves.forEach((RowCol rowCol) {
-      Chain? verticalChain = checkVerticalChain(rowCol.row, rowCol.col);
-      Chain? horizontalChain = checkHorizontalChain(rowCol.row, rowCol.col);
+    for (final rowCol in _lastMoves) {
+      final Chain? verticalChain = checkVerticalChain(rowCol.row, rowCol.col);
+      final Chain? horizontalChain = checkHorizontalChain(rowCol.row, rowCol.col);
 
       // Check if there is a combo
-      Combo combo =
+      final Combo combo =
           Combo(horizontalChain, verticalChain, rowCol.row, rowCol.col);
       if (combo.type != ComboType.none) {
         // We found a combo.  We therefore need to take appropriate actions
@@ -216,7 +216,7 @@ class AnimationsResolver {
         } else {
           animationType = TileAnimationType.collapse;
           if (combo.commonTile == null) {
-            print('Houston, we have a problem');
+            debugPrint('Houston, we have a problem');
             //TODO: this should never happen
           } else {
             // When we are collapsing, the tiles move to the position of the commonTile
@@ -228,11 +228,17 @@ class AnimationsResolver {
 
         // We need to register the animations (combo)
         combo.tiles.forEach((TileOld? tile) {
-          if (tile == null) return;
+          if (tile == null) {
+            return;
+          }
           from = RowCol(row: tile.row, col: tile.col);
           final id = _identities.array![tile.row][tile.col];
-          if (to == null) return;
-          if (from == null) return;
+          if (to == null) {
+            return;
+          }
+          if (from == null) {
+            return;
+          }
           _registerAnimation(
             id,
             delay,
@@ -262,8 +268,10 @@ class AnimationsResolver {
         // Let's update the _state and _types at destination.
         // Except a potential common tile (combo of more than 3 tiles)
         // would remain
-        combo.tiles.forEach((TileOld? tile) {
-          if (tile == null) return;
+        for (final tile in combo.tiles) {
+          if (tile == null) {
+            continue;
+          }
           if (tile != combo.commonTile) {
             _state.array![tile.row][tile.col] = 0;
             _types.array![tile.row][tile.col] = TileType.empty;
@@ -272,9 +280,9 @@ class AnimationsResolver {
             // Transfer the identity
             _identities.array![tile.row][tile.col] = -1;
           }
-        });
+        }
       }
-    });
+    }
 
     // If there is at least one combo,
     // wait for the combo to play before going any further
@@ -286,11 +294,11 @@ class AnimationsResolver {
   // Check if there is a vertical chain.
   //
   Chain? checkVerticalChain(int row, int col) {
-    Chain chain = Chain(type: ChainType.vertical);
-    int minRow = math.max(0, row - 5);
-    int maxRow = math.min(row + 5, rows - 1);
+    final Chain chain = Chain(type: ChainType.vertical);
+    final int minRow = math.max(0, row - 5);
+    final int maxRow = math.min(row + 5, rows - 1);
     int index = row;
-    TileType? type = _tiles.array![row][col]?.type;
+    final TileType? type = _tiles.array![row][col]?.type;
 
     // By default the tested tile is part of the chain
     chain.addTile(_tiles.array![row][col]);
@@ -321,11 +329,11 @@ class AnimationsResolver {
   // Check if there is a horizontal chain.
   //
   Chain? checkHorizontalChain(int row, int col) {
-    Chain chain = Chain(type: ChainType.horizontal);
-    int minCol = math.max(0, col - 5);
-    int maxCol = math.min(col + 5, cols - 1);
+    final Chain chain = Chain(type: ChainType.horizontal);
+    final int minCol = math.max(0, col - 5);
+    final int maxCol = math.min(col + 5, cols - 1);
     int index = col;
-    TileType? type = _tiles.array![row][col]?.type;
+    final TileType? type = _tiles.array![row][col]?.type;
 
     // By default the tested tile is part of the chain
     chain.addTile(_tiles.array![row][col]);
@@ -403,8 +411,8 @@ class AnimationsResolver {
 
       // If there is a hole, slide the tile to the corresponding column
       if (colOffset != 0) {
-        RowCol from = RowCol(row: row, col: col);
-        RowCol to = RowCol(row: row - 1, col: col + colOffset);
+        final RowCol from = RowCol(row: row, col: col);
+        final RowCol to = RowCol(row: row - 1, col: col + colOffset);
 
         // Register the avalanche animation
         final id = _identities.array![row][col];
@@ -450,7 +458,7 @@ class AnimationsResolver {
     _avalanches[col].clear();
 
     // Inform that some
-    return (movesCounter > 0);
+    return movesCounter > 0;
   }
 
   //
@@ -587,7 +595,7 @@ class AnimationsResolver {
     // if not preventing from adding new tiles
     //
     if (empty > 0) {
-      int row = _getEntryRowForColumn(col);
+      final int row = _getEntryRowForColumn(col);
 
       //
       // Only consider the case where there is an entry point

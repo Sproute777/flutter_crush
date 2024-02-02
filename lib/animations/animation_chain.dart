@@ -59,7 +59,7 @@ class AnimationChainState extends State<AnimationChain> with SingleTickerProvide
     //
     // Let's build the list of all animations in the sequence
     //
-    widget.animationSequence.animations.forEach((TileAnimation tileAnimation){
+    for (final tileAnimation in widget.animationSequence.animations) {
       final int start = tileAnimation.delay * delayInMs;
       final int end = start + normalDurationInMs;
       final double ratioStart = start / totalDurationInMs;
@@ -78,7 +78,7 @@ class AnimationChainState extends State<AnimationChain> with SingleTickerProvide
             ),
           )
       );
-    });
+    }
 
     _controller.forward();
   }

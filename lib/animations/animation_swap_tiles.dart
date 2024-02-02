@@ -1,15 +1,15 @@
-import '../model/tile.dart';
 import 'package:flutter/material.dart';
-import 'package:logging/logging.dart';
+
+import '../model/tile.dart';
 
 class AnimationSwapTiles extends StatefulWidget {
-  AnimationSwapTiles({
-    Key? key,
+  const AnimationSwapTiles({
+    super.key,
     required this.upTile,
     required this.downTile,
     this.onComplete,
     required this.swapAllowed,
-  }): super(key: key);
+  });
 
   final TileOld upTile;
   final TileOld downTile;
@@ -17,10 +17,10 @@ class AnimationSwapTiles extends StatefulWidget {
   final bool swapAllowed;
 
   @override
-  _AnimationSwapTilesState createState() => _AnimationSwapTilesState();
+  AnimationSwapTilesState createState() => AnimationSwapTilesState();
 }
 
-class _AnimationSwapTilesState extends State<AnimationSwapTiles> with SingleTickerProviderStateMixin {
+class AnimationSwapTilesState extends State<AnimationSwapTiles> with SingleTickerProviderStateMixin {
  late final AnimationController _controller;
 
   @override
@@ -28,7 +28,7 @@ class _AnimationSwapTilesState extends State<AnimationSwapTiles> with SingleTick
     super.initState();
 
     _controller = AnimationController(
-      duration: Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 300),
       vsync: this,
     )..addListener(() {
       setState(() {});

@@ -1,9 +1,10 @@
 import 'dart:async';
 
-import '../model/objective_event.dart';
-import '../model/tile.dart';
 import 'package:logging/logging.dart';
 import 'package:rxdart/rxdart.dart';
+
+import '../model/objective_event.dart';
+import '../model/tile.dart';
 
 class AimBloc {
   ///
@@ -32,7 +33,7 @@ class AimBloc {
     _objectivesController.stream
         // but, we only consider the ones that matches THIS one
         .where((e) {
-          Logger.root.fine('objectiveCtr type ${e.type} ${tileType}');
+          Logger.root.fine('objectiveCtr type ${e.type} $tileType');
           return e.type == tileType;
         })
         // if any, we emit the corresponding counter

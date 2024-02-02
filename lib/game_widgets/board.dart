@@ -40,7 +40,9 @@ class _BoardState extends State<Board> {
   ReadyBloc? readyBloc;
 
   void _buildDecorations() {
-    if (_decorations != null) return;
+    if (_decorations != null) {
+      return;
+    }
     _decorations = Array2d<BoxDecoration?>(widget.cols + 1, widget.rows + 1,
         defaultValue: null);
 
@@ -98,9 +100,11 @@ class _BoardState extends State<Board> {
   }
 
   void _buildChecker() {
-    if (_checker != null) return;
+    if (_checker != null) {
+      return;
+    }
 
-    Logger.root.info('_buildChecker');
+    // Logger.root.info('_buildChecker');
     _checker = Array2d<Color?>(widget.rows, widget.cols, defaultValue: null);
     int counter = 0;
 
@@ -109,7 +113,7 @@ class _BoardState extends State<Board> {
       for (int col = 0; col < widget.cols; col++) {
         final double opacity = ((counter + col) % 2 == 1) ? 0.3 : 0.1;
 
-        Color color = (widget.levelNtf.value!.grid.array![row][col] == 'X')
+        final color = (widget.levelNtf.value!.grid.array![row][col] == 'X')
             ? Colors.transparent
             : Colors.white.withOpacity(opacity);
 

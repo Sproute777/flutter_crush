@@ -23,7 +23,7 @@ class GameController {
   Array2d<TileOld>? get grid => _grid;
   late math.Random _rnd;
 
-final levelNtf = ValueNotifier<Level?>(null); 
+  final levelNtf = ValueNotifier<Level?>(null);
   //
   // List of all possible Swaps
   //
@@ -35,10 +35,10 @@ final levelNtf = ValueNotifier<Level?>(null);
   // (used to determine the possible swaps)
   //
   static const List<SwapMove> _moves = <SwapMove>[
-     SwapMove(row: 0, col: -1),
-     SwapMove(row: 0, col: 1),
-     SwapMove(row: -1, col: 0),
-     SwapMove(row: 1, col: 0),
+    SwapMove(row: 0, col: -1),
+    SwapMove(row: 0, col: 1),
+    SwapMove(row: -1, col: 0),
+    SwapMove(row: 1, col: 0),
   ];
 
   //
@@ -152,7 +152,8 @@ final levelNtf = ValueNotifier<Level?>(null);
                   col: col,
                   type: type,
                   levelNtf: levelNtf,
-                  depth: (levelNtf.value!.grid.array![row][col] == '2') ? 1 : 0);
+                  depth:
+                      (levelNtf.value!.grid.array![row][col] == '2') ? 1 : 0);
 
             case 'X':
               // No cell
@@ -174,7 +175,9 @@ final levelNtf = ValueNotifier<Level?>(null);
           }
 
           // Assign the tile
-          if (tile != null) _grid!.array![row][col] = tile;
+          if (tile != null) {
+            _grid!.array![row][col] = tile;
+          }
         }
       }
 
@@ -182,7 +185,7 @@ final levelNtf = ValueNotifier<Level?>(null);
       // 2. Identify the possible swaps
       //
       identifySwaps();
-    } while (_swaps.length == 0);
+    } while (_swaps.isEmpty);
 
     //
     // Once everything is set, build the tile Widgets
@@ -190,7 +193,9 @@ final levelNtf = ValueNotifier<Level?>(null);
     for (int row = 0; row < levelNtf.value!.rows; row++) {
       for (int col = 0; col < levelNtf.value!.cols; col++) {
         // Only consider the authorized cells (not forbidden)
-        if (_grid!.array?[row][col].type == TileType.forbidden) continue;
+        if (_grid!.array?[row][col].type == TileType.forbidden) {
+          continue;
+        }
 
         _grid!.array![row][col].build();
       }
@@ -238,7 +243,9 @@ final levelNtf = ValueNotifier<Level?>(null);
                 destCol < totalCols) {
               toTile = _grid!.array![destRow][destCol];
               // If the destination does not exist, skip
-              if (toTile.type == TileType.forbidden) continue;
+              if (toTile.type == TileType.forbidden) {
+                continue;
+              }
 
               // If the source tile is a bomb or if the destination tile is empty, all swaps are possible
               if (isSrcBombTile) {
@@ -257,12 +264,17 @@ final levelNtf = ValueNotifier<Level?>(null);
               }
 
               // If we want to swap the same type of tile => skip
-              if (toTile.type == fromTile.type) continue;
+              if (toTile.type == fromTile.type) {
+                continue;
+              }
 
               if (isDestNormalTile || toTile.type == TileType.empty) {
                 // Exchange the tiles
                 _grid!.array![destRow][destCol] = TileOld(
-                    row: row, col: col, type: fromTile.type, levelNtf: levelNtf);
+                    row: row,
+                    col: col,
+                    type: fromTile.type,
+                    levelNtf: levelNtf);
                 _grid!.array![row][col] = TileOld(
                     row: destRow,
                     col: destCol,
@@ -319,11 +331,11 @@ final levelNtf = ValueNotifier<Level?>(null);
   // Check if there is a vertical chain.
   //
   Chain? checkVerticalChain(int row, int col) {
-    Chain chain = Chain(type: ChainType.vertical);
-    int minRow = math.max(0, row - 5);
-    int maxRow = math.min(row + 5, _grid!.height - 1);
-    int index = row;
-    TileType? type = _grid!.array![row][col].type;
+    final Chain chain = Chain(type: ChainType.vertical);
+    final int minRow = math.max(0, row - 5);
+    final int maxRow = math.min(row + 5, _grid!.height - 1);
+    var index = row;
+    final TileType? type = _grid!.array![row][col].type;
 
     // By default the tested tile is part of the chain
     chain.addTile(_grid!.array![row][col]);
@@ -354,11 +366,11 @@ final levelNtf = ValueNotifier<Level?>(null);
   // Check if there is a horizontal chain.
   //
   Chain? checkHorizontalChain(int row, int col) {
-    Chain chain = Chain(type: ChainType.horizontal);
-    int minCol = math.max(0, col - 5);
-    int maxCol = math.min(col + 5, _grid!.width - 1);
+    final Chain chain = Chain(type: ChainType.horizontal);
+    final int minCol = math.max(0, col - 5);
+    final int maxCol = math.min(col + 5, _grid!.width - 1);
     int index = col;
-    TileType? type = _grid!.array![row][col].type;
+    final TileType? type = _grid!.array![row][col].type;
 
     // By default the tested tile is part of the chain
     chain.addTile(_grid!.array![row][col]);
@@ -389,7 +401,7 @@ final levelNtf = ValueNotifier<Level?>(null);
   // Check if the swap between 2 tiles is recognized
   //
   bool swapContains(TileOld source, TileOld destination) {
-    Swap testSwap = Swap(from: source, to: destination);
+    final Swap testSwap = Swap(from: source, to: destination);
     return _swaps.keys.contains(testSwap.hashCode);
   }
 
@@ -397,10 +409,10 @@ final levelNtf = ValueNotifier<Level?>(null);
   // Swap 2 tiles
   //
   void swapTiles(TileOld source, TileOld destination) {
-    RowCol sourceRowCol = RowCol(row: source.row, col: source.col);
-    RowCol destRowCol = RowCol(row: destination.row, col: destination.col);
+    final sourceRowCol = RowCol(row: source.row, col: source.col);
+    final destRowCol = RowCol(row: destination.row, col: destination.col);
     source.swapRowColWith(destination);
-    TileOld? tft = grid!.array![sourceRowCol.row][sourceRowCol.col];
+    final tft = grid!.array![sourceRowCol.row][sourceRowCol.col];
     grid!.array![sourceRowCol.row][sourceRowCol.col] =
         grid!.array![destRowCol.row][destRowCol.col];
     grid!.array![destRowCol.row][destRowCol.col] = tft;
@@ -410,8 +422,8 @@ final levelNtf = ValueNotifier<Level?>(null);
   // Get combo resulting from a move
   //
   Combo getCombo(int row, int col) {
-    Chain? verticalChain = checkVerticalChain(row, col);
-    Chain? horizontalChain = checkHorizontalChain(row, col);
+    final Chain? verticalChain = checkVerticalChain(row, col);
+    final Chain? horizontalChain = checkHorizontalChain(row, col);
 
     return Combo(horizontalChain, verticalChain, row, col);
   }
@@ -422,8 +434,10 @@ final levelNtf = ValueNotifier<Level?>(null);
   void resolveCombo(Combo combo) {
     // We now need to remove all the Tiles from the grid and change the type if necessary
     _log.finest('resolveCombo');
-    combo.tiles.forEach((TileOld? tile) {
-      if (tile == null) return;
+    for (final tile in combo.tiles) {
+      if (tile == null) {
+        continue;
+      }
       if (tile != combo.commonTile) {
         // Decrement the depth
         if (--grid!.array![tile.row][tile.col].depth < 0) {
@@ -447,7 +461,7 @@ final levelNtf = ValueNotifier<Level?>(null);
         // We need to notify about the creation of a new tile
         pushTileEvent(combo.resultingTileType, 1);
       }
-    });
+    }
   }
 
   //
@@ -455,7 +469,7 @@ final levelNtf = ValueNotifier<Level?>(null);
   //
   void refreshGridAfterAnimations(
       Array2d<TileType> tileTypes, Set<RowCol> involvedCells) {
-    involvedCells.forEach((RowCol rowCol) {
+    for (final rowCol in involvedCells) {
       _grid!.array![rowCol.row][rowCol.col].row = rowCol.row;
       _grid!.array![rowCol.row][rowCol.col].col = rowCol.col;
       _grid!.array![rowCol.row][rowCol.col].type =
@@ -463,36 +477,38 @@ final levelNtf = ValueNotifier<Level?>(null);
       _grid!.array![rowCol.row][rowCol.col].visible = true;
       _grid!.array![rowCol.row][rowCol.col].depth = 0;
       _grid!.array![rowCol.row][rowCol.col].build();
-    });
+    }
   }
 
   //
   // Proceed with an explosion
   // The spread of the explosion depends on the type of bomb
   //
-  void proceedWithExplosion(TileOld tileExplosion, 
-      {bool skipThis = false}) {
+  void proceedWithExplosion(TileOld tileExplosion, {bool skipThis = false}) {
     // Retrieve the list of row/col variations
-    List<SwapMove>? _swaps = _explosions[tileExplosion.type];
+    final List<SwapMove>? swaps = _explosions[tileExplosion.type];
 
     // We will record any explosions that could happen should
     // a bomb make another bomb explode
-    List<TileOld> _subExplosions = <TileOld>[];
+    final List<TileOld> subExplosions = <TileOld>[];
 
     // All the tiles in that area will disappear
-    _swaps?.forEach((SwapMove move) {
-      int row = tileExplosion.row + move.row;
-      int col = tileExplosion.col + move.col;
+    swaps?.forEach((SwapMove move) {
+      final int row = tileExplosion.row + move.row;
+      final int col = tileExplosion.col + move.col;
 
       // Test if the cell is valid
-      if (row > -1 && row < levelNtf.value!.rows && col > -1 && col < levelNtf.value!.cols) {
+      if (row > -1 &&
+          row < levelNtf.value!.rows &&
+          col > -1 &&
+          col < levelNtf.value!.cols) {
         // And also if we may explode the tile
         if (levelNtf.value!.grid.array![row][col] == '1') {
-          TileOld? tile = _grid!.array![row][col];
+          final TileOld tile = _grid!.array![row][col];
 
           if (TileOld.isBomb(tile.type) && !skipThis) {
             // Another bomb must explode
-            _subExplosions.add(tile);
+            subExplosions.add(tile);
           } else {
             // Notify that we removed some tiles
             pushTileEvent(tile.type, 1);
@@ -506,8 +522,8 @@ final levelNtf = ValueNotifier<Level?>(null);
     });
 
     // Proceed with chained explosions
-    _subExplosions.forEach((TileOld tile) {
-      proceedWithExplosion(tile,  skipThis: true);
+    subExplosions.forEach((TileOld tile) {
+      proceedWithExplosion(tile, skipThis: true);
     });
   }
 
@@ -527,7 +543,8 @@ final levelNtf = ValueNotifier<Level?>(null);
     // We first need to decrement the objective by the counter
     Objective? objective;
     try {
-      objective = levelNtf.value!.objectives.firstWhere((o) => o.type == tileType);
+      objective =
+          levelNtf.value!.objectives.firstWhere((o) => o.type == tileType);
     } catch (_) {}
     if (objective == null) {
       return;
@@ -557,7 +574,8 @@ final levelNtf = ValueNotifier<Level?>(null);
     levelNtf.value = lvl;
     _log.info(lvl);
     _grid = Array2d<TileOld>(lvl.rows, lvl.cols,
-        defaultValue: TileOld(type: TileType.empty, levelNtf: ValueNotifier<Level?>(null)));
+        defaultValue: TileOld(
+            type: TileType.empty, levelNtf: ValueNotifier<Level?>(null)));
     // Fill the Game with Tile and make sure there are possible Swaps
     //
     await shuffle();
@@ -592,18 +610,19 @@ final levelNtf = ValueNotifier<Level?>(null);
 
   void setTileWidth(double value) {
     _log.warning('setTileWidth $value');
-     levelNtf.value = levelNtf.value!.copyWith(tileWidth: value);
+    levelNtf.value = levelNtf.value!.copyWith(tileWidth: value);
     _log.warning('setBoardTop value ${levelNtf.value}');
   }
 
   void setTileHeight(double value) {
     _log.warning('setTileHeight $value');
-     levelNtf.value = levelNtf.value!.copyWith(tileHeight: value);
+    levelNtf.value = levelNtf.value!.copyWith(tileHeight: value);
     _log.warning('setBoardTop value ${levelNtf.value}');
   }
 
   void levelDecrementMove() {
-    final movesLeft = (levelNtf.value!.movesLeft - 1).clamp(0, levelNtf.value!.maxMoves);
+    final movesLeft =
+        (levelNtf.value!.movesLeft - 1).clamp(0, levelNtf.value!.maxMoves);
     levelNtf.value = levelNtf.value!.copyWith(movesLeft: movesLeft);
   }
 
