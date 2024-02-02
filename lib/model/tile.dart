@@ -1,9 +1,11 @@
 import 'dart:math' as math;
 import 'dart:math';
-import 'package:flutter_crush/gen/assets.gen.dart';
-import 'package:flutter_crush/model/level.dart';
+
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart' hide Level;
+
+import '../gen/assets.gen.dart';
+import 'level.dart';
 
 class TileNew extends StatefulWidget {
   final TileType type;

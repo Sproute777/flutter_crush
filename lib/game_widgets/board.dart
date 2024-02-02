@@ -1,14 +1,14 @@
 import 'dart:math' as math;
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_crush/bloc/game_bloc.dart';
-import 'package:flutter_crush/controllers/game_controller.dart';
-import 'package:flutter_crush/helpers/array_2d.dart';
-import 'package:flutter_crush/model/level.dart';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logging/logging.dart' hide Level;
 
 import '../bloc/ready_bloc.dart';
+import '../controllers/game_controller.dart';
+import '../helpers/array_2d.dart';
 import '../level/domain/level_const.dart';
+import '../model/level.dart';
 
 class Board extends StatefulWidget {
   Board({

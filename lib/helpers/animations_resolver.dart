@@ -1,16 +1,17 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:flutter_crush/controllers/game_controller.dart';
-import 'package:flutter_crush/helpers/array_2d.dart';
-import 'package:flutter_crush/model/animation_sequence.dart';
-import 'package:flutter_crush/model/avalanche_test.dart';
-import 'package:flutter_crush/model/chain.dart';
-import 'package:flutter_crush/model/combo.dart';
-import 'package:flutter_crush/model/level.dart';
-import 'package:flutter_crush/model/row_col.dart';
-import 'package:flutter_crush/model/tile.dart';
-import 'package:flutter_crush/model/tile_animation.dart';
+
+import '../controllers/game_controller.dart';
+import '../model/animation_sequence.dart';
+import '../model/avalanche_test.dart';
+import '../model/chain.dart';
+import '../model/combo.dart';
+import '../model/level.dart';
+import '../model/row_col.dart';
+import '../model/tile.dart';
+import '../model/tile_animation.dart';
+import 'array_2d.dart';
 
 class AnimationsResolver {
   // final GameBloc gameBloc;
@@ -57,7 +58,7 @@ class AnimationsResolver {
   late Map<int, List<int>> _animationsIdentitiesPerDelay;
 
   // List of all cells, involved in the animations
-  Set<RowCol> _involvedCells = Set<RowCol>();
+  final _involvedCells = <RowCol>{};
   Set<RowCol> get involvedCells => _involvedCells;
 
   // Longuest delay for all animations
@@ -66,13 +67,13 @@ class AnimationsResolver {
   // Working array that contains the last moves that took place
   // following a single resolution
   // Used to check for combos
-  Set<RowCol> _lastMoves = Set<RowCol>();
+  final _lastMoves = <RowCol>{};
 
   // Registers an animation
   void _registerAnimation(int identity, int delay, TileAnimation animation) {
     // First register per identity, then per delay
     if (_animationsPerIdentityAndDelay[identity] == null) {
-      _animationsPerIdentityAndDelay[identity] = Map<int, TileAnimation>();
+      _animationsPerIdentityAndDelay[identity] = <int, TileAnimation>{};
     }
 
     _animationsPerIdentityAndDelay[identity]?[delay] = animation;

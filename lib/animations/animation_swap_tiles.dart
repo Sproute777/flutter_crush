@@ -1,4 +1,4 @@
-import 'package:flutter_crush/model/tile.dart';
+import '../model/tile.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 

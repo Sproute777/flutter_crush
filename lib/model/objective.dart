@@ -1,4 +1,4 @@
-import 'package:flutter_crush/model/tile.dart';
+import 'tile.dart';
 
 ///
 /// Objective

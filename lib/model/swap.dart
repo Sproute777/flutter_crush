@@ -1,4 +1,4 @@
-import 'package:flutter_crush/model/tile.dart';
+import 'tile.dart';
 
 /// Identifies a possible swap between 2 tiles
 class Swap extends Object {

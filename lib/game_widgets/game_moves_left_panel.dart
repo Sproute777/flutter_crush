@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_crush/controllers/game_controller.dart';
-import 'package:flutter_crush/game_widgets/stream_moves_left_counter.dart';
-import 'package:flutter_crush/model/level.dart';
+import '../controllers/game_controller.dart';
+import 'stream_moves_left_counter.dart';
+import '../model/level.dart';
 import 'package:flutter/material.dart';
 
 class GameMovesLeftPanel extends StatelessWidget {

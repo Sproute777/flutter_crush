@@ -1,23 +1,25 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_crush/game_widgets/stream_objective_item.dart';
-import 'package:flutter_crush/model/level.dart';
-import 'package:flutter_crush/model/objective.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../controllers/game_controller.dart';
+import '../model/level.dart';
+import '../model/objective.dart';
+import 'stream_objective_item.dart';
 
 class ObjectivePanel extends StatelessWidget {
+  const ObjectivePanel({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final  gameController = RepositoryProvider.of<GameController>(context);
+    final gameController = RepositoryProvider.of<GameController>(context);
     final Level level = gameController.levelNtf.value!;
     final Orientation orientation = MediaQuery.of(context).orientation;
-    final EdgeInsets paddingTop = EdgeInsets.only(top: (orientation == Orientation.portrait ? 10.0 : 0.0));
+    final EdgeInsets paddingTop = EdgeInsets.only(
+        top: (orientation == Orientation.portrait ? 10.0 : 0.0));
     //
     // Build the objectives
     //
-    List<Widget> objectiveWidgets = level.objectives.map((Objective obj){
+    final objectiveWidgets = level.objectives.map((Objective obj) {
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 4.0),
         child: StreamObjectiveItem(objective: obj),

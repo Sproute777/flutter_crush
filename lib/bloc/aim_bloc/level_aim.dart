@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter_crush/model/tile.dart';
+import '../../model/tile.dart';
 
 class LevelAim extends Equatable {
   final TileType type;

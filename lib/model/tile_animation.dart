@@ -1,5 +1,5 @@
-import 'package:flutter_crush/model/row_col.dart';
-import 'package:flutter_crush/model/tile.dart';
+import 'row_col.dart';
+import 'tile.dart';
 
 /// Class which is used to register a Tile animation
 class TileAnimation{

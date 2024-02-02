@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_crush/bloc/game_bloc.dart';
-import 'package:flutter_crush/bloc/objective_bloc.dart';
-import 'package:flutter_crush/controllers/game_controller.dart';
-import 'package:flutter_crush/model/objective.dart';
-import 'package:flutter_crush/model/tile.dart';
+import '../bloc/game_bloc.dart';
+import '../bloc/objective_bloc.dart';
+import '../controllers/game_controller.dart';
+import '../model/objective.dart';
+import '../model/tile.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 

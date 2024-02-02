@@ -1,5 +1,5 @@
-import 'package:flutter_crush/model/tile.dart';
-import 'package:flutter_crush/model/tile_animation.dart';
+import 'tile.dart';
+import 'tile_animation.dart';
 
 class AnimationSequence {
   // Range of time for this sequence of animations

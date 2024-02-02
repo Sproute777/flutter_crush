@@ -1,7 +1,8 @@
-import 'package:flutter_crush/model/animation_sequence.dart';
-import 'package:flutter_crush/model/level.dart';
-import 'package:flutter_crush/model/tile_animation.dart';
 import 'package:flutter/material.dart';
+
+import '../model/animation_sequence.dart';
+import '../model/level.dart';
+import '../model/tile_animation.dart';
 
 
 class AnimationChain extends StatefulWidget {
@@ -59,8 +60,8 @@ class _AnimationChainState extends State<AnimationChain> with SingleTickerProvid
     // Let's build the list of all animations in the sequence
     //
     widget.animationSequence.animations.forEach((TileAnimation tileAnimation){
-      int start = tileAnimation.delay * (delayInMs);
-      int end = start + normalDurationInMs;
+      final int start = tileAnimation.delay * (delayInMs);
+      final int end = start + normalDurationInMs;
       final double ratioStart = start / totalDurationInMs;
       final double ratioEnd = end / totalDurationInMs;
 
@@ -90,8 +91,8 @@ class _AnimationChainState extends State<AnimationChain> with SingleTickerProvid
 
   @override
   Widget build(BuildContext context) {
-    TileAnimation firstAnimation = widget.animationSequence.animations[0];
-    int totalAnimations = widget.animationSequence.animations.length;
+    final TileAnimation firstAnimation = widget.animationSequence.animations[0];
+    final int totalAnimations = widget.animationSequence.animations.length;
     int index = totalAnimations - 1;
 
     Widget? theWidget = firstAnimation.tile?.widget;
@@ -109,7 +110,7 @@ class _AnimationChainState extends State<AnimationChain> with SingleTickerProvid
         Positioned(
           left: firstAnimation.tile?.location.x,
           top: firstAnimation.tile?.location.y,
-          child: theWidget ?? SizedBox(),
+          child: theWidget ?? const SizedBox(),
         ),
       ],
     );
@@ -120,19 +121,14 @@ class _AnimationChainState extends State<AnimationChain> with SingleTickerProvid
     switch(tileAnimation.animationType){
         case TileAnimationType.newTile:
           widget = _buildSubAnimationAppearance(index, tileAnimation, childWidget);
-          break;
         case TileAnimationType.moveDown:
           widget = _buildSubAnimationMoveDown(index, tileAnimation, childWidget);
-          break;
         case TileAnimationType.avalanche:
           widget = _buildSubAnimationSlide(index, tileAnimation, childWidget);
-          break;
         case TileAnimationType.collapse:
           widget = _buildSubAnimationCollapse(index, tileAnimation, childWidget);
-          break;
         case TileAnimationType.chain:
           widget = _buildSubAnimationChain(index, tileAnimation, childWidget);
-          break;
       }
     return widget;
   }

@@ -1,24 +1,25 @@
-import 'package:flutter_crush/game_widgets/double_curved_container.dart';
-import 'package:flutter_crush/model/level.dart';
 import 'package:flutter/material.dart';
 
+import '../model/level.dart';
+import 'double_curved_container.dart';
+
 class GameOverSplash extends StatefulWidget {
-  GameOverSplash({
-    Key? key,
+  const GameOverSplash({
+    super.key,
     required this.success,
     required this.level,
     this.onComplete,
-  }) : super(key: key);
+  });
 
   final Level level;
   final VoidCallback? onComplete;
   final bool success;
 
   @override
-  _GameOverSplashState createState() => _GameOverSplashState();
+  GameOverSplashState createState() => GameOverSplashState();
 }
 
-class _GameOverSplashState extends State<GameOverSplash>
+class GameOverSplashState extends State<GameOverSplash>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<double> _animationAppear;
@@ -28,7 +29,7 @@ class _GameOverSplashState extends State<GameOverSplash>
     super.initState();
 
     _controller = AnimationController(
-      duration: Duration(seconds: 3),
+      duration: const Duration(seconds: 3),
       vsync: this,
     )
       ..addListener(() {
@@ -48,7 +49,7 @@ class _GameOverSplashState extends State<GameOverSplash>
     ).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: Interval(
+        curve: const Interval(
           0.0,
           0.1,
           curve: Curves.easeIn,
@@ -71,11 +72,11 @@ class _GameOverSplashState extends State<GameOverSplash>
 
   @override
   Widget build(BuildContext context) {
-    Size screenSize = MediaQuery.of(context).size;
+    final screenSize = MediaQuery.of(context).size;
 
-    Color darkColor = widget.success ? Colors.green[700]! : Colors.red[700]!;
-    Color lightColor = widget.success ? Colors.green : Colors.red;
-    String message = widget.success ? "You Win" : "Game Over";
+    final darkColor = widget.success ? Colors.green[700]! : Colors.red[700]!;
+    final lightColor = widget.success ? Colors.green : Colors.red;
+    final String message = widget.success ? 'You Win' : 'Game Over';
 
     return AnimatedBuilder(
       animation: _animationAppear,
@@ -86,15 +87,12 @@ class _GameOverSplashState extends State<GameOverSplash>
           height: 150.0,
           outerColor: darkColor,
           innerColor: lightColor,
-          child: Container(
-            color: lightColor,
-            child: Center(
-              child: Text(message,
-                  style: TextStyle(
-                    fontSize: 50.0,
-                    color: Colors.white,
-                  )),
-            ),
+          child: Center(
+            child: Text(message,
+                style: const TextStyle(
+                  fontSize: 50.0,
+                  color: Colors.white,
+                )),
           ),
         ),
       ),
@@ -102,7 +100,7 @@ class _GameOverSplashState extends State<GameOverSplash>
         return Positioned(
           left: 0.0,
           top: 150.0 + 100.0 * _animationAppear.value,
-          child: child ?? SizedBox(),
+          child: child ?? const SizedBox(),
         );
       },
     );

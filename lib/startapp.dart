@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_crush/application.dart';
+import 'application.dart';
 import 'package:logging/logging.dart';
 
 class AppBlocObserver extends BlocObserver {

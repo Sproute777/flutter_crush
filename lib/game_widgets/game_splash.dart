@@ -49,7 +49,7 @@ class GameSplashState extends State<GameSplash>
     ).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: Interval(
+        curve: const Interval(
           0.0,
           0.1,
           curve: Curves.easeIn,
@@ -72,12 +72,12 @@ class GameSplashState extends State<GameSplash>
 
   @override
   Widget build(BuildContext context) {
-    Size screenSize = MediaQuery.of(context).size;
+    final screenSize = MediaQuery.of(context).size;
 
     //
     // Build the objectives
     //
-    List<Widget> objectiveWidgets =
+    final objectiveWidgets =
         widget.levelNtf.value!.objectives.map((Objective obj) {
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 4.0),
@@ -97,14 +97,12 @@ class GameSplashState extends State<GameSplash>
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                Container(
-                    child: Text(
+                Text(
                   'Level:  ${widget.levelNtf.value!.id.index}',
-                  style: TextStyle(fontSize: 24.0, color: Colors.white),
-                )),
-                SizedBox(height: 8.0),
+                  style: const TextStyle(fontSize: 24.0, color: Colors.white),
+                ),
+                const SizedBox(height: 8.0),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: objectiveWidgets,
@@ -118,7 +116,7 @@ class GameSplashState extends State<GameSplash>
         return Positioned(
           left: 0.0,
           top: 150.0 + 100.0 * _animationAppear.value,
-          child: child ?? SizedBox(),
+          child: child ?? const SizedBox(),
         );
       },
     );

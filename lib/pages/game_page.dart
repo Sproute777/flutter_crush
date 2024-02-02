@@ -1,31 +1,29 @@
 import 'dart:async';
 
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_crush/animations/animation_chain.dart';
-import 'package:flutter_crush/animations/animation_combo_collapse.dart';
-import 'package:flutter_crush/animations/animation_combo_three.dart';
-import 'package:flutter_crush/animations/animation_swap_tiles.dart';
-import 'package:flutter_crush/bloc/game_bloc.dart';
-import 'package:flutter_crush/game_widgets/board.dart';
-import 'package:flutter_crush/game_widgets/game_moves_left_panel.dart';
-import 'package:flutter_crush/game_widgets/game_over_splash.dart';
-import 'package:flutter_crush/game_widgets/game_splash.dart';
-import 'package:flutter_crush/game_widgets/objective_panel.dart';
-import 'package:flutter_crush/game_widgets/shadowed_text.dart';
-import 'package:flutter_crush/helpers/animations_resolver.dart';
-import 'package:flutter_crush/helpers/array_2d.dart';
-import 'package:flutter_crush/model/animation_sequence.dart';
-import 'package:flutter_crush/model/combo.dart';
-import 'package:flutter_crush/model/level.dart';
-import 'package:flutter_crush/model/row_col.dart';
-import 'package:flutter_crush/model/tile.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logging/logging.dart' hide Level;
 
+import '../animations/animation_chain.dart';
+import '../animations/animation_combo_collapse.dart';
+import '../animations/animation_combo_three.dart';
+import '../animations/animation_swap_tiles.dart';
 import '../bloc/aim_bloc/level_aim_bloc.dart';
 import '../bloc/ready_bloc.dart';
 import '../controllers/game_controller.dart';
-import 'tile_flow_delegate.dart';
+import '../game_widgets/board.dart';
+import '../game_widgets/game_moves_left_panel.dart';
+import '../game_widgets/game_over_splash.dart';
+import '../game_widgets/game_splash.dart';
+import '../game_widgets/objective_panel.dart';
+import '../game_widgets/shadowed_text.dart';
+import '../helpers/animations_resolver.dart';
+import '../helpers/array_2d.dart';
+import '../model/animation_sequence.dart';
+import '../model/combo.dart';
+import '../model/level.dart';
+import '../model/row_col.dart';
+import '../model/tile.dart';
 
 class GamePage extends StatelessWidget {
   const GamePage({super.key, required this.level});

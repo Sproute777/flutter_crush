@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter_crush/utils/guard_with_crashlytics.dart';
+import 'utils/guard_with_crashlytics.dart';
 
 import 'get_it.dart';
 import 'startapp.dart';

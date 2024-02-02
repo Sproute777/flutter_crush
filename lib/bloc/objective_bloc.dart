@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:flutter_crush/model/objective_event.dart';
-import 'package:flutter_crush/model/tile.dart';
+import '../model/objective_event.dart';
+import '../model/tile.dart';
 import 'package:logging/logging.dart';
 import 'package:rxdart/rxdart.dart';
 

@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:flutter_crush/model/level.dart';
+import '../model/level.dart';
 import 'package:flutter/services.dart';
 import 'package:logging/logging.dart' hide Level;
 // import 'package:quiver/iterables.dart';
