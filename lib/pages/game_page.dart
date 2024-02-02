@@ -8,7 +8,6 @@ import '../animations/animation_chain.dart';
 import '../animations/animation_combo_collapse.dart';
 import '../animations/animation_combo_three.dart';
 import '../animations/animation_swap_tiles.dart';
-import '../bloc/aim_bloc/level_aim_bloc.dart';
 import '../bloc/ready_bloc.dart';
 import '../controllers/game_controller.dart';
 import '../game_widgets/board.dart';
@@ -35,26 +34,23 @@ class GamePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => LevelAimBloc(),
-      child: GameView(level: level),
-    );
+    return GameView(level: level);
   }
 }
 
 class GameView extends StatefulWidget {
 
   final Level level;
-  GameView({
-    Key? key,
+  const GameView({
+    super.key,
     required this.level,
-  }) : super(key: key);
+  });
 
   @override
-  _GameViewState createState() => _GameViewState();
+  GameViewState createState() => GameViewState();
 }
 
-class _GameViewState extends State<GameView>
+class GameViewState extends State<GameView>
     with SingleTickerProviderStateMixin {
   // late final AnimationController _controller;
   OverlayEntry? _gameSplash;
@@ -107,20 +103,20 @@ class _GameViewState extends State<GameView>
 
   @override
   Widget build(BuildContext context) {
-    Orientation orientation = MediaQuery.of(context).orientation;
+    final Orientation orientation = MediaQuery.of(context).orientation;
     gameController = RepositoryProvider.of<GameController>(context);
     return ValueListenableBuilder(
       valueListenable: gameController!.levelNtf,
       builder: (context, level,_) {
         return Scaffold(
           floatingActionButton: FloatingActionButton(
-            child: Icon(Icons.close),
+            child: const Icon(Icons.close),
             onPressed: () {
               Navigator.of(context).pop();
             },
           ),
           body: Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               image: DecorationImage(
                 image: AssetImage('assets/images/background/background2.jpeg'),
                 fit: BoxFit.cover,
@@ -135,7 +131,6 @@ class _GameViewState extends State<GameView>
               onTapUp: _onPanEnd,
               child: Stack(
                 children: <Widget>[
-                  _buildAuthor(),
                   _buildMovesLeftPanel(orientation),
                   _buildObjectivePanel(orientation),
                   _buildBoard( gameController!.levelNtf),
@@ -150,29 +145,13 @@ class _GameViewState extends State<GameView>
     );
   }
 
-  //
-  // Puts the author text
-  //
-  Widget _buildAuthor() {
-    return Align(
-      alignment: Alignment.bottomLeft,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ShadowedText(
-          text: 'by Didier Boelens',
-          color: Colors.white,
-          fontSize: 12.0,
-          offset: Offset(1.0, 1.0),
-        ),
-      ),
-    );
-  }
+ 
 
   //
   // Builds the score panel
   //
   Widget _buildMovesLeftPanel(Orientation orientation) {
-    Alignment alignment = orientation == Orientation.portrait
+    final Alignment alignment = orientation == Orientation.portrait
         ? Alignment.topLeft
         : Alignment.topLeft;
 
@@ -186,13 +165,13 @@ class _GameViewState extends State<GameView>
   // Builds the objective panel
   //
   Widget _buildObjectivePanel(Orientation orientation) {
-    Alignment alignment = orientation == Orientation.portrait
+    final Alignment alignment = orientation == Orientation.portrait
         ? Alignment.topRight
         : Alignment.bottomLeft;
 
     return Align(
       alignment: alignment,
-      child: ObjectivePanel(),
+      child: const ObjectivePanel(),
     );
   }
 
@@ -201,10 +180,9 @@ class _GameViewState extends State<GameView>
   //
   Widget _buildBoard(ValueNotifier<Level?> levelNtf) {
     if(levelNtf.value == null) {
-      return SizedBox();
+      return const SizedBox();
     }
     return Align(
-      alignment: Alignment.center,
       child: Board(
         rows: levelNtf.value!.rows,
         cols: levelNtf.value!.cols,
@@ -219,7 +197,6 @@ class _GameViewState extends State<GameView>
   Widget _buildTiles() {
     return StreamBuilder<bool>(
       stream: readyBloc!.outReadyToDisplayTiles,
-      initialData: null,
       builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
         if (snapshot.hasData) {
           List<Widget> tiles = <Widget>[];
@@ -252,7 +229,7 @@ class _GameViewState extends State<GameView>
           // return Flow(delegate: TileFlowDelegate(),);
         }
         // If nothing is ready, simply return an empty container
-        return SizedBox();
+        return const SizedBox();
       },
     );
   }
@@ -379,7 +356,7 @@ class _GameViewState extends State<GameView>
             rowCol.row == gameController!.levelNtf.value!.rows) {
           // Not possible, outside the boundaries
         } else {
-          TileOld? destTile = gameController!.grid!.array![rowCol.row][rowCol.col];
+           TileOld? destTile = gameController!.grid!.array![rowCol.row][rowCol.col];
           bool canBePlayed = false;
 
           //TODO:  Condition no longer necessary
@@ -414,7 +391,6 @@ class _GameViewState extends State<GameView>
 
             // 4. Animate both tiles
             _overlayEntryAnimateSwapTiles = OverlayEntry(
-                opaque: false,
                 builder: (BuildContext context) {
                   return AnimationSwapTiles(
                     upTile: upTile,
@@ -437,7 +413,7 @@ class _GameViewState extends State<GameView>
 
                       if (swapAllowed == true) {
                         // Remember if the tile we move is a bomb
-                        bool isSourceTileABomb =
+                        final bool isSourceTileABomb =
                             TileOld.isBomb(gestureFromTile!.type);
 
                         // Swap the 2 tiles
@@ -445,9 +421,9 @@ class _GameViewState extends State<GameView>
 
                         // Get the tiles that need to be removed, following the swap
                         // We need to get the tiles from all possible combos
-                        Combo comboOne = gameController!.getCombo(
+                        final Combo comboOne = gameController!.getCombo(
                             gestureFromTile!.row, gestureFromTile!.col);
-                        Combo comboTwo = gameController!
+                        final Combo comboTwo = gameController!
                             .getCombo(destTile.row, destTile.col);
 
                         // Wait for both animations to complete
@@ -533,7 +509,9 @@ class _GameViewState extends State<GameView>
   // This is used just before starting an animation
   //
   void _showComboTilesForAnimation(Combo combo, bool visible) {
-    combo.tiles.forEach((TileOld? tile) => tile?.visible = visible);
+    for (final tile in combo.tiles) {
+      tile?.visible = visible;
+    }
     setState(() {});
   }
 
@@ -568,14 +546,12 @@ class _GameViewState extends State<GameView>
         // await Audio.playAsset(AudioType.move_down);
 
         Overlay.of(context).insert(overlayEntry!);
-        break;
 
       case ComboType.none:
       case ComboType.one:
       case ComboType.two:
         // These type of combos are not possible, therefore directly return
         completer.complete(null);
-        break;
 
       default:
         // Hide the tiles before starting the animation

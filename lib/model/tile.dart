@@ -356,11 +356,11 @@ class TileOld extends Object {
   static bool isBomb(TileType? type) {
     int? index = type?.index;
     if (index == null) return false;
-    return (index >= _firstBombTile && index <= _lastBombTile);
+    return index >= _firstBombTile && index <= _lastBombTile;
   }
 
   static bool canBePlayed(TileType? type) =>
-      (type != TileType.wall && type != TileType.forbidden);
+      type != TileType.wall && type != TileType.forbidden;
 }
 
 enum TileType {

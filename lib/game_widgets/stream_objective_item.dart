@@ -89,28 +89,25 @@ class StreamObjectiveItemState extends State<StreamObjectiveItem> {
     TileOld tile = TileOld(type: widget.objective.type, levelNtf: gameController!.levelNtf);
     tile.build();
 
-    return Container(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          SizedBox(
-            width: 32.0,
-            height: 32.0,
-            child: tile.widget,
-          ),
-          StreamBuilder<int>(
-            initialData: widget.objective.count,
-            stream: _bloc!.objectiveCounter,
-            builder: (BuildContext context, AsyncSnapshot<int> snapshot){
-              return Text(
-                '${snapshot.data}',
-                style: TextStyle(color: Colors.black),
-              );
-            }
-          ),
-        ],
-      ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        SizedBox(
+          width: 32.0,
+          height: 32.0,
+          child: tile.widget,
+        ),
+        StreamBuilder<int>(
+          initialData: widget.objective.count,
+          stream: _bloc!.objectiveCounter,
+          builder: (BuildContext context, AsyncSnapshot<int> snapshot){
+            return Text(
+              '${snapshot.data}',
+              style: const TextStyle(color: Colors.black),
+            );
+          }
+        ),
+      ],
     );
   }
 }

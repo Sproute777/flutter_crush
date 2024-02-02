@@ -11,12 +11,12 @@ import '../level/domain/level_const.dart';
 import '../model/level.dart';
 
 class Board extends StatefulWidget {
-  Board({
-    Key? key,
+  const Board({
+    super.key,
     this.cols = 0,
     this.rows = 0,
     required this.levelNtf,
-  }) : super(key: key);
+  });
 
   final int rows;
   final int cols;

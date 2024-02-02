@@ -20,20 +20,20 @@ class LevelRepository implements ILevelRepository {
       final list = jsonDecode(jsonContent) as Map<String, dynamic>;
       debugPrint(list.toString());
       final levels = List<Level>.empty(growable: true);
-      (list['levels'] as List).forEach((levelItem) {
+      for (final levelItem in list['levels'] as List) {
         debugPrint(levelItem.toString());
         try {
           final settings = LevelSettings.fromJson(levelItem);
           final l = Level.fromSettings(settings);
           levels.add(l);
-        } catch (e, stack) {
+        } catch (e, _) {
           debugPrint(
             'crash during parse fromJson',
           );
         }
-      });
+      }
       return levels;
-    } catch (e, stack) {
+    } catch (e, _) {
       debugPrint(
         'crash during loading assets',
       );

@@ -6,26 +6,26 @@ import '../model/tile_animation.dart';
 
 
 class AnimationChain extends StatefulWidget {
-  AnimationChain({
-    Key? key,
+  const AnimationChain({
+    super.key,
     required this.animationSequence,
     required this.levelNtf,
      required this.onComplete,
-  }):super(key: key);
+  });
 
   final AnimationSequence animationSequence;
   final VoidCallback onComplete;
   final ValueNotifier<Level?> levelNtf;
 
   @override
-  _AnimationChainState createState() => _AnimationChainState();
+  AnimationChainState createState() => AnimationChainState();
 }
 
-class _AnimationChainState extends State<AnimationChain> with SingleTickerProviderStateMixin {
+class AnimationChainState extends State<AnimationChain> with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
 
   // List of all individual animations (one per delay)
-  List<Animation<double>> _animations = <Animation<double>>[];
+  final _animations = <Animation<double>>[];
   
   // Normal duration of one fall
   final int normalDurationInMs = 300;
@@ -60,7 +60,7 @@ class _AnimationChainState extends State<AnimationChain> with SingleTickerProvid
     // Let's build the list of all animations in the sequence
     //
     widget.animationSequence.animations.forEach((TileAnimation tileAnimation){
-      final int start = tileAnimation.delay * (delayInMs);
+      final int start = tileAnimation.delay * delayInMs;
       final int end = start + normalDurationInMs;
       final double ratioStart = start / totalDurationInMs;
       final double ratioEnd = end / totalDurationInMs;
@@ -173,7 +173,7 @@ class _AnimationChainState extends State<AnimationChain> with SingleTickerProvid
   //
   Widget _buildSubAnimationChain(int index, TileAnimation tileAnimation, Widget? childWidget){
     return Transform.scale(
-      scale: (1.0 - _animations[index].value),
+      scale: 1.0 - _animations[index].value,
       child: childWidget,      
     );
   }
