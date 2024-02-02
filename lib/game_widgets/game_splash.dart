@@ -1,24 +1,25 @@
-import 'package:flutter_crush/game_widgets/double_curved_container.dart';
-import 'package:flutter_crush/game_widgets/objective_item.dart';
-import 'package:flutter_crush/model/level.dart';
-import 'package:flutter_crush/model/objective.dart';
 import 'package:flutter/material.dart';
 
+import '../model/level.dart';
+import '../model/objective.dart';
+import 'double_curved_container.dart';
+import 'objective_item.dart';
+
 class GameSplash extends StatefulWidget {
-  GameSplash({
-    Key? key,
+  const GameSplash({
+    super.key,
     required this.levelNtf,
     this.onComplete,
-  }) : super(key: key);
+  });
 
   final ValueNotifier<Level?> levelNtf;
   final VoidCallback? onComplete;
 
   @override
-  _GameSplashState createState() => _GameSplashState();
+  GameSplashState createState() => GameSplashState();
 }
 
-class _GameSplashState extends State<GameSplash>
+class GameSplashState extends State<GameSplash>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<double> _animationAppear;
@@ -28,7 +29,7 @@ class _GameSplashState extends State<GameSplash>
     super.initState();
 
     _controller = AnimationController(
-      duration: Duration(seconds: 4),
+      duration: const Duration(seconds: 4),
       vsync: this,
     )
       ..addListener(() {
@@ -100,7 +101,7 @@ class _GameSplashState extends State<GameSplash>
               children: <Widget>[
                 Container(
                     child: Text(
-                  'Level:  ${widget.levelNtf.value!.index}',
+                  'Level:  ${widget.levelNtf.value!.id.index}',
                   style: TextStyle(fontSize: 24.0, color: Colors.white),
                 )),
                 SizedBox(height: 8.0),

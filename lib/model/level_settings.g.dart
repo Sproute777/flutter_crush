@@ -8,7 +8,7 @@ part of 'level_settings.dart';
 
 _$$LevelSettingsImpl _$$$LevelSettingsImplFromJson(Map<String, dynamic> json) =>
     _$$LevelSettingsImpl(
-      index: json['level'] as int,
+      id: LevelSettings._levelIdFromJson(json['level']),
       rows: json['rows'] as int,
       cols: json['cols'] as int,
       moves: json['moves'] as int,

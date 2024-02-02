@@ -153,7 +153,6 @@ final levelNtf = ValueNotifier<Level?>(null);
                   type: type,
                   levelNtf: levelNtf,
                   depth: (levelNtf.value!.grid.array![row][col] == '2') ? 1 : 0);
-              break;
 
             case 'X':
               // No cell
@@ -163,7 +162,6 @@ final levelNtf = ValueNotifier<Level?>(null);
                   type: TileType.forbidden,
                   levelNtf: levelNtf,
                   depth: 1);
-              break;
 
             case 'W':
               // A wall
@@ -173,7 +171,6 @@ final levelNtf = ValueNotifier<Level?>(null);
                   type: TileType.wall,
                   levelNtf: levelNtf,
                   depth: 1);
-              break;
           }
 
           // Assign the tile

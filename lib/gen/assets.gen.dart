@@ -293,7 +293,7 @@ class MyAssets {
   static const String levels = 'assets/levels.json';
 
   /// List of all assets
-  List<String> get values => [levels];
+  static List<String> get values => [levels];
 }
 
 class AssetGenImage {

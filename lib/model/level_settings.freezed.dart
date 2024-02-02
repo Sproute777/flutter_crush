@@ -20,8 +20,8 @@ LevelSettings _$LevelSettingsFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$LevelSettings {
-  @JsonKey(name: 'level')
-  int get index => throw _privateConstructorUsedError;
+  @JsonKey(name: 'level', fromJson: LevelSettings._levelIdFromJson)
+  LevelId get id => throw _privateConstructorUsedError;
   int get rows => throw _privateConstructorUsedError;
   int get cols => throw _privateConstructorUsedError;
   int get moves => throw _privateConstructorUsedError;
@@ -42,7 +42,8 @@ abstract class $LevelSettingsCopyWith<$Res> {
       _$LevelSettingsCopyWithImpl<$Res, LevelSettings>;
   @useResult
   $Res call(
-      {@JsonKey(name: 'level') int index,
+      {@JsonKey(name: 'level', fromJson: LevelSettings._levelIdFromJson)
+      LevelId id,
       int rows,
       int cols,
       int moves,
@@ -63,7 +64,7 @@ class _$LevelSettingsCopyWithImpl<$Res, $Val extends LevelSettings>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? index = null,
+    Object? id = null,
     Object? rows = null,
     Object? cols = null,
     Object? moves = null,
@@ -71,10 +72,10 @@ class _$LevelSettingsCopyWithImpl<$Res, $Val extends LevelSettings>
     Object? aimConfig = null,
   }) {
     return _then(_value.copyWith(
-      index: null == index
-          ? _value.index
-          : index // ignore: cast_nullable_to_non_nullable
-              as int,
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as LevelId,
       rows: null == rows
           ? _value.rows
           : rows // ignore: cast_nullable_to_non_nullable
@@ -108,7 +109,8 @@ abstract class _$$$LevelSettingsImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {@JsonKey(name: 'level') int index,
+      {@JsonKey(name: 'level', fromJson: LevelSettings._levelIdFromJson)
+      LevelId id,
       int rows,
       int cols,
       int moves,
@@ -127,7 +129,7 @@ class __$$$LevelSettingsImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? index = null,
+    Object? id = null,
     Object? rows = null,
     Object? cols = null,
     Object? moves = null,
@@ -135,10 +137,10 @@ class __$$$LevelSettingsImplCopyWithImpl<$Res>
     Object? aimConfig = null,
   }) {
     return _then(_$$LevelSettingsImpl(
-      index: null == index
-          ? _value.index
-          : index // ignore: cast_nullable_to_non_nullable
-              as int,
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as LevelId,
       rows: null == rows
           ? _value.rows
           : rows // ignore: cast_nullable_to_non_nullable
@@ -167,7 +169,8 @@ class __$$$LevelSettingsImplCopyWithImpl<$Res>
 @JsonSerializable(createToJson: false)
 class _$$LevelSettingsImpl extends $LevelSettings {
   const _$$LevelSettingsImpl(
-      {@JsonKey(name: 'level') required this.index,
+      {@JsonKey(name: 'level', fromJson: LevelSettings._levelIdFromJson)
+      required this.id,
       required this.rows,
       required this.cols,
       required this.moves,
@@ -181,8 +184,8 @@ class _$$LevelSettingsImpl extends $LevelSettings {
       _$$$LevelSettingsImplFromJson(json);
 
   @override
-  @JsonKey(name: 'level')
-  final int index;
+  @JsonKey(name: 'level', fromJson: LevelSettings._levelIdFromJson)
+  final LevelId id;
   @override
   final int rows;
   @override
@@ -209,7 +212,7 @@ class _$$LevelSettingsImpl extends $LevelSettings {
 
   @override
   String toString() {
-    return 'LevelSettings(index: $index, rows: $rows, cols: $cols, moves: $moves, gridConfig: $gridConfig, aimConfig: $aimConfig)';
+    return 'LevelSettings(id: $id, rows: $rows, cols: $cols, moves: $moves, gridConfig: $gridConfig, aimConfig: $aimConfig)';
   }
 
   @override
@@ -217,7 +220,7 @@ class _$$LevelSettingsImpl extends $LevelSettings {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$$LevelSettingsImpl &&
-            (identical(other.index, index) || other.index == index) &&
+            (identical(other.id, id) || other.id == id) &&
             (identical(other.rows, rows) || other.rows == rows) &&
             (identical(other.cols, cols) || other.cols == cols) &&
             (identical(other.moves, moves) || other.moves == moves) &&
@@ -231,7 +234,7 @@ class _$$LevelSettingsImpl extends $LevelSettings {
   @override
   int get hashCode => Object.hash(
       runtimeType,
-      index,
+      id,
       rows,
       cols,
       moves,
@@ -248,7 +251,8 @@ class _$$LevelSettingsImpl extends $LevelSettings {
 
 abstract class $LevelSettings extends LevelSettings {
   const factory $LevelSettings(
-          {@JsonKey(name: 'level') required final int index,
+          {@JsonKey(name: 'level', fromJson: LevelSettings._levelIdFromJson)
+          required final LevelId id,
           required final int rows,
           required final int cols,
           required final int moves,
@@ -261,8 +265,8 @@ abstract class $LevelSettings extends LevelSettings {
       _$$LevelSettingsImpl.fromJson;
 
   @override
-  @JsonKey(name: 'level')
-  int get index;
+  @JsonKey(name: 'level', fromJson: LevelSettings._levelIdFromJson)
+  LevelId get id;
   @override
   int get rows;
   @override

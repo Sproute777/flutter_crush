@@ -1,20 +1,19 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../helpers/array_2d.dart';
+import 'ids.dart';
 import 'level_settings.dart';
 import 'objective.dart';
 
 part 'level.freezed.dart';
 
 @Freezed(
-  toJson: false,
-  fromJson: false,
   copyWith: true,
 )
 class Level with _$Level {
   const Level._();
   const factory Level({
-    required int index,
+    required LevelId id,
     required int rows,
     required int cols,
     required int maxMoves,
@@ -37,18 +36,13 @@ class Level with _$Level {
       final listCell = row[rowIndex].split(',');
       for (var cellIndex = 0; cellIndex < listCell.length; cellIndex++) {
         final cell = listCell[cellIndex];
-        try {
           grid.array![rowIndex][cellIndex] = cell;
-        } catch (e) {
-          print(e);
-          rethrow;
-        }
       }
     }
     objectives.forEach((Objective objective) => objective.reset());
 
     return Level(
-      index: settings.index,
+      id: settings.id,
       rows: settings.rows,
       cols: settings.cols,
       maxMoves: settings.moves,
@@ -62,3 +56,4 @@ class Level with _$Level {
     );
   }
 }
+

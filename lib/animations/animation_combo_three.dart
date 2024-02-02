@@ -1,30 +1,30 @@
-import 'package:flutter_crush/model/combo.dart';
-import 'package:flutter_crush/model/tile.dart';
 import 'package:flutter/material.dart';
-import 'package:logging/logging.dart';
+
+import '../model/combo.dart';
+import '../model/tile.dart';
 
 class AnimationComboThree extends StatefulWidget {
-  AnimationComboThree({
-    Key? key,
+  const AnimationComboThree({
+    super.key,
     required this.combo,
     this.onComplete,
-  }):super(key: key);
+  });
 
   final Combo combo;
   final VoidCallback? onComplete;
 
   @override
-  _AnimationComboThreeState createState() => _AnimationComboThreeState();
+  AnimationComboThreeState createState() => AnimationComboThreeState();
 }
 
-class _AnimationComboThreeState extends State<AnimationComboThree> with SingleTickerProviderStateMixin {
+class AnimationComboThreeState extends State<AnimationComboThree> with SingleTickerProviderStateMixin {
  late final AnimationController _controller;
 
   @override
   void initState(){
     super.initState();
 
-    _controller = AnimationController(duration: Duration(milliseconds: 300), vsync: this)
+    _controller = AnimationController(duration: const Duration(milliseconds: 300), vsync: this)
     ..addListener((){
       setState((){});
     })
@@ -51,7 +51,7 @@ class _AnimationComboThreeState extends State<AnimationComboThree> with SingleTi
     return Stack(
       children: widget.combo.tiles.map((TileOld? tile){
         if(tile == null){
-          return Positioned(child: SizedBox());
+          return const Positioned(child: SizedBox());
         }
         return Positioned(
           left: tile.location.x,

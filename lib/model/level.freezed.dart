@@ -16,7 +16,7 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$Level {
-  int get index => throw _privateConstructorUsedError;
+  LevelId get id => throw _privateConstructorUsedError;
   int get rows => throw _privateConstructorUsedError;
   int get cols => throw _privateConstructorUsedError;
   int get maxMoves => throw _privateConstructorUsedError;
@@ -38,7 +38,7 @@ abstract class $LevelCopyWith<$Res> {
       _$LevelCopyWithImpl<$Res, Level>;
   @useResult
   $Res call(
-      {int index,
+      {LevelId id,
       int rows,
       int cols,
       int maxMoves,
@@ -64,7 +64,7 @@ class _$LevelCopyWithImpl<$Res, $Val extends Level>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? index = null,
+    Object? id = null,
     Object? rows = null,
     Object? cols = null,
     Object? maxMoves = null,
@@ -77,10 +77,10 @@ class _$LevelCopyWithImpl<$Res, $Val extends Level>
     Object? movesLeft = null,
   }) {
     return _then(_value.copyWith(
-      index: null == index
-          ? _value.index
-          : index // ignore: cast_nullable_to_non_nullable
-              as int,
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as LevelId,
       rows: null == rows
           ? _value.rows
           : rows // ignore: cast_nullable_to_non_nullable
@@ -133,7 +133,7 @@ abstract class _$$LevelValueImplCopyWith<$Res> implements $LevelCopyWith<$Res> {
   @override
   @useResult
   $Res call(
-      {int index,
+      {LevelId id,
       int rows,
       int cols,
       int maxMoves,
@@ -157,7 +157,7 @@ class __$$LevelValueImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? index = null,
+    Object? id = null,
     Object? rows = null,
     Object? cols = null,
     Object? maxMoves = null,
@@ -170,10 +170,10 @@ class __$$LevelValueImplCopyWithImpl<$Res>
     Object? movesLeft = null,
   }) {
     return _then(_$LevelValueImpl(
-      index: null == index
-          ? _value.index
-          : index // ignore: cast_nullable_to_non_nullable
-              as int,
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as LevelId,
       rows: null == rows
           ? _value.rows
           : rows // ignore: cast_nullable_to_non_nullable
@@ -222,7 +222,7 @@ class __$$LevelValueImplCopyWithImpl<$Res>
 
 class _$LevelValueImpl extends LevelValue {
   const _$LevelValueImpl(
-      {required this.index,
+      {required this.id,
       required this.rows,
       required this.cols,
       required this.maxMoves,
@@ -237,7 +237,7 @@ class _$LevelValueImpl extends LevelValue {
         super._();
 
   @override
-  final int index;
+  final LevelId id;
   @override
   final int rows;
   @override
@@ -267,7 +267,7 @@ class _$LevelValueImpl extends LevelValue {
 
   @override
   String toString() {
-    return 'Level(index: $index, rows: $rows, cols: $cols, maxMoves: $maxMoves, tileWidth: $tileWidth, tileHeight: $tileHeight, boardLeft: $boardLeft, boardTop: $boardTop, grid: $grid, objectives: $objectives, movesLeft: $movesLeft)';
+    return 'Level(id: $id, rows: $rows, cols: $cols, maxMoves: $maxMoves, tileWidth: $tileWidth, tileHeight: $tileHeight, boardLeft: $boardLeft, boardTop: $boardTop, grid: $grid, objectives: $objectives, movesLeft: $movesLeft)';
   }
 
   @override
@@ -275,7 +275,7 @@ class _$LevelValueImpl extends LevelValue {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$LevelValueImpl &&
-            (identical(other.index, index) || other.index == index) &&
+            (identical(other.id, id) || other.id == id) &&
             (identical(other.rows, rows) || other.rows == rows) &&
             (identical(other.cols, cols) || other.cols == cols) &&
             (identical(other.maxMoves, maxMoves) ||
@@ -298,7 +298,7 @@ class _$LevelValueImpl extends LevelValue {
   @override
   int get hashCode => Object.hash(
       runtimeType,
-      index,
+      id,
       rows,
       cols,
       maxMoves,
@@ -319,7 +319,7 @@ class _$LevelValueImpl extends LevelValue {
 
 abstract class LevelValue extends Level {
   const factory LevelValue(
-      {required final int index,
+      {required final LevelId id,
       required final int rows,
       required final int cols,
       required final int maxMoves,
@@ -333,7 +333,7 @@ abstract class LevelValue extends Level {
   const LevelValue._() : super._();
 
   @override
-  int get index;
+  LevelId get id;
   @override
   int get rows;
   @override

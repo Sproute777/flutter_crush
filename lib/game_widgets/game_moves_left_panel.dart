@@ -31,7 +31,7 @@ class GameMovesLeftPanel extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                'Level: ${levelNtf.value?.index}',
+                'Level: ${levelNtf.value?.id.index}',
                 style: TextStyle(fontSize: 14.0, color: Colors.black,)
               ),
             ),
