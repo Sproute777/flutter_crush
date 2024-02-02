@@ -39,7 +39,9 @@ class Level with _$Level {
           grid.array![rowIndex][cellIndex] = cell;
       }
     }
-    objectives.forEach((Objective objective) => objective.reset());
+    for (final objective in objectives) {
+      objective.reset();
+    }
 
     return Level(
       id: settings.id,

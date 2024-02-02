@@ -1,3 +1,5 @@
+// ignore_for_file: use_is_even_rather_than_modulo
+
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -224,7 +226,7 @@ class _BoardState extends State<Board> {
 
   //
   Rect _getDimensionsFromContext(BuildContext context) {
-    final RenderBox box = context.findRenderObject() as RenderBox;
+    final RenderBox box = context.findRenderObject()! as RenderBox;
 
     final Offset topLeft = box.size.topLeft(box.localToGlobal(Offset.zero));
     final Offset bottomRight =

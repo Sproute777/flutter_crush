@@ -24,7 +24,7 @@ class StreamObjectiveItem extends StatefulWidget {
 }
 
 class StreamObjectiveItemState extends State<StreamObjectiveItem> {
-   AimBloc? _bloc;
+   late final AimBloc _bloc;
     // GameBloc? gameBloc;
     GameController? gameController;
 
@@ -72,7 +72,7 @@ class StreamObjectiveItemState extends State<StreamObjectiveItem> {
     _subscription?.cancel();
     _subscription = gameController!.outObjectiveEvents.listen((o) {
       Logger.root.fine(' listen ourObjectiveEvents');
-      _bloc!.setObjectives(o);
+      _bloc.setObjectives(o);
     });
   }
 
@@ -99,7 +99,7 @@ class StreamObjectiveItemState extends State<StreamObjectiveItem> {
         ),
         StreamBuilder<int>(
           initialData: widget.objective.count,
-          stream: _bloc!.objectiveCounter,
+          stream: _bloc.objectiveCounter,
           builder: (BuildContext context, AsyncSnapshot<int> snapshot){
             return Text(
               '${snapshot.data}',

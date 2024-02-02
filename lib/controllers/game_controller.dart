@@ -211,8 +211,8 @@ class GameController {
     int index;
     int destRow;
     int destCol;
-    int totalRows = _grid!.height;
-    int totalCols = _grid!.width;
+    final int totalRows = _grid!.height;
+    final int totalCols = _grid!.width;
     TileOld? fromTile;
     TileOld? toTile;
     bool isSrcNormalTile;
@@ -233,7 +233,7 @@ class GameController {
           do {
             index++;
             move = _moves[index];
-//TODO: check if the move is allowed (barriers)
+// T0D0: check if the move is allowed (barriers)
             destRow = row + move.row;
             destCol = col + move.col;
 
@@ -522,21 +522,21 @@ class GameController {
     });
 
     // Proceed with chained explosions
-    subExplosions.forEach((TileOld tile) {
+    for (final tile in subExplosions) {
       proceedWithExplosion(tile, skipThis: true);
-    });
+    }
   }
 
 // Controller aimed at processing the Objective events
   //
-  PublishSubject<ObjectiveEvent> _objectiveEventsController =
+  final PublishSubject<ObjectiveEvent> _objectiveEventsController =
       PublishSubject<ObjectiveEvent>();
   void setObjectiveEvent(ObjectiveEvent event) =>
       _objectiveEventsController.sink.add(event);
   Stream<ObjectiveEvent> get outObjectiveEvents =>
       _objectiveEventsController.stream;
 
-  PublishSubject<bool> _gameIsOverController = PublishSubject<bool>();
+  final PublishSubject<bool> _gameIsOverController = PublishSubject<bool>();
   Stream<bool> get gameIsOver => _gameIsOverController.stream;
 
   void pushTileEvent(TileType? tileType, int counter) {
@@ -558,11 +558,11 @@ class GameController {
 
     // Check if the game is won
     bool isWon = true;
-    levelNtf.value!.objectives.forEach((Objective? objective) {
-      if ((objective?.count ?? 0) > 0) {
+    for (final objective in levelNtf.value!.objectives) {
+      if ((objective.count) > 0) {
         isWon = false;
       }
-    });
+    }
 
     // If the game is won, send a notification
     if (isWon) {
@@ -582,7 +582,7 @@ class GameController {
     //  .timeout(Duration(seconds: 10));
   }
 
-  PublishSubject<int> _movesLeftController = PublishSubject<int>();
+  final PublishSubject<int> _movesLeftController = PublishSubject<int>();
   Stream<int> get movesLeftCount => _movesLeftController.stream;
 
   void playMove() {

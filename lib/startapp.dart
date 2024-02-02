@@ -35,5 +35,5 @@ Future<void> startApp() async {
 
   Bloc.observer = AppBlocObserver();
 
-  runApp(Application());
+  runApp(const Application());
 }

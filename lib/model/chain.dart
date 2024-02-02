@@ -9,7 +9,7 @@ class Chain {
   ChainType? type;
 
   // List of the tiles, part of the chain
-  HashMap<int, TileOld?> _tiles = HashMap<int, TileOld?>();
+  final _tiles = HashMap<int, TileOld?>();
   List<TileOld?> get tiles => _tiles.values.toList();
 
   // Constructor

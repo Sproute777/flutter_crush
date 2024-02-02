@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_equals_and_hash_code_on_mutable_classes
+
 import 'tile.dart';
 
 /// Identifies a possible swap between 2 tiles

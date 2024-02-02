@@ -30,7 +30,7 @@ class Combo {
       _tiles.putIfAbsent(tile.hashCode, () => tile);
     });
 
-    int total = _tiles.length;
+    final int total = _tiles.length;
     _type = ComboType.values[total];
 
     // If the combo contains more than 3 tiles but is not the combination of both horizontal and vertical chains

@@ -16,7 +16,7 @@ class LevelRepository implements ILevelRepository {
   @override
   Future<List<Level>> loadLevels() async {
     try {
-      String jsonContent = await rootBundle.loadString('assets/levels.json');
+      final String jsonContent = await rootBundle.loadString('assets/levels.json');
       final list = jsonDecode(jsonContent) as Map<String, dynamic>;
       debugPrint(list.toString());
       final levels = List<Level>.empty(growable: true);

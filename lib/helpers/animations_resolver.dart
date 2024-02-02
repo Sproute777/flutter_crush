@@ -168,7 +168,7 @@ class AnimationsResolver {
         bool somethingHappens = _processAvalanches(column, delay);
 
         // Then process the moves inside a column
-        int newDelay = _processColumn(column, delay);
+        final int newDelay = _processColumn(column, delay);
         somethingHappens |= (newDelay != delay);
 
         // If something happens, we need to continue
@@ -217,7 +217,7 @@ class AnimationsResolver {
           animationType = TileAnimationType.collapse;
           if (combo.commonTile == null) {
             debugPrint('Houston, we have a problem');
-            //TODO: this should never happen
+            //T0D0: this should never happen
           } else {
             // When we are collapsing, the tiles move to the position of the commonTile
             to = RowCol(
@@ -227,17 +227,14 @@ class AnimationsResolver {
         }
 
         // We need to register the animations (combo)
-        combo.tiles.forEach((TileOld? tile) {
+        for (final tile in combo.tiles) {
           if (tile == null) {
-            return;
+            continue;
           }
           from = RowCol(row: tile.row, col: tile.col);
           final id = _identities.array![tile.row][tile.col];
           if (to == null) {
-            return;
-          }
-          if (from == null) {
-            return;
+            continue;
           }
           _registerAnimation(
             id,
@@ -245,19 +242,19 @@ class AnimationsResolver {
             TileAnimation(
               animationType: animationType,
               delay: delay,
-              from: from!,
+              from: from,
               to: to,
               tile: _tiles.array![tile.row][tile.col],
             ),
           );
 
           // Record the cells involved in the animation
-          _involvedCells.add(from!);
+          _involvedCells.add(from);
 
           // At the same time, we need to check the objectives
           gameController.pushTileEvent(
               _tiles.array![tile.row][tile.col]?.type, 1);
-        });
+        }
 
         // ... the delay for the next move
         delay++;
@@ -386,11 +383,11 @@ class AnimationsResolver {
     // Counter of moves caused by an avalanche effect
     int movesCounter = 0;
 
-    final bool leftCol = (col > 0);
-    final bool rightCol = (col < cols - 1);
+    final bool leftCol = col > 0;
+    final bool rightCol = col < cols - 1;
 
     // Let's process all cases
-    _avalanches[col].forEach((AvalancheTest avalancheTest) {
+    for (final avalancheTest in _avalanches[col]) {
       final int row = avalancheTest.row;
 
       // Count the number of "holes" on the left-hand side column
@@ -452,7 +449,7 @@ class AnimationsResolver {
         // Increment the counter of moves
         movesCounter++;
       }
-    });
+    }
 
     // As we processed all avalanches related to this column, we can remove them all
     _avalanches[col].clear();
@@ -621,10 +618,10 @@ class AnimationsResolver {
           _tiles.array![dest][col] = TileOld(
             row: row,
             col: col,
-            depth: 0,
+            // depth: 0,
             levelNtf: levelNtf,
             type: newTileType,
-            visible: true,
+            // visible: true,
           ); // We will build it later
           _tiles.array![dest][col]?.build();
 
@@ -713,14 +710,14 @@ class AnimationsResolver {
   // This routine returns a list of animations sequences, per identity, sorted per delay start
   //
   List<AnimationSequence> getAnimationsSequences() {
-    List<AnimationSequence> sequences = <AnimationSequence>[];
+    final List<AnimationSequence> sequences = <AnimationSequence>[];
 
-    _animationsPerIdentityAndDelay.keys.forEach((int identity) {
+    for (final identity in _animationsPerIdentityAndDelay.keys) {
       // now that we have an identity, let's put all its animations, sorted by delay
-      List<TileAnimation> animations = <TileAnimation>[];
+      final List<TileAnimation> animations = <TileAnimation>[];
 
       // Let's sort the animations related to a single identity
-      List<int>? delays =
+      final List<int>? delays =
           _animationsPerIdentityAndDelay[identity]?.keys.toList();
       delays?.sort();
 
@@ -729,7 +726,7 @@ class AnimationsResolver {
       TileType? tileType;
       TileAnimation? tileAnimation;
       TileOld? tile;
-      if (delays != null)
+      if (delays != null){
         for (var delayIndex = 0; delayIndex < delays.length; delayIndex++) {
           final item = delays[delayIndex];
           if (delayIndex == 0) {
@@ -745,10 +742,10 @@ class AnimationsResolver {
               tile = TileOld(
                 row: tileAnimation!.from.row,
                 col: tileAnimation.from.col,
-                depth: 0,
+                // depth: 0,
                 levelNtf: levelNtf,
-                type: tileType!,
-                visible: true,
+                type: tileType,
+                // visible: true,
               );
               tile.build();
               tileAnimation.tile = tile;
@@ -758,8 +755,11 @@ class AnimationsResolver {
 
           // add the animation
           final a = _animationsPerIdentityAndDelay[identity]?[item];
-          if (a != null) animations.add(a);
+          if (a != null) {
+            animations.add(a);
+          }
         }
+      }
       // enumerate(delays).forEach((item) {
       //   // Remember that start and end delays as well as the type of tile
       //   if (item.index == 0) {
@@ -800,7 +800,7 @@ class AnimationsResolver {
           animations: animations,
         ));
       }
-    });
+    }
 
     return sequences;
   }

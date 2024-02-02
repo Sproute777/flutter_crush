@@ -2,7 +2,7 @@ import 'package:rxdart/rxdart.dart';
 
 class ReadyBloc {
    ReadyBloc();
-  BehaviorSubject<bool> _readyToDisplayTilesController =
+  final BehaviorSubject<bool> _readyToDisplayTilesController =
       BehaviorSubject<bool>();
   Function get setReadyToDisplayTiles =>
       _readyToDisplayTilesController.sink.add;

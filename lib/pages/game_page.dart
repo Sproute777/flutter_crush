@@ -39,7 +39,6 @@ class GamePage extends StatelessWidget {
 }
 
 class GameView extends StatefulWidget {
-
   final Level level;
   const GameView({
     super.key,
@@ -106,69 +105,51 @@ class GameViewState extends State<GameView>
     final Orientation orientation = MediaQuery.of(context).orientation;
     gameController = RepositoryProvider.of<GameController>(context);
     return ValueListenableBuilder(
-      valueListenable: gameController!.levelNtf,
-      builder: (context, level,_) {
-        return Scaffold(
-          floatingActionButton: FloatingActionButton(
-            child: const Icon(Icons.close),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-          body: Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/images/background/background2.jpeg'),
-                fit: BoxFit.cover,
+        valueListenable: gameController!.levelNtf,
+        builder: (context, level, _) {
+          return Scaffold(
+            floatingActionButton: FloatingActionButton(
+              child: const Icon(Icons.close),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            body: Container(
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image:
+                      AssetImage('assets/images/background/background2.jpeg'),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: GestureDetector(
+                onPanDown: _onPanDown,
+                onPanStart: _onPanStart,
+                onPanEnd: _onPanEnd,
+                onPanUpdate: _onPanUpdate,
+                onTap: _onTap,
+                onTapUp: _onPanEnd,
+                child: Stack(
+                  children: <Widget>[
+                    _buildMovesLeftPanel(orientation),
+                    _buildObjectivePanel(orientation),
+                    _buildBoard(gameController!.levelNtf),
+                    _buildTiles(),
+                  ],
+                ),
               ),
             ),
-            child: GestureDetector(
-              onPanDown: _onPanDown,
-              onPanStart: _onPanStart,
-              onPanEnd: _onPanEnd,
-              onPanUpdate: _onPanUpdate,
-              onTap: _onTap,
-              onTapUp: _onPanEnd,
-              child: Stack(
-                children: <Widget>[
-                  _buildAuthor(),
-                  _buildMovesLeftPanel(orientation),
-                  _buildObjectivePanel(orientation),
-                  _buildBoard( gameController!.levelNtf),
-                  _buildTiles(),
-                ],
-              ),
-            ),
-          ),
-        );
-        
-      }
-    );
+          );
+        });
   }
 
-  //
-  // Puts the author text
-  //
-  Widget _buildAuthor() {
-    return const Align(
-      alignment: Alignment.bottomLeft,
-      child: Padding(
-        padding: EdgeInsets.all(8.0),
-        child: ShadowedText(
-          text: 'by Didier Boelens',
-          // color: Colors.white,
-          fontSize: 12.0,
-          // offset: Offset(1.0, 1.0),
-        ),
-      ),
-    );
-  }
+  
 
   //
   // Builds the score panel
   //
   Widget _buildMovesLeftPanel(Orientation orientation) {
-    final  alignment = orientation == Orientation.portrait
+    final alignment = orientation == Orientation.portrait
         ? Alignment.topLeft
         : Alignment.topLeft;
 
@@ -182,13 +163,13 @@ class GameViewState extends State<GameView>
   // Builds the objective panel
   //
   Widget _buildObjectivePanel(Orientation orientation) {
-    final  alignment = orientation == Orientation.portrait
+    final alignment = orientation == Orientation.portrait
         ? Alignment.topRight
         : Alignment.bottomLeft;
 
     return Align(
       alignment: alignment,
-      child: ObjectivePanel(),
+      child: const ObjectivePanel(),
     );
   }
 
@@ -196,7 +177,7 @@ class GameViewState extends State<GameView>
   // Builds the game board
   //
   Widget _buildBoard(ValueNotifier<Level?> levelNtf) {
-    if(levelNtf.value == null) {
+    if (levelNtf.value == null) {
       return const SizedBox();
     }
     return Align(
@@ -222,7 +203,9 @@ class GameViewState extends State<GameView>
           final Array2d<TileOld?> grid = gameController!.grid!;
 
           for (int row = 0; row < gameController!.levelNtf.value!.rows; row++) {
-            for (int col = 0; col < gameController!.levelNtf.value!.cols; col++) {
+            for (int col = 0;
+                col < gameController!.levelNtf.value!.cols;
+                col++) {
               final tile = grid.array![row][col];
               if (tile != null &&
                   tile.type != TileType.empty &&
@@ -232,8 +215,7 @@ class GameViewState extends State<GameView>
                 // Make sure the widget is correctly positioned
                 //
                 tile.setPosition();
-                tiles.add(
-                  Positioned(
+                tiles.add(Positioned(
                   left: tile.location.x,
                   top: tile.location.y,
                   child: tile.widget,
@@ -258,9 +240,12 @@ class GameViewState extends State<GameView>
   //
 
   RowCol _rowColFromGlobalPosition(Offset globalPosition) {
-    final double top = globalPosition.dy - gameController!.levelNtf.value!.boardTop;
-    final double left = globalPosition.dx - gameController!.levelNtf.value!.boardLeft;
-    Logger.root.info('(_rowColFromGlobalPosition) . $top $left ${gameController!.levelNtf.value!.tileWidth} ${gameController!.levelNtf.value!.tileHeight}');
+    final double top =
+        globalPosition.dy - gameController!.levelNtf.value!.boardTop;
+    final double left =
+        globalPosition.dx - gameController!.levelNtf.value!.boardLeft;
+    Logger.root.info(
+        '(_rowColFromGlobalPosition) . $top $left ${gameController!.levelNtf.value!.tileWidth} ${gameController!.levelNtf.value!.tileHeight}');
     return RowCol(
       col: (left / gameController!.levelNtf.value!.tileWidth).floor(),
       row: gameController!.levelNtf.value!.rows -
@@ -273,10 +258,12 @@ class GameViewState extends State<GameView>
   // The pointer touches the screen
   //
   void _onPanDown(DragDownDetails details) {
-    if (!_allowGesture) return;
+    if (!_allowGesture) {
+      return;
+    }
 
     // Determine the [row,col] from touch position
-    RowCol rowCol = _rowColFromGlobalPosition(details.globalPosition);
+    final RowCol rowCol = _rowColFromGlobalPosition(details.globalPosition);
 
     // Ignore if we touched outside the grid
     if (rowCol.row < 0 ||
@@ -287,7 +274,8 @@ class GameViewState extends State<GameView>
     }
 
     // Check if the [row,col] corresponds to a possible swap
-    TileOld? selectedTile = gameController!.grid!.array![rowCol.row][rowCol.col];
+    final TileOld selectedTile =
+        gameController!.grid!.array![rowCol.row][rowCol.col];
     bool canBePlayed = false;
 
     // Reset
@@ -308,15 +296,15 @@ class GameViewState extends State<GameView>
       _overlayEntryFromTile = OverlayEntry(
           // opaque: false,
           builder: (BuildContext context) {
-            return Positioned(
-              left: gestureFromTile!.location.x,
-              top: gestureFromTile!.location.y,
-              child: Transform.scale(
-                scale: 1.1,
-                child: gestureFromTile!.widget,
-              ),
-            );
-          });
+        return Positioned(
+          left: gestureFromTile!.location.x,
+          top: gestureFromTile!.location.y,
+          child: Transform.scale(
+            scale: 1.1,
+            child: gestureFromTile!.widget,
+          ),
+        );
+      });
       Overlay.of(context).insert(_overlayEntryFromTile!);
     }
   }
@@ -358,7 +346,7 @@ class GameViewState extends State<GameView>
 
     if (gestureStarted) {
       // Try to determine the move type (up, down, left, right)
-      Offset delta = details.globalPosition - gestureOffsetStart!;
+      final Offset delta = details.globalPosition - gestureOffsetStart!;
       int deltaRow = 0;
       int deltaCol = 0;
       bool test = false;
@@ -374,7 +362,7 @@ class GameViewState extends State<GameView>
       }
 
       if (test) {
-        RowCol rowCol = RowCol(
+        final RowCol rowCol = RowCol(
             row: gestureFromRowCol!.row + deltaRow,
             col: gestureFromRowCol!.col + deltaCol);
         if (rowCol.col < 0 ||
@@ -383,15 +371,16 @@ class GameViewState extends State<GameView>
             rowCol.row == gameController!.levelNtf.value!.rows) {
           // Not possible, outside the boundaries
         } else {
-          TileOld? destTile = gameController!.grid!.array![rowCol.row][rowCol.col];
+          final TileOld destTile =
+              gameController!.grid!.array![rowCol.row][rowCol.col];
           bool canBePlayed = false;
 
-          //TODO:  Condition no longer necessary
+          //T0D0:  Condition no longer necessary
           canBePlayed = destTile.canMove || destTile.type == TileType.empty;
 
           if (canBePlayed) {
             // We need to test the swap
-            bool swapAllowed =
+            final bool swapAllowed =
                 gameController!.swapContains(gestureFromTile!, destTile);
 
             // Do not allow the gesture recognition during the animation
@@ -402,8 +391,8 @@ class GameViewState extends State<GameView>
             _overlayEntryFromTile = null;
 
             // 2. Generate the up/down tiles
-            TileOld upTile = gestureFromTile!.cloneForAnimation();
-            TileOld downTile = destTile.cloneForAnimation();
+            final TileOld upTile = gestureFromTile!.cloneForAnimation();
+            final TileOld downTile = destTile.cloneForAnimation();
 
             // 3. Remove both tiles from the game grid
             gameController!.grid!.array![rowCol.row][rowCol.col].visible =
@@ -420,76 +409,75 @@ class GameViewState extends State<GameView>
             _overlayEntryAnimateSwapTiles = OverlayEntry(
                 // opaque: false,
                 builder: (BuildContext context) {
-                  return AnimationSwapTiles(
-                    upTile: upTile,
-                    downTile: downTile,
-                    swapAllowed: swapAllowed,
-                    onComplete: () async {
-                      // 5. Put back the tiles in the game grid
-                      gameController!
-                          .grid!.array![rowCol.row][rowCol.col].visible = true;
+              return AnimationSwapTiles(
+                upTile: upTile,
+                downTile: downTile,
+                swapAllowed: swapAllowed,
+                onComplete: () async {
+                  // 5. Put back the tiles in the game grid
+                  gameController!.grid!.array![rowCol.row][rowCol.col].visible =
+                      true;
 
-                      gameController!
-                          .grid!
-                          .array![gestureFromRowCol!.row]
-                              [gestureFromRowCol!.col]
-                          .visible = true;
+                  gameController!
+                      .grid!
+                      .array![gestureFromRowCol!.row][gestureFromRowCol!.col]
+                      .visible = true;
 
-                      // 6. Remove the overlay Entry
-                      _overlayEntryAnimateSwapTiles?.remove();
-                      _overlayEntryAnimateSwapTiles = null;
+                  // 6. Remove the overlay Entry
+                  _overlayEntryAnimateSwapTiles?.remove();
+                  _overlayEntryAnimateSwapTiles = null;
 
-                      if (swapAllowed == true) {
-                        // Remember if the tile we move is a bomb
-                        bool isSourceTileABomb =
-                            TileOld.isBomb(gestureFromTile!.type);
+                  if (swapAllowed) {
+                    // Remember if the tile we move is a bomb
+                    final bool isSourceTileABomb =
+                        TileOld.isBomb(gestureFromTile!.type);
 
-                        // Swap the 2 tiles
-                        gameController!.swapTiles(gestureFromTile!, destTile);
+                    // Swap the 2 tiles
+                    gameController!.swapTiles(gestureFromTile!, destTile);
 
-                        // Get the tiles that need to be removed, following the swap
-                        // We need to get the tiles from all possible combos
-                        Combo comboOne = gameController!.getCombo(
-                            gestureFromTile!.row, gestureFromTile!.col);
-                        Combo comboTwo = gameController!
-                            .getCombo(destTile.row, destTile.col);
+                    // Get the tiles that need to be removed, following the swap
+                    // We need to get the tiles from all possible combos
+                    final Combo comboOne = gameController!
+                        .getCombo(gestureFromTile!.row, gestureFromTile!.col);
+                    final Combo comboTwo =
+                        gameController!.getCombo(destTile.row, destTile.col);
 
-                        // Wait for both animations to complete
-                        await Future.wait(
-                            [_animateCombo(comboOne), _animateCombo(comboTwo)]);
+                    // Wait for both animations to complete
+                    await Future.wait(
+                        [_animateCombo(comboOne), _animateCombo(comboTwo)]);
 
-                        // Resolve the combos
-                        gameController!.resolveCombo(comboOne );
-                        gameController!.resolveCombo(comboTwo );
+                    // Resolve the combos
+                    gameController!.resolveCombo(comboOne);
+                    gameController!.resolveCombo(comboTwo);
 
-                        // If the tile we moved is a bomb, we need to process the explosion
-                        if (isSourceTileABomb) {
-                          gameController!.proceedWithExplosion(
-                              TileOld(
-                                  row: destTile.row,
-                                  col: destTile.row,
-                                  levelNtf: gameController!.levelNtf,
-                                  type: gestureFromTile!.type),
-                              );
-                        }
+                    // If the tile we moved is a bomb, we need to process the explosion
+                    if (isSourceTileABomb) {
+                      gameController!.proceedWithExplosion(
+                        TileOld(
+                            row: destTile.row,
+                            col: destTile.row,
+                            levelNtf: gameController!.levelNtf,
+                            type: gestureFromTile!.type),
+                      );
+                    }
 
-                        // Proceed with the falling tiles
-                        await _playAllAnimations();
+                    // Proceed with the falling tiles
+                    await _playAllAnimations();
 
-                        // Once this is all done, we need to recalculate all the possible swaps
-                        gameController!.identifySwaps();
+                    // Once this is all done, we need to recalculate all the possible swaps
+                    gameController!.identifySwaps();
 
-                        // Record the fact that we have played a move
-                        gameController!.playMove();
-                      }
+                    // Record the fact that we have played a move
+                    gameController!.playMove();
+                  }
 
-                      // 7. Reset
-                      _allowGesture = true;
-                      _onPanEnd(null);
-                      setState(() {});
-                    },
-                  );
-                });
+                  // 7. Reset
+                  _allowGesture = true;
+                  _onPanEnd(null);
+                  setState(() {});
+                },
+              );
+            });
             if (_overlayEntryAnimateSwapTiles != null) {
               Overlay.of(context).insert(_overlayEntryAnimateSwapTiles!);
             }
@@ -515,7 +503,7 @@ class GameViewState extends State<GameView>
       // Audio.playAsset(AudioType.bomb);
 
       // Proceed with explosion
-      gameController!.proceedWithExplosion(gestureFromTile! );
+      gameController!.proceedWithExplosion(gestureFromTile!);
 
       // Rebuild the board and proceed with animations
       WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -539,7 +527,9 @@ class GameViewState extends State<GameView>
   // This is used just before starting an animation
   //
   void _showComboTilesForAnimation(Combo combo, bool visible) {
-    combo.tiles.forEach((TileOld? tile) => tile?.visible = visible);
+    for (final tile in combo.tiles) {
+      tile?.visible = visible;
+    }
     setState(() {});
   }
 
@@ -547,7 +537,7 @@ class GameViewState extends State<GameView>
   // Launch an Animation which returns a Future when completed
   //
   Future<dynamic> _animateCombo(Combo combo) async {
-    var completer = Completer();
+    final completer = Completer();
     OverlayEntry? overlayEntry;
 
     switch (combo.type) {
@@ -557,7 +547,7 @@ class GameViewState extends State<GameView>
 
         // Launch the animation for a chain of 3 tiles
         overlayEntry = OverlayEntry(
-          opaque: false,
+          // opaque: false,
           builder: (BuildContext context) {
             return AnimationComboThree(
               combo: combo,
@@ -574,14 +564,12 @@ class GameViewState extends State<GameView>
         // await Audio.playAsset(AudioType.move_down);
 
         Overlay.of(context).insert(overlayEntry!);
-        break;
 
       case ComboType.none:
       case ComboType.one:
       case ComboType.two:
         // These type of combos are not possible, therefore directly return
         completer.complete(null);
-        break;
 
       default:
         // Hide the tiles before starting the animation
@@ -593,13 +581,13 @@ class GameViewState extends State<GameView>
           row: combo.commonTile!.row,
           type: combo.resultingTileType,
           levelNtf: gameController!.levelNtf,
-          depth: 0,
+          // depth: 0,
         );
         resultingTile.build();
 
         // Launch the animation for a chain more than 3 tiles
         overlayEntry = OverlayEntry(
-          opaque: false,
+          // opaque: false,
           builder: (BuildContext context) {
             return AnimationComboCollapse(
               combo: combo,
@@ -628,7 +616,7 @@ class GameViewState extends State<GameView>
   // Routine that launches all animations, resulting from a combo
   //
   Future<dynamic> _playAllAnimations() async {
-    var completer = Completer();
+    final completer = Completer();
 
     //
     // Determine all animations (and sequence of animations) that
@@ -640,20 +628,20 @@ class GameViewState extends State<GameView>
 
     // Determine the list of cells that are involved in the animation(s)
     // and make them invisible
-    if (animationResolver.involvedCells.length == 0) {
+    if (animationResolver.involvedCells.isEmpty) {
       // At first glance, there is no animations... so directly return
       completer.complete(null);
     }
 
     // Obtain the animation sequences
-    List<AnimationSequence> sequences =
+    final List<AnimationSequence> sequences =
         animationResolver.getAnimationsSequences();
     int pendingSequences = sequences.length;
 
     // Make all involved cells invisible
-    animationResolver.involvedCells.forEach((RowCol rowCol) {
+    for (final rowCol in animationResolver.involvedCells) {
       gameController!.grid!.array![rowCol.row][rowCol.col].visible = false;
-    });
+    }
 
     // Make a refresh of the board and the end of which we will play the animations
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -661,9 +649,9 @@ class GameViewState extends State<GameView>
       // As the board is now refreshed, it is time to start playing
       // all the animations
       //
-      List<OverlayEntry> overlayEntries = <OverlayEntry>[];
+      final List<OverlayEntry> overlayEntries = <OverlayEntry>[];
 
-      sequences.forEach((AnimationSequence animationSequence) {
+      for (final animationSequence in sequences) {
         //
         // Prepare all the animations at once.
         // This is important to avoid having multiple rebuild
@@ -671,7 +659,7 @@ class GameViewState extends State<GameView>
         //
         overlayEntries.add(
           OverlayEntry(
-            opaque: false,
+            // opaque: false,
             builder: (BuildContext context) {
               return AnimationChain(
                 levelNtf: gameController!.levelNtf,
@@ -686,10 +674,9 @@ class GameViewState extends State<GameView>
                   //
                   if (pendingSequences == 0) {
                     // Remove all OverlayEntries
-                    overlayEntries.forEach((OverlayEntry? entry) {
-                      entry?.remove();
-                      entry = null;
-                    });
+                    for (final entry in overlayEntries) {
+                      entry.remove();
+                    }
 
                     gameController!.refreshGridAfterAnimations(
                         animationResolver.resultingGridInTermsOfTileTypes,
@@ -708,21 +695,21 @@ class GameViewState extends State<GameView>
             },
           ),
         );
-      });
+      }
       Overlay.of(context).insertAll(overlayEntries);
     });
 
     setState(() {});
 
     return completer.future;
-  } 
+  }
 
   //
   // The game is over
   //
   // We need to show the adequate splash (win/lost)
   //
-  void _onGameOver(bool success) async {
+  Future<void> _onGameOver(bool success) async {
     // Prevent from bubbling
     if (_gameOverReceived) {
       return;
@@ -738,22 +725,23 @@ class GameViewState extends State<GameView>
 
     // Show the splash
     _gameSplash = OverlayEntry(
-        opaque: false,
+        // opaque: false,
         builder: (BuildContext context) {
-          return GameOverSplash(
-            success: success,
-            level: gameController!.levelNtf.value!,
-            onComplete: () {
-              _gameSplash?.remove();
-              _gameSplash = null;
+      return GameOverSplash(
+        success: success,
+        level: gameController!.levelNtf.value!,
+        onComplete: () {
+          _gameSplash?.remove();
+          _gameSplash = null;
 
-              // as the game is over, let's leave the game
-              Navigator.of(context).pop();
-            },
-          );
-        });
-
-    Overlay.of(context).insert(_gameSplash!);
+          // as the game is over, let's leave the game
+          Navigator.of(context).pop();
+        },
+      );
+    });
+    if (context.mounted) {
+      Overlay.of(context).insert(_gameSplash!);
+    }
   }
 
   //
@@ -766,7 +754,7 @@ class GameViewState extends State<GameView>
 
     // Show the splash
     _gameSplash = OverlayEntry(
-        opaque: false,
+        // opaque: false,
         builder: (BuildContext context) {
           return GameSplash(
             levelNtf: gameController!.levelNtf,

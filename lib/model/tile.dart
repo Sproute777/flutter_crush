@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_equals_and_hash_code_on_mutable_classes
+
 import 'dart:math' as math;
 import 'dart:math';
 
@@ -146,7 +148,7 @@ class TileOld extends Object {
   late Widget _widget;
   late Point<double> location;
   bool visible;
-  final _log = Logger('TileOld');
+  // final _log = Logger('TileOld');
 
   TileOld({
     required this.type,
@@ -189,7 +191,7 @@ class TileOld extends Object {
         ],
       );
     } else if (type == TileType.empty) {
-      _widget = SizedBox();
+      _widget = const SizedBox();
     } else {
       _widget = _buildDecoration(type!);
     }
@@ -262,7 +264,7 @@ class TileOld extends Object {
     if (levelNtf.value == null) {
       return;
     }
-    double bottom =
+    final double bottom =
         levelNtf.value!.boardTop + (levelNtf.value!.rows - 1) * levelNtf.value!.tileHeight;
    final x = levelNtf.value!.boardLeft + col * levelNtf.value!.tileWidth;
    final y = bottom - row * levelNtf.value!.tileHeight;
@@ -273,7 +275,7 @@ class TileOld extends Object {
   // Generate a tile to be used during the swap animations
   //
   TileOld cloneForAnimation() {
-    TileOld tile = TileOld(levelNtf: levelNtf, type: type, row: row, col: col);
+    final TileOld tile = TileOld(levelNtf: levelNtf, type: type, row: row, col: col);
     tile.build();
 
     return tile;
@@ -322,9 +324,9 @@ class TileOld extends Object {
   // Generate a random tile
   //
   static TileType random(math.Random rnd) {
-    int minValue = _firstNormalTile;
-    int maxValue = _lastNormalTile;
-    int value = rnd.nextInt(maxValue - minValue) + minValue;
+    final int minValue = _firstNormalTile;
+    final int maxValue = _lastNormalTile;
+    final int value = rnd.nextInt(maxValue - minValue) + minValue;
     return TileType.values[value];
   }
 
@@ -334,7 +336,7 @@ class TileOld extends Object {
   static int get _lastBombTile => TileType.fireball.index;
 
   static bool isNormal(TileType? type) {
-    int? index = type?.index;
+    final int? index = type?.index;
     if (index == null) {
       return false;
     }
@@ -342,7 +344,7 @@ class TileOld extends Object {
   }
 
   static bool isBomb(TileType? type) {
-    int? index = type?.index;
+    final int? index = type?.index;
     if (index == null) {
       return false;
     }
